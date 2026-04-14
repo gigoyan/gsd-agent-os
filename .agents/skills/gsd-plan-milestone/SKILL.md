@@ -1,0 +1,62 @@
+---
+name: gsd-plan-milestone
+description: Turn the next meaningful goal into one milestone file and one bounded execution phase inside the Codex-native GSD workflow. Use when work is too large for a quick task, spans multiple files, changes behavior, or needs explicit acceptance criteria and verification planning.
+---
+
+# GSD Plan Milestone
+
+Plan the next unit of non-trivial work without starting implementation.
+Use this skill to translate a goal into one milestone file and one executable phase, with synchronized roadmap and state updates. When an active milestone is already in progress, this skill plans the next bounded phase inside that milestone instead of creating a replacement milestone.
+
+## Workflow
+1. Read [PROJECT.md](../../../PROJECT.md), [`.planning/REQUIREMENTS.md`](../../../.planning/REQUIREMENTS.md), [`.planning/ROADMAP.md`](../../../.planning/ROADMAP.md), [`.planning/CODEBASE_MAP.md`](../../../.planning/CODEBASE_MAP.md), and [`.planning/STATE.md`](../../../.planning/STATE.md).
+2. Determine whether the work is non-trivial. If it is tiny and bounded, stop and switch to `$gsd-quick-task`.
+3. For non-trivial work, confirm the governing readiness artifacts are sufficiently current before planning: the current project's Project Idea Document, Technical Specification, and stack-selection/configuration-package planning artifact. Treat [PROJECT.md](../../../PROJECT.md) and [`.planning/REQUIREMENTS.md`](../../../.planning/REQUIREMENTS.md) as the current project's bootstrap charter and requirements surfaces, not as substitutes for those later readiness artifacts.
+4. If any governing artifact is missing, stale, or materially underspecified for the requested scope, stop planning and return an explicit prerequisite route naming the missing artifact work. Do not create or update milestone or phase files for implementation planning until the readiness gate is satisfied.
+5. Once the readiness gate is satisfied, determine whether the work needs a brand-new milestone or the next phase for the current active milestone. Reuse the active milestone when it is still in progress and the next work item belongs to its acceptance criteria.
+6. Clarify the requested outcome, intended scope, exclusions, dependencies, success criteria, and the smallest meaningful behavior slices that need validation. If the work depends on prior durable context, request a narrow `gsd-memory-lookup` context pack first; otherwise stay repo-local and use the active planning artifacts as the source of truth.
+7. Create or update one milestone file under [`.planning/milestones/`](../../../.planning/milestones/) with enough detail that a later execution or verification agent does not need to guess the milestone intent. The milestone must capture the concrete outcome, scope, explicit exclusions, assumptions, dependencies, risks, acceptance criteria, validation strategy, and a phase list that reflects both completed and pending phases. Include concrete instructions or examples when the user, repo evidence, or prior analysis already supplies them. Keep the milestone itself repo-local and do not write durable memory from planning.
+8. Create exactly one active phase file under [`.planning/phases/`](../../../.planning/phases/) for the first or next bounded implementation pass. The phase must be execution-ready: identify the exact behavior slice, touched areas, first tests or checks to create or update before implementation when practical, key constraints, concrete implementation notes, and explicit done criteria. If the planning stop point is likely to matter later, note the later `gsd-session-save` follow-up as `candidate` or `none` without writing durable memory here.
+9. Update [`.planning/ROADMAP.md`](../../../.planning/ROADMAP.md) and [`.planning/STATE.md`](../../../.planning/STATE.md) so the active milestone, milestone status, active phase, phase status, and durable-memory follow-up are explicit and still point to repo-local workflow control.
+
+## Source Templates
+- [`.planning/templates/milestone-template.md`](../../../.planning/templates/milestone-template.md)
+- [`.planning/templates/phase-template.md`](../../../.planning/templates/phase-template.md)
+- [`.planning/templates/roadmap-template.md`](../../../.planning/templates/roadmap-template.md)
+- [`.planning/templates/project-idea-document-template.md`](../../../.planning/templates/project-idea-document-template.md)
+- [`.planning/templates/technical-specification-template.md`](../../../.planning/templates/technical-specification-template.md)
+- [`.planning/templates/stack-selection-and-configuration-package-template.md`](../../../.planning/templates/stack-selection-and-configuration-package-template.md)
+
+## Naming Rules
+- Milestone file: `M001-<slug>.md`
+- Phase file: `M001-P01-<slug>.md`
+- Use zero-padded numeric identifiers.
+
+## Rules
+- Keep the milestone meaningful but not broad enough to hide multiple unrelated efforts.
+- Enforce the Spec-First gate for non-trivial work. Do not plan implementation when the current project's Project Idea Document, Technical Specification, or stack-selection/configuration-package planning artifact is missing, stale, or materially underspecified.
+- Milestones must be detailed enough to act as durable repo-local planning artifacts, not thin reminders. Prefer concrete instructions over terse placeholders whenever the needed detail is already known.
+- Include explicit assumptions, constraints, dependencies, verification expectations, and phase intent so later agents can execute without reconstructing the plan from chat history.
+- Include concrete examples only when they materially reduce ambiguity. Do not pad the milestone with generic filler or speculative implementation detail.
+- Keep the first phase narrow enough for one focused execution pass and organized around a meaningful behavior slice rather than microscopic fragments.
+- If the active milestone is incomplete, do not create a new milestone just to continue it. Update the existing milestone and add only the next bounded phase needed.
+- When invoked as a delegated child under `$gsd-run-milestone`, perform planning only. Do not orchestrate, do not delegate, and do not continue into execution or verification.
+- As a delegated child, do not call `spawn_agent`, `send_input`, `wait_agent`, or `close_agent`.
+- Define validation before implementation. Prefer the most relevant available test level: unit, integration, API or contract, regression, characterization, or smoke or manual fallback when automation is impractical.
+- Specify which tests or checks should be created or updated first, or record the closest realistic safeguard when test-first is impractical.
+- Tie milestone acceptance criteria and phase done criteria to validated behavior so `$gsd-verify-phase` can verify the slice from explicit evidence.
+- When the work is architectural, multi-step, policy-heavy, or integration-heavy, include enough file, workflow, and decision detail in the milestone to make sequencing and expected outputs unambiguous.
+- Keep written normalization lightweight by default. Require a fuller written normalization pass only when ambiguity, risk, scope, or explicit user request justifies it.
+- Use memory lookup only to recover missing durable context, not to replace planning state or broaden the milestone.
+- Do not write durable memory from this skill; durable outcomes belong to `gsd-session-save` after later execution or verification proves they matter.
+- When planning reaches a meaningful stop point, record an explicit durable-memory follow-up decision in repo-local state as `candidate` or `none`; do not leave the save decision implicit.
+- End the response with explicit `Phase Status: planned` and `Milestone Status: in_progress` lines, then a compact `Next-Step Prompt` for `$gsd-execute-phase` that tells the next agent to execute the active phase defined in the current planning artifacts.
+- After returning the required outputs, stop immediately. Do not begin execution, verification, or any additional routing work yourself.
+- Treat the `Next-Step Prompt` as response-only handoff text. Do not write it into milestone, phase, roadmap, or state artifacts unless the user explicitly asks for that artifact content.
+- If the request is actually tiny and bounded, stop and switch to `$gsd-quick-task`.
+
+## Completion Check
+- For non-trivial work, the readiness gate was checked first and either passed explicitly or caused planning to stop and route to prerequisite artifact work.
+- One milestone file exists and captures goal, scope, exclusions, assumptions, dependencies, risks, acceptance criteria, validation strategy, and current phase sequencing.
+- One active phase file exists, is small enough to execute without further decomposition, and names the first validation step, touched areas, key constraints, and done criteria.
+- [`.planning/ROADMAP.md`](../../../.planning/ROADMAP.md) and [`.planning/STATE.md`](../../../.planning/STATE.md) both point to the same active milestone and phase, with milestone status shown as in progress.

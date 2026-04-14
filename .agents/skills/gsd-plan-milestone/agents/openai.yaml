@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Plan Milestone"
+  short_description: "Plan the next milestone step"
+  default_prompt: "Use $gsd-plan-milestone to turn a goal into one milestone file and one bounded phase file."

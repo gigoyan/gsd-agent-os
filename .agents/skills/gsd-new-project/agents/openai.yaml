@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD New Project"
+  short_description: "Bootstrap repo planning docs"
+  default_prompt: "Use $gsd-new-project to initialize PROJECT.md and the core planning artifacts for this repository."

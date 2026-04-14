@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Verify Phase"
+  short_description: "Verify the active phase now"
+  default_prompt: "Use $gsd-verify-phase to validate the active phase against its done criteria and acceptance checks."

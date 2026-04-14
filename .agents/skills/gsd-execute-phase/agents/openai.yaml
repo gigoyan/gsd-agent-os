@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Execute Phase"
+  short_description: "Execute the active phase now"
+  default_prompt: "Use $gsd-execute-phase to implement the currently active phase without expanding scope."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Map Codebase"
+  short_description: "Analyze and map a codebase"
+  default_prompt: "Use $gsd-map-codebase to analyze this repository and create a grounded CODEBASE_MAP.md."

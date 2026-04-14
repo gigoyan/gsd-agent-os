@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Quick Task"
+  short_description: "Handle a small bounded task"
+  default_prompt: "Use $gsd-quick-task to complete a small, low-risk task without creating a full milestone."

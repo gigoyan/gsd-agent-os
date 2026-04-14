@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Run Milestone"
+  short_description: "Orchestrate an active milestone with sub-agents"
+  default_prompt: "Use $gsd-run-milestone to keep the root session as the only orchestrator, delegate exactly one planning, execution, or verification step at a time to medium-reasoning sub-agents, and require each child to return status plus next-step output and then stop."
