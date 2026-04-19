@@ -74,6 +74,8 @@ Capture the inputs required for project-local configuration generation once stac
 - Secrets and environment variable categories:
 - Local development expectations:
 - CI or automation expectations:
+- Default delegated child-agent model: `gpt-5.4`
+- Default delegated child-agent reasoning effort:
 - Required agent roles or workflow specializations:
 - Review or approval constraints:
 - Any project-local toolchain requirements:
@@ -83,6 +85,7 @@ Use this only after the stack domains and configuration-package inputs above are
 
 - Confirm generation happens inside the current project's local runtime copy, not inside a reusable source package.
 - Confirm the selected stack, runtime environments, and review constraints are current enough to generate project-local `.codex/config.toml` and `.codex/agents/*.toml`.
+- When the current project uses delegated child agents, explicitly set the child model in the generated TOML configuration to `gpt-5.4` unless the current project intentionally overrides it.
 - Generate only the project-local files the current project actually needs; do not create placeholder roles or unsupported config fields.
 - Keep generated role prompts and permissions aligned with bounded-child orchestration and conservative reviewer defaults unless the current project explicitly overrides them.
 - If schema details are needed, verify them narrowly from official Codex or OpenAI guidance at generation time.

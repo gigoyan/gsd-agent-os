@@ -15,7 +15,7 @@ This skill is for user-requested milestone automation where the main session sho
    - active phase ready to build: `$gsd-execute-phase`
    - active phase implemented and awaiting review: `$gsd-verify-phase`
 3. Choose the child role from the immediate GSD step plus the current phase domain and selected stack context already established by repo-local planning artifacts. Keep that role choice root-owned, stack-agnostic at the blueprint level, and constrained to one bounded delegated step.
-4. Spawn exactly one bounded sub-agent for that step. The root session should pass only the minimal prompt and required file references, keep `fork_context: false` by default, set `reasoning_effort: "medium"` on the spawn unless the user explicitly overrides it, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
+4. Spawn exactly one bounded sub-agent for that step. The root session should pass only the minimal prompt and required file references, keep `fork_context: false` by default, set `model: "gpt-5.4"` and `reasoning_effort: "medium"` on the spawn unless the user explicitly overrides either setting, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
 5. Read the child result and route only from explicit response signals:
    - `Phase Status`
    - `Milestone Status`
@@ -27,7 +27,7 @@ This skill is for user-requested milestone automation where the main session sho
 - This skill requires an explicit user request for subagent-driven milestone automation.
 - Keep the root session as manager. Do not let child agents recursively fan out unless the environment is intentionally configured for deeper delegation.
 - Keep the root session at high reasoning for milestone orchestration. Do not inherit high reasoning into sub-agents by default.
-- For every planning, execution, and verification child, call `spawn_agent(..., reasoning_effort="medium")` unless the user explicitly asks for a different child reasoning level.
+- For every planning, execution, and verification child, call `spawn_agent(..., model="gpt-5.4", reasoning_effort="medium")` unless the user explicitly asks for a different child model or child reasoning level.
 - Use `fork_context: false` for child spawns unless the delegated step truly cannot proceed without full thread history.
 - Pass only the minimum step-specific instructions and artifact references needed for the delegated skill. Do not hand the child the full milestone loop responsibility.
 - The root session must never tell a child to spawn, wait for, route to, or manage other agents.
