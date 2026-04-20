@@ -14,9 +14,14 @@
 - Name tempting adjacent work that should not be folded into this milestone.
 
 ## Known Inputs
-- User-confirmed requirements:
-- Repo evidence and current constraints:
-- Concrete examples or fixed rules to preserve:
+- Confirmed:
+  - User-confirmed requirements:
+  - Repo evidence and current constraints:
+  - Concrete examples or fixed rules to preserve:
+- Suggested:
+  - Recommended milestone framing, sequencing, or implementation direction that still needs confirmation:
+- Unknown:
+  - Open scope, dependency, or readiness gaps that still need confirmation:
 
 ## Assumptions
 - A1:
@@ -49,6 +54,7 @@
 ## Implementation Notes
 - Record concrete instructions, examples, or sequencing constraints that later phases must preserve.
 - Include file or artifact targets when already known.
+- Keep recommendations and inferred sequencing visibly `Suggested` until stronger evidence or explicit confirmation makes them `Confirmed`.
 
 ## Planned Phases
 | Phase | Name | Status | Goal |

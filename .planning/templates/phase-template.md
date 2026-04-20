@@ -26,6 +26,7 @@
 
 ## Implementation Notes
 - Concrete instructions, examples, or sequencing notes needed to execute this phase without guesswork.
+- When the phase relies on repo evidence, recommendations, or unresolved gaps, keep them labeled as `Confirmed`, `Suggested`, or `Unknown` instead of flattening them into certainty.
 
 ## Test-First Validation
 - Primary test level:

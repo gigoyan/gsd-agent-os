@@ -1,0 +1,6 @@
+# Generated from the selected Node.js backend stack profile.
+# Keep only supported Codex config fields in the final project-local file.
+
+[agents]
+max_threads = 4
+max_depth = 1

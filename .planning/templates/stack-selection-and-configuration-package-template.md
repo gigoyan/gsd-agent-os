@@ -1,7 +1,9 @@
 # Stack Selection And Configuration Package Template
 
-Use this template after a Project Idea Document and Technical Specification are sufficiently current.
+Use this template after a Project Idea Document is current and the project has reached stack-selection readiness.
+If the user explicitly requests stack selection before bootstrap or spec artifacts exist, use this template anyway and mark which upstream artifacts still need to be completed afterward.
 Keep the reusable GSD generic: record concrete choices for the current project, not for the package itself.
+Use [`.planning/templates/stack-profile-contract.md`](./stack-profile-contract.md) as the contract for reusable stack profiles and variant options.
 
 ## Purpose
 - Select the project stack in a structured way.
@@ -10,9 +12,11 @@ Keep the reusable GSD generic: record concrete choices for the current project, 
 
 ## Readiness Gate
 - Related Project Idea Document:
-- Related Technical Specification:
+- Related Technical Specification or draft technical direction:
 - Readiness statement:
-  - Confirm the problem, flows, constraints, and architecture direction are clear enough to make stack choices deliberately.
+  - Confirm the problem, primary flows, constraints, and architecture direction are clear enough to make stack choices deliberately.
+  - Note whether Technical Specification completion still depends on the selected stack.
+  - Note whether stack selection started from an explicit user request before bootstrap artifacts were in place.
 
 ## Decision Summary
 - Project name:
@@ -20,6 +24,49 @@ Keep the reusable GSD generic: record concrete choices for the current project, 
 - Decision date:
 - Deployment or operating context:
 - Key non-negotiable constraints:
+- Confirmed facts already proven by repo evidence, supplied material, or explicit user decisions:
+- Suggested defaults or recommendations awaiting confirmation:
+- Unknown decision gaps or conflicting inputs:
+
+## Stack Profile Resolution
+- Selected profile IDs and versions:
+- Selected profile package paths:
+- Profile-backed recommendation sets reviewed:
+- Convention overlays reviewed:
+- Deferred freshness follow-on status:
+- Official sources reserved for later freshness review:
+- Project-local deviations from curated profile defaults:
+- Evidence status for the current profile resolution:
+
+## Profile-Backed Recommendations Reviewed
+Record each profile-backed recommendation bundle that was surfaced during stack selection.
+Keep repo-proven facts `Confirmed`, profile-backed proposals `Suggested`, and unresolved or conflicting choices `Unknown`.
+
+- Recommendation ID:
+- Recommendation label:
+- Triggering confirmed inputs:
+- Suggested axis options:
+- Suggested conventions:
+- Rationale shown:
+- Tradeoffs shown:
+- User decision: accepted, overridden, deferred, or not-shown
+- Override or deferral note:
+- Evidence status:
+- Source or rationale:
+
+## Variant Selections
+Record each selected variant option with the reason it fits the current project.
+Keep repo-proven or user-confirmed choices `Confirmed`, best-fit recommendations `Suggested`, and unresolved axes `Unknown`.
+
+- Axis ID:
+- Selected option ID:
+- Recommendation source ID, if any:
+- Why this fit:
+- Tradeoff accepted:
+- Example or reference shown to the user:
+- Override confirmation note:
+- Evidence status:
+- Source or rationale:
 
 ## Stack Domains
 Record the selected option for each domain.
@@ -29,36 +76,50 @@ Use `Other` when the common options do not fit, then explain the choice and cons
 - Options: Web SPA, SSR web app, mobile app, desktop app, API-only, CLI, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Backend Or Server Runtime
 - Options: Node.js, Python, Go, JVM, .NET, serverless platform, no dedicated backend, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Data Storage
 - Options: PostgreSQL, MySQL, SQLite, document store, key-value store, object storage only, no durable store, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Auth And Identity
 - Options: First-party auth, external IdP, enterprise SSO, magic link, no auth, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Integrations And Messaging
 - Options: REST APIs, GraphQL, webhooks, queues, cron or jobs, event bus, none, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Hosting And Delivery
 - Options: Cloud VM, managed platform, serverless, edge platform, on-prem, hybrid, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ### Observability And Operations
 - Options: Hosted monitoring, self-hosted monitoring, basic logs only, Other
 - Selected option:
 - Notes:
+- Evidence status:
+- Source or rationale:
 
 ## Cross-Cutting Constraints
 - Security and compliance constraints:
@@ -77,6 +138,10 @@ Capture the inputs required for project-local configuration generation once stac
 - Default delegated child-agent model: `gpt-5.4`
 - Default delegated child-agent reasoning effort:
 - Required agent roles or workflow specializations:
+- Generated `AGENTS.md` instruction layers or fragments:
+- Generated or enabled skills:
+- Generated project-local output files:
+- Generated project-local templates or starter assets:
 - Review or approval constraints:
 - Any project-local toolchain requirements:
 
@@ -84,7 +149,8 @@ Capture the inputs required for project-local configuration generation once stac
 Use this only after the stack domains and configuration-package inputs above are complete.
 
 - Confirm generation happens inside the current project's local runtime copy, not inside a reusable source package.
-- Confirm the selected stack, runtime environments, and review constraints are current enough to generate project-local `.codex/config.toml` and `.codex/agents/*.toml`.
+- Confirm the selected stack, stack-aware Technical Specification, runtime environments, and review constraints are current enough to generate project-local `.codex/config.toml` and `.codex/agents/*.toml`.
+- Confirm the selected curated profile manifests and template assets were the sources for generated project-local outputs.
 - When the current project uses delegated child agents, explicitly set the child model in the generated TOML configuration to `gpt-5.4` unless the current project intentionally overrides it.
 - Generate only the project-local files the current project actually needs; do not create placeholder roles or unsupported config fields.
 - Keep generated role prompts and permissions aligned with bounded-child orchestration and conservative reviewer defaults unless the current project explicitly overrides them.
@@ -92,12 +158,13 @@ Use this only after the stack domains and configuration-package inputs above are
 - Review generated files against the current Project Idea Document, Technical Specification, and this completed stack-selection artifact before adoption.
 
 ## Project-Local Output Rule
-- Generate `.codex/config.toml` and `.codex/agents/*.toml` only after the stack decisions above are complete.
+- Generate `.codex/config.toml` and `.codex/agents/*.toml` only after the stack decisions above and the stack-aware Technical Specification are complete enough to support safe project-local generation.
 - Generate those files only inside the current project's local runtime copy.
 - Do not treat `.codex` as the main blueprint documentation surface or as durable memory.
 
 ## Open Questions
-- Remaining decision gaps:
-- Research still needed:
+- Remaining `Unknown` decision gaps:
+- `Suggested` defaults or recommendations awaiting confirmation:
+- Deferred follow-on work outside active selection, such as freshness review or project-local output generation:
 - Risks introduced by the selected stack:
 - Follow-up actions before implementation:

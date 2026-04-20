@@ -1,0 +1,89 @@
+profile_id = "backend-nodejs-service"
+profile_version = "2026-04-19"
+last_reviewed = "2026-04-19"
+
+[selection]
+artifact_template = ".planning/templates/stack-selection-and-configuration-package-template.md"
+agents_fragment_source = "generated-agents-fragment.md"
+skills_manifest_source = "generated-skills-manifest.md"
+examples_source = "project-structure-examples.md"
+
+[generated_outputs]
+codex_config_template = "project-local-codex-config.template.toml"
+always_generate_agent_templates = [
+  "project-local-agent-backend-implementer.template.toml",
+  "project-local-agent-backend-reviewer.template.toml",
+  "project-local-agent-backend-debugger.template.toml"
+]
+framework_agent_template = "project-local-agent-api-framework-specialist.template.toml"
+
+[generated_outputs.targets]
+codex_config = ".codex/config.toml"
+backend_implementer = ".codex/agents/backend-implementer.toml"
+backend_reviewer = ".codex/agents/backend-reviewer.toml"
+backend_debugger = ".codex/agents/backend-debugger.toml"
+api_framework_specialist = ".codex/agents/api-framework-specialist.toml"
+
+[generated_outputs.framework_agent_rules]
+generate_for = ["fastify", "express"]
+omit_for = ["node-core-http"]
+
+[command_sets.javascript-esm]
+test = ["node --test", "npm test"]
+lint = ["npm run lint"]
+dev = ["node --watch src/server.js", "npm run dev"]
+build = []
+typecheck = []
+
+[command_sets.typescript-node-next]
+test = ["node --test", "npm test"]
+lint = ["npm run lint"]
+dev = ["npm run dev"]
+build = ["npm run build"]
+typecheck = ["npm run typecheck"]
+
+[command_sets.commonjs-compat]
+test = ["node --test", "npm test"]
+lint = ["npm run lint"]
+dev = ["node --watch src/server.js", "npm run dev"]
+build = []
+typecheck = []
+
+[repo_shape.single-package-service]
+workdir_hint = "."
+command_prefix = ""
+notes = [
+  "Assume one backend package until the project artifact says otherwise."
+]
+
+[repo_shape.npm-workspaces-monorepo]
+workdir_hint = "{{backend_workspace_path}}"
+command_prefix = "npm --workspace {{backend_workspace_name}}"
+notes = [
+  "Use workspace-aware commands when scripts live below the repo root.",
+  "Keep package boundaries explicit in generated role guidance."
+]
+
+[[roles]]
+role_id = "backend-implementer"
+target = ".codex/agents/backend-implementer.toml"
+template = "project-local-agent-backend-implementer.template.toml"
+apply_when = "always"
+
+[[roles]]
+role_id = "backend-reviewer"
+target = ".codex/agents/backend-reviewer.toml"
+template = "project-local-agent-backend-reviewer.template.toml"
+apply_when = "always"
+
+[[roles]]
+role_id = "backend-debugger"
+target = ".codex/agents/backend-debugger.toml"
+template = "project-local-agent-backend-debugger.template.toml"
+apply_when = "always"
+
+[[roles]]
+role_id = "api-framework-specialist"
+target = ".codex/agents/api-framework-specialist.toml"
+template = "project-local-agent-api-framework-specialist.template.toml"
+apply_when = "http_framework in ['fastify', 'express']"

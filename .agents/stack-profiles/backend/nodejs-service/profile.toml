@@ -1,0 +1,974 @@
+profile_id = "backend-nodejs-service"
+display_name = "Node.js Backend Service"
+domain = "backend"
+status = "active"
+version = "2026-04-19"
+summary = "Curated Node.js backend profile for APIs, webhooks, and background jobs. It favors Active LTS or Maintenance LTS Node.js releases, explicit module-system markers, built-in Node testing where practical, non-blocking request paths, and project-specific variant selection for authoring mode, architecture, HTTP framework, and repository shape."
+owners = ["GSD blueprint maintainers"]
+last_reviewed = "2026-04-19"
+
+best_for = [
+  "I/O-bound APIs and web services",
+  "Webhook consumers and integration services",
+  "Background workers and scheduled jobs",
+  "Teams that want one runtime across service code and tooling"
+]
+
+avoid_when = [
+  "CPU-heavy workloads that cannot be partitioned or offloaded",
+  "Hard real-time systems",
+  "Projects that need one opinionated full-stack framework instead of a backend runtime profile"
+]
+
+prerequisites = [
+  "Use an Active LTS or Maintenance LTS Node.js release for production targets",
+  "Declare runtime expectations in package.json",
+  "Choose an explicit authoring mode instead of relying on Node's auto-detection defaults",
+  "Define package scripts for dev, test, lint, and build or typecheck workflows"
+]
+
+compatibility_notes = [
+  "This profile is runtime-first and can support plain JavaScript or TypeScript authoring",
+  "HTTP framework choice is optional when the service is a worker, CLI, or job runner",
+  "Repository shape can remain single-package until shared packages or multiple deployables justify workspaces"
+]
+
+recommended_architecture_baseline = "Start with a feature-first modular monolith. Keep transport adapters thin, business logic out of route handlers, and I/O boundaries explicit."
+recommended_project_structure = "Default to a single service package with src/app, src/config, src/modules, src/shared, and test/. Move to npm workspaces only when there is a real need for multiple packages."
+testing_baseline = [
+  "Use node:test for unit and integration seams when the repo does not already standardize on another runner",
+  "Keep fast unit tests close to modules and broader integration tests under test/integration",
+  "Test transport boundaries, validation, and failure paths, not only happy-path services"
+]
+
+tooling_baseline = [
+  "Use package.json scripts as the control plane for setup, dev, test, lint, and build or typecheck commands",
+  "Use explicit ESM or CommonJS markers in package.json and file extensions when needed",
+  "Use built-in .env support and process.env for environment-driven configuration",
+  "Use ESLint with recommended safety rules when linting is enabled",
+  "Use TypeScript NodeNext mode when the TypeScript variant is selected"
+]
+
+operational_baseline = [
+  "Do not block the event loop or worker pool on request paths",
+  "Use structured logging and request-scoped context when the selected framework supports it",
+  "Use process supervision or the host init system instead of assuming the process should never crash",
+  "Expose the Node inspector only on localhost during development or through a secure tunnel"
+]
+
+style_baseline = [
+  "Prefer async and await in application code",
+  "Prefer small single-purpose modules",
+  "Validate input at the transport boundary and normalize errors before returning responses",
+  "Keep reusable business logic independent of framework request and response objects",
+  "Prefer named exports for reusable internal modules unless a framework convention strongly prefers otherwise"
+]
+
+naming_baseline = [
+  "Environment variables use UPPER_SNAKE_CASE",
+  "Feature folders use domain-oriented names",
+  "Scripts in package.json use stable verbs like dev, test, lint, build, typecheck, and start",
+  "Tests mirror the feature or module they verify"
+]
+
+error_handling_baseline = [
+  "Handle errors as close to the failure site as practical",
+  "Do not rely on uncaughtException to keep a production process alive",
+  "Convert framework or transport errors into one service-level error contract at the boundary"
+]
+
+dependency_baseline = [
+  "Prefer the smallest dependency that solves the actual problem",
+  "Do not introduce framework dependencies into core business logic modules",
+  "Keep generated clients, SDK wrappers, and database adapters behind explicit interfaces"
+]
+
+documentation_baseline = [
+  "Document public routes, jobs, queues, and environment variables",
+  "Use comments to explain non-obvious behavior, not obvious syntax",
+  "Keep architecture decisions in spec artifacts instead of scattered inline comments"
+]
+
+selection_prompt = "Select the Node.js backend profile options that match the project's delivery needs."
+selection_help = "The choices below control how the Node.js service is authored, structured, validated, and later specialized for Codex."
+comparison_rules = [
+  "Prefer the simplest option that matches the expected service size and team skill",
+  "Choose hexagonal only when adapter boundaries and long-term swapability matter enough to justify extra ceremony",
+  "Choose workspaces only when you truly have multiple packages or deployables to maintain"
+]
+
+[[recommendation_sets]]
+recommendation_id = "http-api-defaults"
+label = "Default Node.js HTTP API"
+status = "active"
+priority = "primary"
+when_to_suggest = [
+  "Repo evidence or explicit user intent confirms a Node.js HTTP API or webhook service",
+  "No repo-proven requirement already forces CommonJS, Express, workspaces, or a non-HTTP runtime shape",
+  "The current project wants the lowest-ceremony recommended combination"
+]
+not_when = [
+  "The repo already proves a different authoring mode, framework, or repository shape that the user is keeping",
+  "The spec or user explicitly prioritizes legacy middleware compatibility over the recommended default path",
+  "The service is worker-only and does not expose HTTP routes"
+]
+rationale = "For a typical Node.js API, JavaScript ESM plus a feature-first modular monolith, Fastify, and a single package keeps the stack modern and lightweight while still leaving explicit room for later overrides."
+tradeoffs = [
+  "Schema-first Fastify usage adds some up-front route-definition work",
+  "JavaScript ESM relies on runtime validation and tests instead of compile-time type checking",
+  "Single-package discipline matters as the service grows"
+]
+suggested_convention_ids = [
+  "thin-route-handlers",
+  "schema-at-boundary",
+  "package-scripts-control-plane"
+]
+override_prompt = "If the project needs TypeScript, Express middleware compatibility, a worker-only runtime, or multiple packages, confirm the override explicitly instead of silently dropping the recommendation."
+deferred_follow_on = [
+  "Later freshness review can re-check the current Node.js, Fastify, and npm guidance",
+  "Later project-local generation can derive AGENTS and .codex overlays from the confirmed options"
+]
+
+[[recommendation_sets.recommended_axis_options]]
+axis_id = "authoring_mode"
+option_id = "javascript-esm"
+reason = "Modern Node.js services can stay low-ceremony with explicit ESM markers when there is no confirmed TypeScript or CommonJS constraint."
+
+[[recommendation_sets.recommended_axis_options]]
+axis_id = "service_architecture"
+option_id = "feature-first-layered"
+reason = "Feature-first structure is the best general-purpose default for modular Node.js services without the extra ceremony of strict layers or hexagonal ports."
+
+[[recommendation_sets.recommended_axis_options]]
+axis_id = "http_framework"
+option_id = "fastify"
+reason = "Fastify fits the default API case when the project benefits from schema-aware transport boundaries and strong built-in operational ergonomics."
+
+[[recommendation_sets.recommended_axis_options]]
+axis_id = "repo_shape"
+option_id = "single-package-service"
+reason = "One package is the clearest default until the spec or repo proves the need for workspaces."
+
+[[convention_overlays]]
+convention_id = "thin-route-handlers"
+label = "Thin Route Handlers"
+summary = "Keep route modules focused on transport validation, response shaping, and delegation into service logic."
+applies_when = [
+  "An HTTP framework option is selected",
+  "The service exposes HTTP APIs or webhooks"
+]
+guidance = [
+  "Validate and normalize requests at the route boundary",
+  "Delegate business decisions to service modules instead of embedding them in handlers",
+  "Keep framework request and response objects out of reusable business logic"
+]
+output_implications = [
+  "Generated route guidance should emphasize transport-edge boundaries and service delegation",
+  "Later review overlays should flag handlers that contain business logic"
+]
+deferred_follow_on = [
+  "Project-local output generation may turn this into AGENTS or review checklist fragments later"
+]
+
+[[convention_overlays]]
+convention_id = "schema-at-boundary"
+label = "Schema At Boundary"
+summary = "Keep request and response contracts explicit at the transport edge, especially for Fastify-backed APIs."
+applies_when = [
+  "The selected HTTP framework is Fastify",
+  "The service exposes HTTP APIs with request or response payloads"
+]
+guidance = [
+  "Keep validation close to routes",
+  "Review request and response shapes together instead of scattering them across unrelated modules",
+  "Treat schema drift as a transport-boundary concern"
+]
+output_implications = [
+  "Later generated route templates may include schema placeholders",
+  "Later review overlays may check response-schema coverage"
+]
+deferred_follow_on = [
+  "Project-local generation and freshness review remain outside the active selection step"
+]
+
+[[convention_overlays]]
+convention_id = "package-scripts-control-plane"
+label = "Package Scripts Control Plane"
+summary = "Use package.json scripts as the stable control plane for development, test, lint, and build or typecheck commands."
+applies_when = [
+  "The project uses the Node.js backend profile",
+  "The repository exposes a package.json-based workflow"
+]
+guidance = [
+  "Standardize on stable script verbs such as dev, test, lint, build, and typecheck",
+  "Route automation and agent guidance through scripts instead of ad hoc shell snippets",
+  "Keep verification entry points discoverable from package.json"
+]
+output_implications = [
+  "Later generated AGENTS fragments may reference stable script names",
+  "Later project-local config may derive default verification commands from package.json scripts"
+]
+deferred_follow_on = [
+  "Project-local command generation remains deferred until stack selection and the technical specification are current"
+]
+
+[freshness_policy]
+check_mode = "project-local-adjustment-allowed"
+max_staleness_days = 90
+official_sources = [
+  "https://nodejs.org/en/about/releases/",
+  "https://nodejs.org/api/esm.html",
+  "https://nodejs.org/api/modules.html",
+  "https://nodejs.org/api/test.html",
+  "https://nodejs.org/api/environment_variables.html",
+  "https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop",
+  "https://docs.npmjs.com/cli/v11/configuring-npm/package-json",
+  "https://www.typescriptlang.org/docs/handbook/modules/reference.html",
+  "https://fastify.dev/docs/latest/",
+  "https://expressjs.com/en/advanced/best-practice-performance.html",
+  "https://eslint.org/docs/latest/use/configure/"
+]
+community_sources = [
+  "https://alistair.cockburn.us/hexagonal-architecture/",
+  "https://martinfowler.com/bliki/LayeringPrinciples.html",
+  "https://martinfowler.com/bliki/PresentationDomainDataLayering.html"
+]
+check_scope = [
+  "Supported Node.js release guidance",
+  "ESM and CommonJS guidance",
+  "node:test capabilities and stability",
+  "Environment variable and .env support",
+  "npm package.json, scripts, and workspaces behavior",
+  "TypeScript NodeNext guidance",
+  "Fastify and Express framework guidance used by variant options",
+  "Linting and style tooling guidance used by generated outputs"
+]
+
+[generation_targets]
+agents_outputs = [
+  "nodejs-backend-baseline",
+  "nodejs-authoring-mode-overlay",
+  "nodejs-architecture-overlay",
+  "nodejs-framework-overlay",
+  "nodejs-repo-shape-overlay"
+]
+skill_outputs = [
+  "node-backend-implementation",
+  "node-backend-debugging",
+  "node-backend-testing",
+  "node-fastify-routes",
+  "node-express-routes"
+]
+config_outputs = [
+  "project-local codex config for default verification commands",
+  "project-local role overlays for backend implementation and review",
+  "optional per-framework role overlays"
+]
+template_outputs = [
+  "service folder layout",
+  "package.json script skeleton",
+  "framework bootstrap skeleton",
+  "test layout skeleton",
+  "environment variable reference skeleton"
+]
+command_outputs = [
+  "npm test",
+  "npm run lint",
+  "npm run build",
+  "npm run typecheck",
+  "node --test",
+  "node --watch"
+]
+review_checklist_outputs = [
+  "non-blocking request-path checks",
+  "error-boundary checks",
+  "environment-variable handling checks",
+  "framework-schema or validation checks",
+  "module-boundary checks"
+]
+
+[safety_and_mutation_rules]
+mutable_at_selection_time = [
+  "Target Node.js LTS branch",
+  "Recommended framework major line",
+  "Lint or typecheck command details",
+  "Generated command examples tied to current tool versions"
+]
+immutable_without_maintainer_review = [
+  "Supported variant axes",
+  "Canonical profile_id",
+  "Architecture option set",
+  "Core baseline guidance about event-loop safety and explicit module markers"
+]
+unsupported_combinations = [
+  "hexagonal architecture without any adapter or boundary seams in the spec",
+  "npm workspaces for a single-package service with no shared packages or extra deployables",
+  "Fastify schema-first guidance ignored while claiming the Fastify profile is selected"
+]
+
+source_refs = [
+  "references/sources.md"
+]
+change_log_ref = "none"
+
+[[variant_axes]]
+axis_id = "authoring_mode"
+label = "Authoring Mode"
+required = true
+selection_stage = "stack selection"
+default_option_id = "javascript-esm"
+option_ids = ["javascript-esm", "typescript-node-next", "commonjs-compat"]
+selection_prompt = "How should the Node.js service be authored?"
+selection_help = "This affects module syntax, build or typecheck steps, file extensions, and generated instructions."
+comparison_rules = [
+  "Choose JavaScript ESM for the lowest ceremony modern Node baseline",
+  "Choose TypeScript when type safety and editor tooling justify a compile or typecheck step",
+  "Choose CommonJS only for legacy ecosystem compatibility or strong existing constraints"
+]
+
+[[variant_axes]]
+axis_id = "service_architecture"
+label = "Service Architecture"
+required = true
+selection_stage = "stack selection"
+default_option_id = "feature-first-layered"
+option_ids = ["feature-first-layered", "strict-layered", "hexagonal"]
+selection_prompt = "How should the Node.js service be organized internally?"
+selection_help = "This affects folder layout, dependency direction, and how much ceremony the project accepts for boundaries."
+comparison_rules = [
+  "Choose feature-first when the project needs practical modularity with low ceremony",
+  "Choose strict layered when the team already thinks in transport, service, and data layers",
+  "Choose hexagonal when adapters and replaceable integrations are a first-order concern"
+]
+
+[[variant_axes]]
+axis_id = "http_framework"
+label = "HTTP Framework"
+required = false
+selection_stage = "stack selection"
+default_option_id = "fastify"
+option_ids = ["fastify", "express", "node-core-http"]
+selection_prompt = "If this service exposes HTTP APIs, which server approach fits best?"
+selection_help = "This affects bootstrap code, validation style, and generated route-handling guidance."
+comparison_rules = [
+  "Choose Fastify for schema-first APIs and strong out-of-the-box performance features",
+  "Choose Express for broad ecosystem familiarity and minimal routing ceremony",
+  "Choose core http only for very small or highly custom services"
+]
+
+[[variant_axes]]
+axis_id = "repo_shape"
+label = "Repository Shape"
+required = true
+selection_stage = "stack selection"
+default_option_id = "single-package-service"
+option_ids = ["single-package-service", "npm-workspaces-monorepo"]
+selection_prompt = "How should the Node.js backend live in the repository?"
+selection_help = "This affects the root layout, dependency installation model, and future package boundaries."
+comparison_rules = [
+  "Choose single-package until you truly need multiple packages",
+  "Choose npm workspaces when shared packages or multiple deployables already exist in the spec"
+]
+
+[[variant_options]]
+option_id = "javascript-esm"
+axis_id = "authoring_mode"
+label = "JavaScript (ESM)"
+status = "active"
+recommended = true
+short_description = "Use modern JavaScript with native import and export and an explicit ESM marker."
+best_for = [
+  "Most new Node.js services",
+  "Teams that want the smallest toolchain",
+  "Projects that do not need a TypeScript compile step"
+]
+avoid_when = [
+  "The team requires compile-time type checking",
+  "A critical dependency is still tightly bound to CommonJS-only patterns"
+]
+main_tradeoffs = [
+  "Less static type safety than TypeScript",
+  "Requires discipline around runtime validation and tests"
+]
+example = "package.json -> { \"type\": \"module\" }\nsrc/server.js -> import Fastify from 'fastify'"
+non_technical_explanation = "This is the simplest modern option. You write JavaScript directly and Node runs it without a compile step."
+architecture_effects = [
+  "No build boundary is required for ordinary service code",
+  "Generated guidance should prefer explicit package.json module markers"
+]
+structure_effects = [
+  "Use .js files with explicit import paths",
+  "Keep transpile-only folders out of the default layout"
+]
+tooling_effects = [
+  "No TypeScript compile step",
+  "Linting and tests can run directly against source"
+]
+code_style_effects = [
+  "Prefer async and await and named exports",
+  "Use JSDoc only when it materially improves clarity or editor help"
+]
+skill_effects = [
+  "Generate the general node-backend-implementation skill",
+  "Do not generate TypeScript-specific build guidance by default"
+]
+config_effects = [
+  "Default build command may be empty or omitted",
+  "Default verification commands emphasize node:test and lint"
+]
+prerequisites = [
+  "package.json contains an explicit ESM marker"
+]
+incompatible_with = []
+follow_up_questions = []
+source_refs = [
+  "https://nodejs.org/api/esm.html",
+  "https://docs.npmjs.com/cli/v11/configuring-npm/package-json"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "typescript-node-next"
+axis_id = "authoring_mode"
+label = "TypeScript (NodeNext)"
+status = "active"
+recommended = false
+short_description = "Use TypeScript with Node-aware module settings that model Node's real module system."
+best_for = [
+  "Larger services",
+  "Teams that want stronger contracts and editor support",
+  "Codebases with many integrations or internal packages"
+]
+avoid_when = [
+  "The project is intentionally tiny or throwaway",
+  "The team does not want a typecheck or build step"
+]
+main_tradeoffs = [
+  "Adds config and typecheck complexity",
+  "Needs careful module settings to match Node behavior"
+]
+example = "tsconfig.json -> { \"compilerOptions\": { \"module\": \"nodenext\" } }\nsrc/server.ts -> import Fastify from 'fastify'"
+non_technical_explanation = "This option adds another checking layer before runtime. It catches many mistakes early, but it also adds more setup."
+architecture_effects = [
+  "Encourages explicit contracts across modules and packages",
+  "Makes shared DTO and boundary types easier to maintain"
+]
+structure_effects = [
+  "Use .ts source files and a clear build or typecheck command",
+  "Keep generated output separate from source"
+]
+tooling_effects = [
+  "Add a typecheck command and possibly a build command",
+  "Use NodeNext-compatible TypeScript settings"
+]
+code_style_effects = [
+  "Prefer explicit types at public boundaries",
+  "Avoid type assertions where a narrower runtime or schema check would be clearer"
+]
+skill_effects = [
+  "Generate a TypeScript-aware backend implementation overlay",
+  "Generate a typecheck-focused review checklist"
+]
+config_effects = [
+  "Default verification includes npm run typecheck",
+  "Generated config should preserve Node module compatibility"
+]
+prerequisites = [
+  "TypeScript is part of the approved toolchain",
+  "The team accepts a typecheck or build step"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Do you want build output checked into deployment artifacts or do you run tsx or ts-node only in development?"
+]
+source_refs = [
+  "https://www.typescriptlang.org/docs/handbook/modules/reference.html",
+  "https://nodejs.org/api/esm.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "commonjs-compat"
+axis_id = "authoring_mode"
+label = "JavaScript (CommonJS)"
+status = "active"
+recommended = false
+short_description = "Use require and module.exports for legacy compatibility with older Node.js ecosystems."
+best_for = [
+  "Legacy codebases being adopted into GSD",
+  "Projects with hard CommonJS dependency constraints"
+]
+avoid_when = [
+  "New services without a strong compatibility reason",
+  "Teams standardizing on modern ESM"
+]
+main_tradeoffs = [
+  "Less aligned with the modern JavaScript module standard",
+  "Adds future migration cost"
+]
+example = "package.json -> { \"type\": \"commonjs\" }\nsrc/server.js -> const express = require('express')"
+non_technical_explanation = "This keeps older Node.js module style. It can be useful for compatibility, but it is not the best default for new services."
+architecture_effects = [
+  "No major architectural change by itself",
+  "Generated guidance should avoid mixing module systems casually"
+]
+structure_effects = [
+  "Use .js or .cjs files consistently",
+  "Do not rely on ESM-only patterns"
+]
+tooling_effects = [
+  "Lint and tests run directly against source",
+  "Generated examples must use require syntax"
+]
+code_style_effects = [
+  "Prefer one export pattern per module and keep it consistent",
+  "Avoid mixed import and require syntax unless interop is required and documented"
+]
+skill_effects = [
+  "Generate compatibility-focused backend guidance"
+]
+config_effects = [
+  "Default commands do not assume an ESM-only loader path"
+]
+prerequisites = [
+  "A real compatibility reason is documented in the spec"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Is this a temporary compatibility mode that should later migrate to ESM?"
+]
+source_refs = [
+  "https://nodejs.org/api/modules.html",
+  "https://nodejs.org/api/esm.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "feature-first-layered"
+axis_id = "service_architecture"
+label = "Feature-First Layered"
+status = "active"
+recommended = true
+short_description = "Organize the service by business feature first, while keeping routing, service, and data code separated inside each feature."
+best_for = [
+  "Most product APIs",
+  "Modular monoliths",
+  "Small-to-medium teams that need clear ownership without heavy ceremony"
+]
+avoid_when = [
+  "The system must swap many external adapters independently from core logic",
+  "The spec is still too small to justify feature modules"
+]
+main_tradeoffs = [
+  "Some shared abstractions may still need discipline to avoid cross-feature leakage",
+  "Less rigid than hexagonal boundaries"
+]
+example = "src/modules/users/routes.js\nsrc/modules/users/service.js\nsrc/modules/users/repository.js"
+non_technical_explanation = "Think of the codebase as a set of business areas such as users, billing, and notifications. Each area keeps its own route, logic, and data code together."
+architecture_effects = [
+  "Encourages modular monolith boundaries",
+  "Keeps transport and persistence concerns out of the feature service core"
+]
+structure_effects = [
+  "Top-level modules folder split by business capability",
+  "Shared utilities live outside feature folders only when genuinely shared"
+]
+tooling_effects = [
+  "Tests and lint can target features independently"
+]
+code_style_effects = [
+  "Prefer imports within a feature over cross-feature shortcuts",
+  "Keep route handlers thin and delegate to feature services"
+]
+skill_effects = [
+  "Generate node-backend-implementation with feature boundary guidance"
+]
+config_effects = [
+  "Review checklists emphasize feature isolation and thin handlers"
+]
+prerequisites = [
+  "The technical spec identifies primary business capabilities"
+]
+incompatible_with = []
+follow_up_questions = []
+source_refs = [
+  "https://martinfowler.com/bliki/PresentationDomainDataLayering.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "strict-layered"
+axis_id = "service_architecture"
+label = "Strict Layered"
+status = "active"
+recommended = false
+short_description = "Organize the service into clear transport, application, domain, and data layers with directional dependencies."
+best_for = [
+  "Teams already experienced with layered service design",
+  "Services with predictable CRUD and orchestration flows"
+]
+avoid_when = [
+  "Small codebases where extra layers become ceremony",
+  "Projects where business capabilities are a clearer top-level organizing principle"
+]
+main_tradeoffs = [
+  "Can become verbose",
+  "Top-level layers may grow large without additional domain module boundaries"
+]
+example = "src/presentation/\nsrc/application/\nsrc/domain/\nsrc/data/"
+non_technical_explanation = "This splits the app into horizontal technical layers. It is easy to reason about if the team already works that way, but it can scatter one feature across many folders."
+architecture_effects = [
+  "Dependencies flow downward through layers",
+  "Domain logic should not depend on HTTP or database details"
+]
+structure_effects = [
+  "Top-level folders are technical layers",
+  "Feature folders may exist under each layer if needed"
+]
+tooling_effects = [
+  "Review checklists focus on layer purity"
+]
+code_style_effects = [
+  "Keep DTO mapping explicit between layers",
+  "Avoid skipping layers for convenience"
+]
+skill_effects = [
+  "Generate backend-review guidance for layer violations"
+]
+config_effects = [
+  "Review overlays should flag direct transport-to-data coupling"
+]
+prerequisites = [
+  "The team accepts the extra ceremony of explicit layer boundaries"
+]
+incompatible_with = []
+follow_up_questions = []
+source_refs = [
+  "https://martinfowler.com/bliki/LayeringPrinciples.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "hexagonal"
+axis_id = "service_architecture"
+label = "Hexagonal"
+status = "active"
+recommended = false
+short_description = "Keep core application logic isolated from transport and infrastructure through ports and adapters."
+best_for = [
+  "Integration-heavy systems",
+  "Long-lived domains with multiple external interfaces",
+  "Teams that need replaceable adapters and strong core isolation"
+]
+avoid_when = [
+  "Simple services with limited integrations",
+  "Teams that do not want extra boundary abstractions"
+]
+main_tradeoffs = [
+  "More abstraction and setup",
+  "Requires discipline to avoid fake ports that add no value"
+]
+example = "src/core/\nsrc/ports/\nsrc/adapters/http/\nsrc/adapters/db/"
+non_technical_explanation = "This keeps the business core in the middle and makes web, database, and queue integrations surround it as replaceable adapters."
+architecture_effects = [
+  "Application core depends on ports, not framework or database clients",
+  "Adapters implement ports and stay at the edge"
+]
+structure_effects = [
+  "Separate core, ports, and adapters folders",
+  "Transport and persistence frameworks live only in adapters"
+]
+tooling_effects = [
+  "Tests should target the core independently from adapters"
+]
+code_style_effects = [
+  "Prefer dependency inversion at integration seams",
+  "Keep framework request and response objects out of core logic"
+]
+skill_effects = [
+  "Generate adapter-boundary review guidance",
+  "Generate testing guidance for core versus adapter seams"
+]
+config_effects = [
+  "Review overlays should flag framework leakage into the core"
+]
+prerequisites = [
+  "The spec identifies real adapters or likely infrastructure swaps"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Which adapters are first-class: HTTP, queue, scheduled jobs, database, third-party APIs?"
+]
+source_refs = [
+  "https://alistair.cockburn.us/hexagonal-architecture/"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "fastify"
+axis_id = "http_framework"
+label = "Fastify"
+status = "active"
+recommended = true
+short_description = "Use a high-performance Node.js web framework with schema-based validation and serialization."
+best_for = [
+  "JSON APIs",
+  "Services that benefit from explicit request and response schemas",
+  "Teams that want strong plugin patterns and built-in logging support"
+]
+avoid_when = [
+  "Teams deeply invested in Express middleware patterns",
+  "Very small services that do not need framework features"
+]
+main_tradeoffs = [
+  "Schema discipline adds up-front work",
+  "Some middleware or ecosystem habits differ from Express"
+]
+example = "const app = Fastify({ logger: true })\napp.get('/health', { schema: { response: { 200: { type: 'object', properties: { ok: { type: 'boolean' } } } } } }, async () => ({ ok: true }))"
+non_technical_explanation = "Fastify asks you to be more explicit about inputs and outputs. That takes some effort, but it usually pays off in clarity and performance."
+architecture_effects = [
+  "Transport boundaries can be strongly schema-driven",
+  "Route declarations should carry validation and response shape close to the edge"
+]
+structure_effects = [
+  "Prefer route modules with colocated schemas",
+  "Keep Fastify decorators and plugins in framework-edge folders"
+]
+tooling_effects = [
+  "Generated guidance should emphasize JSON Schema for route validation",
+  "Structured logging can use the framework logger path"
+]
+code_style_effects = [
+  "Prefer returning serializable objects from handlers",
+  "Treat schemas as code and keep them reviewed"
+]
+skill_effects = [
+  "Generate node-fastify-routes"
+]
+config_effects = [
+  "Review overlays should check validation and response schema coverage"
+]
+prerequisites = [
+  "The service exposes HTTP APIs"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Will request and response schemas be hand-written JSON Schema or generated from another contract?"
+]
+source_refs = [
+  "https://fastify.dev/docs/latest/",
+  "https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "express"
+axis_id = "http_framework"
+label = "Express"
+status = "active"
+recommended = false
+short_description = "Use the broad ecosystem and familiar middleware model of Express."
+best_for = [
+  "Teams already fluent in Express",
+  "Services that need a familiar minimal routing layer",
+  "Projects reusing an existing Express middleware ecosystem"
+]
+avoid_when = [
+  "The team wants schema-first APIs by default",
+  "Performance and built-in serialization guidance are first-order concerns"
+]
+main_tradeoffs = [
+  "More conventions must be supplied by the project",
+  "Validation and serialization discipline are less guided out of the box"
+]
+example = "const app = express()\napp.get('/health', (_req, res) => res.json({ ok: true }))"
+non_technical_explanation = "Express is popular and easy to start with. It gives you flexibility, but you must supply more of your own project conventions."
+architecture_effects = [
+  "Keep middleware chains thin and business logic out of route files",
+  "Handle errors close to the failure site and normalize them at the HTTP boundary"
+]
+structure_effects = [
+  "Prefer explicit router modules per feature",
+  "Keep middleware separated from feature services"
+]
+tooling_effects = [
+  "Generated guidance should include production reliability and error-handling checks"
+]
+code_style_effects = [
+  "Avoid synchronous APIs in request paths",
+  "Pass errors through the middleware chain or handle them locally when clearer"
+]
+skill_effects = [
+  "Generate node-express-routes"
+]
+config_effects = [
+  "Review overlays should check for sync APIs and weak error propagation"
+]
+prerequisites = [
+  "The service exposes HTTP APIs"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Do you want a validation library standardized at the route boundary?"
+]
+source_refs = [
+  "https://expressjs.com/en/starter/basic-routing.html",
+  "https://expressjs.com/en/advanced/best-practice-performance.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "node-core-http"
+axis_id = "http_framework"
+label = "Node Core HTTP"
+status = "active"
+recommended = false
+short_description = "Use Node's built-in HTTP stack without a higher-level web framework."
+best_for = [
+  "Very small services",
+  "Highly custom protocol handling",
+  "Infrastructure or platform code that wants minimal dependencies"
+]
+avoid_when = [
+  "Typical product APIs",
+  "Teams that want routing, validation, and middleware ergonomics"
+]
+main_tradeoffs = [
+  "More boilerplate",
+  "You must build or choose more supporting conventions yourself"
+]
+example = "import http from 'node:http'\nhttp.createServer((req, res) => { res.writeHead(200); res.end('ok') })"
+non_technical_explanation = "This keeps dependencies low, but it also means the project must build more of its own server patterns."
+architecture_effects = [
+  "Transport concerns stay fully custom",
+  "Good only when custom transport control is worth the extra work"
+]
+structure_effects = [
+  "Keep routing and boundary parsing modules very explicit"
+]
+tooling_effects = [
+  "Generated guidance should not assume framework plugins or middleware"
+]
+code_style_effects = [
+  "Use small adapter modules so raw HTTP details do not leak everywhere"
+]
+skill_effects = [
+  "No framework-specific route skill should be generated"
+]
+config_effects = [
+  "Review overlays should emphasize explicit transport parsing and error boundaries"
+]
+prerequisites = [
+  "A documented reason exists for avoiding a higher-level framework"
+]
+incompatible_with = []
+follow_up_questions = [
+  "What server concerns must stay custom enough to justify avoiding Fastify or Express?"
+]
+source_refs = [
+  "https://nodejs.org/api/http.html"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "single-package-service"
+axis_id = "repo_shape"
+label = "Single Package"
+status = "active"
+recommended = true
+short_description = "Keep the backend as one package until multiple packages are clearly needed."
+best_for = [
+  "Most new services",
+  "One deployable backend",
+  "Teams optimizing for simplicity"
+]
+avoid_when = [
+  "The spec already includes shared internal packages or multiple deployables"
+]
+main_tradeoffs = [
+  "Shared code extraction may happen later",
+  "Large codebases need module discipline inside one package"
+]
+example = "package.json\nsrc/\ntest/"
+non_technical_explanation = "This is the simplest repository shape. Keep one package until there is a clear reason to split."
+architecture_effects = [
+  "Encourages a modular monolith first"
+]
+structure_effects = [
+  "One root package.json controls scripts and dependencies"
+]
+tooling_effects = [
+  "One install and one default script surface"
+]
+code_style_effects = [
+  "Use internal module boundaries instead of package boundaries for early growth"
+]
+skill_effects = [
+  "Generate single-service setup guidance"
+]
+config_effects = [
+  "Project-local config can assume one working directory for backend commands"
+]
+prerequisites = []
+incompatible_with = []
+follow_up_questions = []
+source_refs = [
+  "https://docs.npmjs.com/cli/v11/configuring-npm/package-json"
+]
+last_reviewed = "2026-04-19"
+
+[[variant_options]]
+option_id = "npm-workspaces-monorepo"
+axis_id = "repo_shape"
+label = "npm Workspaces"
+status = "active"
+recommended = false
+short_description = "Use npm workspaces when the backend includes multiple packages or deployables that should install together."
+best_for = [
+  "Monorepos with shared packages",
+  "Multiple backend deployables",
+  "Projects with internal libraries and apps"
+]
+avoid_when = [
+  "One small service package",
+  "Teams not ready to manage package boundaries"
+]
+main_tradeoffs = [
+  "More repo complexity",
+  "Versioning and boundary discipline matter more"
+]
+example = "package.json -> { \"workspaces\": [\"apps/*\", \"packages/*\"] }\napps/api\npackages/shared"
+non_technical_explanation = "This is for projects that are really more than one package. It helps when code is intentionally shared, but it adds complexity."
+architecture_effects = [
+  "Makes package boundaries explicit",
+  "Can support multiple deployables or internal libraries"
+]
+structure_effects = [
+  "Use apps/ and packages/ or another explicit multi-package layout"
+]
+tooling_effects = [
+  "Commands may run at workspace or root scope",
+  "Generated instructions should mention workspace-aware npm usage"
+]
+code_style_effects = [
+  "Keep imports package-based across workspace boundaries",
+  "Do not use workspaces as a substitute for clean module design"
+]
+skill_effects = [
+  "Generate workspace-aware setup and review guidance"
+]
+config_effects = [
+  "Project-local config may need cwd-aware backend commands"
+]
+prerequisites = [
+  "The spec identifies multiple packages, deployables, or shared libraries"
+]
+incompatible_with = []
+follow_up_questions = [
+  "Which packages are deployables and which are shared libraries?"
+]
+source_refs = [
+  "https://docs.npmjs.com/cli/v11/configuring-npm/package-json",
+  "https://docs.npmjs.com/cli/v7/using-npm/workspaces"
+]
+last_reviewed = "2026-04-19"

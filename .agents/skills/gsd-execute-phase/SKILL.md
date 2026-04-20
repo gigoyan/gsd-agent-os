@@ -37,6 +37,8 @@ Use this skill after milestone planning is complete and before verification has 
 ## Rules
 - Follow the implementation intent from [PROJECT.md](../../../PROJECT.md) and the planning docs before adding new behavior.
 - Keep active implementation traceable to the governing Project Idea Document, Technical Specification, and stack-selection/configuration-package planning context already established by planning artifacts for the phase. If those artifacts are missing, stale, or contradicted, stop and route back to planning instead of improvising detached code-first changes.
+- For blueprint-self-improvement work inside the reusable GSD package, trace execution to the active milestone, active phase, and prior verification artifacts when project-specific Project Idea Document, Technical Specification, and stack-selection/configuration-package artifacts are intentionally absent.
+- Do not stop execution solely because those project-specific artifacts do not exist for blueprint-internal improvement work.
 - Work in small, meaningful, testable slices. Do not split into microscopic fragments or batch a large speculative test set ahead of all implementation.
 - If the phase includes a justified exception to test-first, apply the nearest practical safeguard and record it.
 - Use memory lookup only when the active phase needs prior durable context that is not already present in repo-local state.
