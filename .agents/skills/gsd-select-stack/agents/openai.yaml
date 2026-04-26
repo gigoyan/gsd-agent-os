@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Select Stack"
+  short_description: "Choose the project stack"
+  default_prompt: "Use $gsd-select-stack to resolve curated stack profiles and capture the selected stack for the current project."

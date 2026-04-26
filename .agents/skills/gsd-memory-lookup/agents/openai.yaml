@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Memory Lookup"
+  short_description: "Retrieve a small context pack"
+  default_prompt: "Use $gsd-memory-lookup to retrieve a small project-first context pack for the current task."

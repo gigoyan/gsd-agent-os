@@ -144,8 +144,8 @@ Choose this path if the repository already contains a real codebase, modules, co
 ### What The Next Step Is In The GSD Flow
 - If the result is a normal onboarding/map and the readiness artifacts are current enough, the next planning step is `$gsd-plan-milestone`.
 - If stack choice is still needed after mapping, the next skill is `$gsd-select-stack`.
-- If deep mapping is needed, finish `$gsd-deep-map-codebase` first and then define the milestone-planning scope.
-- After the milestone has been created, open a new Codex session and run `$gsd-run-milestone` by selecting that milestone.
+- If deep mapping is needed, `$gsd-deep-map-codebase` now performs the exhaustive current-state map, creates the large structured mapping milestone, prepares the first bounded phase, and updates roadmap and state.
+- After that deep-mapping flow finishes, open a new Codex session and run `$gsd-run-milestone` on the created mapping milestone instead of executing the phase directly.
 - From that point, the orchestration flow takes over milestone execution and completes it through sub-agents.
 
 ### How To Write The First Message
@@ -156,7 +156,7 @@ Choose this path if the repository already contains a real codebase, modules, co
 - If it is a new project, start with `$gsd-new-project`.
 - If it is an existing project and you need to understand the repo, start with `$gsd-map-codebase`.
 - If it is an existing project and you need to understand a major refactor or migration, start with `$gsd-deep-map-codebase`.
-- If a milestone has already been created, use a new Codex session and run `$gsd-run-milestone` on that milestone.
+- If deep mapping already created a mapping milestone, use a new Codex session and run `$gsd-run-milestone` on that created milestone.
 
 # Русский
 

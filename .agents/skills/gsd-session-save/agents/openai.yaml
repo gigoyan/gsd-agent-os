@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Session Save"
+  short_description: "Write durable session memory"
+  default_prompt: "Use $gsd-session-save to decide whether the current work has durable value and write the bounded memory artifact if needed."

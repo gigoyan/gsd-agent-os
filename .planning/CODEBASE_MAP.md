@@ -1,6 +1,6 @@
 # Codebase Map
 
-Use [$gsd-map-codebase](../.agents/skills/gsd-map-codebase/SKILL.md) to replace this placeholder with a grounded repository map.
+Use [$gsd-map-codebase](../.agents/skills/gsd-map-codebase/SKILL.md) or [$gsd-deep-map-codebase](../.agents/skills/gsd-deep-map-codebase/SKILL.md) to replace this placeholder with a grounded repository map.
 
 ## Architecture Summary
 - Describe the actual architecture and major subsystems.

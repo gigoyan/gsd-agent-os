@@ -23,7 +23,7 @@ Use it to keep later skills, templates, and verification behavior aligned withou
 ## Serious Deep-Mapping Intent
 - Treat requests as serious deep-mapping intent when the user needs transformation-ready understanding for modernization, major refactor, version upgrade, platform migration, stack migration, or similar architecture-shaping work.
 - Do not collapse serious deep-mapping intent into a lightweight repo summary.
-- Preserve the intent explicitly so later phases can route to a dedicated deep-mapping workflow and, when needed, a large structured mapping milestone with an exact next-session prompt.
+- Preserve the intent explicitly so later phases can route to a dedicated deep-mapping workflow that performs exhaustive current-state mapping and, when needed, creates a large structured mapping milestone, the first bounded mapping phase, roadmap and state updates, and an exact next-session prompt for `$gsd-run-milestone`.
 
 ## Cleanup Permission Gate
 - Temporary blueprint-improvement milestone, phase, verification, roadmap-pointer, and state-detail scaffolding must remain in place until final verification passes and the user explicitly approves cleanup.

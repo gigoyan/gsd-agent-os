@@ -107,23 +107,15 @@
 - When a write is justified, route it to the exact vault note owner defined in the vault operating spec rather than inventing a new category or filename.
 
 ## Main-Agent Conversation Language
-- The conversation language used for direct discussion with the main agent is a project-level runtime preference, not a GSD-step preference.
-- Before handling any user request in a project, first check whether a project-scoped conversation-language preference already exists for that project.
-- Derive project scope from the current project root so the preference is isolated per project and does not affect other repositories that use this GSD blueprint.
-- Store the conversation-language preference only in project-scoped local Codex state outside the repository, for example under `%CODEX_HOME%/project-preferences/<project-id>.toml`.
-- Do not store the conversation-language preference in `.planning/`, `.codex/`, the vault, templates, or any other repository artifact.
-- If the project-scoped conversation-language preference is missing, do not perform the user's requested task yet.
-- When the preference is missing and collaboration mode is `Default`, stop and instruct the user to switch to `Plan` mode and reply `done` so the language can be selected first.
-- When the preference is missing and collaboration mode is `Plan`, require a structured UI language selection before any other work proceeds.
-- The structured UI language selection must offer these options:
-  - `English`
-  - `Armenian`
-  - `Russian`
-- After the user selects one of those options, save it in the project-scoped local Codex state and then continue with the pending task.
-- The user may later explicitly change the conversation language, and the latest explicit choice replaces the stored project-scoped preference.
-- Do not infer or change the selected conversation language from the language of the user's message alone, including on the first message in a project.
-- Mixed-language user input does not change the selected conversation language unless the user explicitly asks to switch or the intent to switch is unmistakable.
-- This conversation-language preference affects only user-facing main-agent discussion, not internal workflow text or repository artifacts.
+- The conversation language used for direct discussion with the main agent is a project-level runtime preference.
+- `AGENTS.md` is the single source of truth for conversation-language behavior in this blueprint.
+- Do not block work just because no conversation-language preference has been set yet.
+- If no explicit preference has been set for the current project, continue in the current ongoing conversation language by default.
+- The user may explicitly set or change the preferred conversation language at any time.
+- When the user explicitly asks to use a different conversation language, save that preference in project-scoped local Codex state outside the repository and continue in that language for future main-agent discussion in the same project.
+- Do not store the conversation-language preference in `.planning/`, `.codex/`, the vault, templates, or other repository artifacts.
+- Do not silently change the selected conversation language based on a single mixed-language message. Only switch when the user explicitly asks, or when the intent to switch is unmistakable.
+- This conversation-language preference affects only user-facing main-agent discussion.
 - All internal GSD work remains in English, including planning, execution, verification, memory lookup, state updates, documentation, markdown artifacts, sub-agent prompts, sub-agent outputs, and control labels such as `Phase Status`, `Milestone Status`, and `Next-Step Prompt`.
 
 ## GSD Workflow Preservation
@@ -164,3 +156,21 @@
 - Planning, execution, and verification outputs must include explicit `Phase Status` and `Milestone Status` lines.
 - Each completed GSD step must end with a minimal, directly usable `Next-Step Prompt` when another GSD step is needed.
 - Long-form templates belong under [`.planning/templates/`](./.planning/templates/), not in this file.
+
+## Repository Tool Capability Rule
+
+Before running any repository command, check `.planning/tool-capabilities.md` if it exists.
+
+If a command is marked as blocked, unavailable, non-executable, incompatible, or unsafe in the current environment:
+- do not run it again
+- use the recorded approved alternative
+- mention the fallback briefly in the execution summary only when relevant
+
+When a command fails due to environment/tool availability, record it once in `.planning/tool-capabilities.md` with:
+- command
+- failure reason
+- approved fallback
+- date
+- evidence
+
+Do not repeatedly rediscover the same unavailable command.

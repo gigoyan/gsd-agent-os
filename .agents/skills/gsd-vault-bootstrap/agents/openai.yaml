@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Vault Bootstrap"
+  short_description: "Initialize or repair the vault"
+  default_prompt: "Use $gsd-vault-bootstrap to initialize or repair the baseline project vault scaffold."

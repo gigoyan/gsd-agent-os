@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Deep Map Codebase"
+  short_description: "Exhaustively map an existing repo"
+  default_prompt: "Use $gsd-deep-map-codebase to produce transformation-ready exhaustive mapping for an existing repository."

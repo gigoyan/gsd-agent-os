@@ -10,7 +10,9 @@ This contract exists so the reusable GSD package can hold curated stack guidance
 - Put durable project guidance in `AGENTS.md`, because Codex reads `AGENTS.md` files before work and layers them by scope.
 - Put repeatable task workflows in skills, because skills package instructions, resources, and optional scripts with progressive disclosure.
 - Keep skills narrowly scoped, because Codex matches them by `description` and the official guidance says those descriptions need clear scope and boundaries.
-- Put project-scoped client settings in `.codex/config.toml`, because Codex supports project config overlays there and applies them by project path precedence.
+- Put project-local runtime and tool configuration in `.codex/config.toml` when a current project requires generated local Codex configuration.
+- If project-local `.codex/` outputs are required for the current project and the repository does not yet contain a `.codex/` directory, create it inside that project’s local runtime copy at generation time.
+- Do not use repository `.codex/` files as the source of truth for user-facing conversation-language policy; that policy is defined in `AGENTS.md`.
 - Use tools and MCP only when they materially improve the workflow, because Codex supports built-in tools, tool search, function calling, and remote MCP for extending agent capabilities.
 - Keep the reusable blueprint generic. Generate project-local `.codex` outputs only after the current project has selected a stack and variants.
 

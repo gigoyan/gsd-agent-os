@@ -38,7 +38,6 @@ This skill is for user-requested milestone automation where the main session sho
 - If a child returns `partial` or `fail`, use its `Next-Step Prompt` only when the recovery action is explicit. Otherwise stop and surface the ambiguity.
 - Re-read [`.planning/STATE.md`](../../../.planning/STATE.md) between loops when a child reports artifact updates, so the orchestrator does not route from stale context.
 - Keep conservative reviewer defaults intact. Review-oriented roles such as `qa_reviewer` remain read-only by default, challenge implementation quality and validation adequacy, and must not silently edit artifacts or broaden into implementation unless a later project-local override explicitly permits it.
-- The user's selected conversation language never carries into child prompts or child outputs; every delegated child interaction remains English-only.
 
 ## Child Prompt Contract
 Every delegated child prompt should make the child role explicit. Use wording equivalent to all of the following:
@@ -46,8 +45,7 @@ Every delegated child prompt should make the child role explicit. Use wording eq
 - Execute exactly one GSD step: planning, execution, or verification.
 - Do not call `spawn_agent`, `send_input`, `wait_agent`, or `close_agent`.
 - Do not perform any later GSD step, even if the next action seems obvious.
-- Keep the child prompt and all child outputs in English, even if the main agent is speaking to the user in another language.
-- Do not inherit or mirror the user's selected conversation language in child prompts or child outputs.
+- Child prompts and child outputs must remain English, following the conversation-language policy defined in `AGENTS.md`.
 - When your assigned step is complete, return `Phase Status`, `Milestone Status`, and `Next-Step Prompt`, then stop immediately.
 
 ## Required Outputs
