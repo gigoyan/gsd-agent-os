@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "blueprint_name": "gsd",
+  "installed_blueprint_version": "",
+  "installed_blueprint_commit": "",
+  "installed_at": "",
+  "installed_by": "",
+  "source_blueprint_path": "",
+  "project_repository_path": "",
+  "sync_mode": "install | update | audit-only",
+  "files": [],
+  "notes": "This lock file tracks the reusable GSD blueprint version installed into this project. It must not store project secrets."
+}

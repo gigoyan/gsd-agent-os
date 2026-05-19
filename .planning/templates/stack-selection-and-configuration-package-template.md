@@ -144,6 +144,19 @@ Capture the inputs required for project-local configuration generation once stac
 - Generated project-local templates or starter assets:
 - Review or approval constraints:
 - Any project-local toolchain requirements:
+- Obsidian MCP mode:
+  - `shared-root`
+- GSD Vault Project ID:
+- GSD Vault Namespace:
+- MCP config ownership:
+  - The absolute Obsidian vault root is configured outside reusable GSD artifacts.
+  - Do not generate one MCP server per project unless the user explicitly overrides the shared-root model.
+
+## Context Index Impact
+- Does selected stack change expected structure, commands, validation strategy, generated project-local outputs, or runtime surfaces:
+- Context-index action: `none` | `create` | `refresh`
+- Recommended `$gsd-refresh-context-index` scope:
+- Notes:
 
 ## Project-Local `.codex` Generation Checklist
 Use this only after the stack domains and configuration-package inputs above are complete.
@@ -161,6 +174,7 @@ Use this only after the stack domains and configuration-package inputs above are
 - Generate `.codex/config.toml` and `.codex/agents/*.toml` only after the stack decisions above and the stack-aware Technical Specification are complete enough to support safe project-local generation.
 - Generate those files only inside the current project's local runtime copy.
 - Do not treat `.codex` as the main blueprint documentation surface or as durable memory.
+- Do not generate project-local `.codex/config.toml` entries that point MCPVault directly to `projects/<vault-project-id>/` when the shared-root model is active. The MCP server should point to the shared Obsidian root; GSD skills must scope reads and writes to the project namespace.
 
 ## Open Questions
 - Remaining `Unknown` decision gaps:

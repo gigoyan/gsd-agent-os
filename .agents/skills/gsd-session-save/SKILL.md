@@ -12,6 +12,23 @@ It must respect the canonical `do not write` default.
 - Use [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for exact save rules, note routing, naming rules, update-vs-create behavior, and linking requirements.
 - Use [`.planning/templates/vault-note-templates/`](../../../.planning/templates/vault-note-templates/) for note payload structure.
 
+## Namespace Resolution
+
+Before any durable write:
+
+1. Resolve `<vault-project-id>`:
+   - Prefer `PROJECT.md` -> `GSD Vault Project ID`.
+   - If missing, derive it from the current repository root folder name.
+   - If the value is newly derived, require that `PROJECT.md` can be updated or that the user explicitly approves the derived namespace before writing durable memory.
+2. Confirm that the active project namespace exists:
+
+    projects/<vault-project-id>/
+
+3. Write only inside that namespace.
+4. Do not create or update notes directly under the shared vault root.
+5. Do not write into sibling project namespaces.
+6. If the namespace does not exist, skip the write and hand off to `gsd-vault-bootstrap`.
+
 ## Primary Purpose
 - Decide whether the current work has durable value.
 - Write a bounded session, decision, or debugging artifact only when the value is likely to matter later.
@@ -52,7 +69,7 @@ It must respect the canonical `do not write` default.
 - If the answer is no, skip the write and say so explicitly.
 
 ## Deterministic Classification
-- Route the durable item to exactly one primary owner:
+- Route the durable item to exactly one primary owner under `projects/<vault-project-id>/`:
   - current durable priorities -> update `00-home/current priorities.md`
   - architecture summary or durable architecture change -> update `atlas/project architecture.md`
   - stack summary or durable tooling/runtime change -> update `atlas/tech stack.md`
@@ -105,6 +122,8 @@ It must respect the canonical `do not write` default.
 - No scaffold changes.
 - No attempt to manage other memory responsibilities.
 - No default write when the durable-value signal is weak.
+- Do not save blueprint sync lock details into the vault. Save only durable decisions or patterns if the sync model itself changes in a way future sessions need to remember.
+- Do not save `.planning/CONTEXT_INDEX.md` content into the vault. If routing knowledge represents a durable reusable pattern beyond the current repository, save only the durable pattern through the normal vault routing rules, not the repo-local context index itself.
 
 ## Handoff Rules
 - If the work does not justify a durable note, say so and stop.

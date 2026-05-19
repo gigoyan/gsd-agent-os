@@ -6,6 +6,8 @@
 - Broader checks:
 - Result:
 - Memory-aware context pack, if used:
+- Context index consulted:
+- Routing row or module card used:
 
 ## Results
 - Summarize the observed behavior against the phase and milestone criteria.
@@ -18,6 +20,14 @@
 
 ## Evidence
 - Spec-traceability evidence:
+- Context-routing evidence:
+- Blueprint-sync safety evidence, if applicable:
+  - project-owned files preserved:
+  - managed blocks updated only inside markers:
+  - lock file updated:
+  - generated project-local files untouched:
+- Unnecessary scanning avoided:
+- Context-index refresh follow-up:
 - Files reviewed:
 - Commands run:
 - Artifacts produced:
@@ -26,6 +36,7 @@
 
 ## Residual Risks
 - RR1:
+- RR-context-index: Record if the context index was missing, stale, misleading, or too broad for this phase.
 
 ## Disposition
 - `pass` | `fail` | `partial`

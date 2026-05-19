@@ -48,6 +48,7 @@ Project-local output generation and profile-specific expansion remain derived fo
 - Keep project-local `AGENTS.md` and `.codex` outputs as derived artifacts from the selected stack rather than blueprint truth, but defer their planning or generation until a later bounded stack-selection follow-on.
 - Keep narrow official-doc freshness checks tied to selected profiles as later follow-on work instead of folding them into this selection step.
 - Keep profile-specific integration details, generated-output manifests, and profile-asset expansion outside this skill until the later stack-selection phase explicitly takes ownership.
+- When stack selection changes expected structure, commands, validation strategy, generated project-local outputs, or runtime surfaces, record a `$gsd-refresh-context-index` follow-up candidate so the context index stays aligned with the selected stack.
 
 ## Required Outputs
 
@@ -55,6 +56,7 @@ Project-local output generation and profile-specific expansion remain derived fo
 - Updated stack-selection/configuration-package artifact for the current project, with repo-proven inputs, recommended defaults, and unresolved decisions kept visibly `Confirmed`, `Suggested`, or `Unknown`.
 - Accepted or overridden profile-backed recommendation sets and convention overlays captured explicitly instead of being flattened into confirmed facts.
 - Explicit deferment when the request also needs profile freshness validation, project-local output generation, or profile-specific expansion work beyond stack-selection capture.
+- Context-index impact: whether selected stack choices require creating or refreshing `.planning/CONTEXT_INDEX.md`.
 - Explicit next-step routing:
   - Bootstrap, Project Idea Document, or Technical Specification completion when stack selection is done but upstream artifacts are still incomplete.
   - `$gsd-plan-milestone` when stack selection and the Technical Specification are sufficiently current for planning.

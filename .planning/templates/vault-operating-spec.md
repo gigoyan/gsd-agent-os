@@ -6,28 +6,51 @@
 - Use the repo for live workflow control.
 - Use the vault for durable memory only.
 
-## Fixed Vault Structure
-```text
-00-home/
-  index.md
-  current priorities.md
+## Shared MCP Root And Project Namespace
 
-atlas/
-  project architecture.md
-  tech stack.md
-  database.md
-  deployment.md
+- The Obsidian MCP server points to one shared vault root.
+- GSD project memory must live under a project namespace inside that root:
 
-knowledge/
-  integrations/
-  decisions/
-  debugging/
-  patterns/
-  business/
+    projects/<vault-project-id>/
 
-sessions/
-inbox/
-```
+- `<vault-project-id>` is resolved from the active repository:
+  1. Prefer the confirmed `GSD Vault Project ID` in `PROJECT.md`.
+  2. Otherwise derive it from the current repository root folder name.
+  3. Preserve the repository folder name except replace filesystem-invalid path characters with `-`.
+  4. Stop for user confirmation if the derived namespace appears to belong to a different project.
+- Every path in this spec is relative to:
+
+    projects/<vault-project-id>/
+
+- Never store durable project memory directly at the shared vault root.
+- Never read or write another project namespace unless the user explicitly requests cross-project memory work.
+
+## Fixed Project Namespace Structure
+
+    projects/<vault-project-id>/
+      00-home/
+        index.md
+        current priorities.md
+
+      atlas/
+        project architecture.md
+        tech stack.md
+        database.md
+        deployment.md
+
+      knowledge/
+        integrations/
+        decisions/
+        debugging/
+        patterns/
+        business/
+
+      sessions/
+      inbox/
+
+In the routing rules below, paths such as `00-home/current priorities.md` mean:
+
+    projects/<vault-project-id>/00-home/current priorities.md
 
 ## Area Ownership
 ### `00-home/`

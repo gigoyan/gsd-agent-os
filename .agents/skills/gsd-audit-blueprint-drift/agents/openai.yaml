@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Audit Blueprint Drift"
+  short_description: "Audit installed blueprint drift"
+  default_prompt: "Use $gsd-audit-blueprint-drift to compare installed GSD files against the reusable blueprint manifest without applying changes."

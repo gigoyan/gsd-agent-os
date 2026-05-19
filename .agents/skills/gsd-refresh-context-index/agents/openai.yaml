@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Refresh Context Index"
+  short_description: "Refresh task-routing context"
+  default_prompt: "Use $gsd-refresh-context-index to create or refresh the repo-local CONTEXT_INDEX.md task-routing guide."

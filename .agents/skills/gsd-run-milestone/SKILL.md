@@ -15,13 +15,14 @@ This skill is for user-requested milestone automation where the main session sho
    - active phase ready to build: `$gsd-execute-phase`
    - active phase implemented and awaiting review: `$gsd-verify-phase`
 3. Choose the child role from the immediate GSD step plus the current phase domain and selected stack context already established by repo-local planning artifacts. Keep that role choice root-owned, stack-agnostic at the blueprint level, and constrained to one bounded delegated step.
-4. Spawn exactly one bounded sub-agent for that step. The root session should pass only the minimal prompt and required file references, keep `fork_context: false` by default, set `model: "gpt-5.4"` and `reasoning_effort: "medium"` on the spawn unless the user explicitly overrides either setting, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
-5. Read the child result and route only from explicit response signals:
+4. Read `.planning/CONTEXT_INDEX.md` when available and pass only the relevant context-routing section, routing row, module card, or phase `Context Routing` summary to the delegated child. Do not pass the full repository map unless the delegated step genuinely requires it.
+5. Spawn exactly one bounded sub-agent for that step. The root session should pass only the minimal prompt and required file references, keep `fork_context: false` by default, set `model: "gpt-5.4"` and `reasoning_effort: "medium"` on the spawn unless the user explicitly overrides either setting, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
+6. Read the child result and route only from explicit response signals:
    - `Phase Status`
    - `Milestone Status`
    - `Next-Step Prompt`
-6. Continue spawning one next sub-agent at a time while `Milestone Status` is `in_progress`. If a child result or stale state requires durable context to route safely, refresh the narrow memory context pack before the next loop; do not infer routing from memory alone.
-7. Stop only when a child result explicitly reports `Milestone Status: completed`, or when the child result says no automatic next-step prompt applies and the next action is genuinely unclear.
+7. Continue spawning one next sub-agent at a time while `Milestone Status` is `in_progress`. If a child result or stale state requires durable context to route safely, refresh the narrow memory context pack before the next loop; do not infer routing from memory alone.
+8. Stop only when a child result explicitly reports `Milestone Status: completed`, or when the child result says no automatic next-step prompt applies and the next action is genuinely unclear.
 
 ## Rules
 - This skill requires an explicit user request for subagent-driven milestone automation.
@@ -30,9 +31,18 @@ This skill is for user-requested milestone automation where the main session sho
 - For every planning, execution, and verification child, call `spawn_agent(..., model="gpt-5.4", reasoning_effort="medium")` unless the user explicitly asks for a different child model or child reasoning level.
 - Use `fork_context: false` for child spawns unless the delegated step truly cannot proceed without full thread history.
 - Pass only the minimum step-specific instructions and artifact references needed for the delegated skill. Do not hand the child the full milestone loop responsibility.
+- The root orchestrator should use `.planning/CONTEXT_INDEX.md` to keep child prompts narrow.
+- Child prompts should include the active phase, parent milestone, and only the relevant context-routing guidance needed for the assigned step.
+- Do not hand child agents the full codebase map or broad repo-discovery task when the context index already identifies start-here paths and validation routes.
+- If a child reports broad scanning caused by missing or stale routing guidance, the root should route to `$gsd-refresh-context-index` when that is the clear next recovery action.
 - The root session must never tell a child to spawn, wait for, route to, or manage other agents.
 - Root-owned role selection may use the current phase domain and selected stack context from planning artifacts, but children must not reinterpret that context to widen scope or self-select a different role.
 - Memory lookup is advisory for routing context only; it never replaces explicit `Phase Status`, `Milestone Status`, or `Next-Step Prompt` text.
+- When the root session needs prior durable context to route safely, it may request `gsd-memory-lookup`, but the lookup must be scoped to the active repository namespace:
+
+    projects/<vault-project-id>/
+
+- The root orchestrator must not let child agents search the shared vault root or sibling project namespaces unless the user explicitly requested cross-project memory work.
 - If a child tries to orchestrate, delegate further, wait for nonexistent agents, or continue into a later GSD step, interrupt that child, discard its routing attempt, and respawn a fresh bounded child with a narrower prompt.
 - Do not infer milestone completion from a missing `Next-Step Prompt` alone. Milestone completion must be explicit.
 - If a child returns `partial` or `fail`, use its `Next-Step Prompt` only when the recovery action is explicit. Otherwise stop and surface the ambiguity.
@@ -45,6 +55,7 @@ Every delegated child prompt should make the child role explicit. Use wording eq
 - Execute exactly one GSD step: planning, execution, or verification.
 - Do not call `spawn_agent`, `send_input`, `wait_agent`, or `close_agent`.
 - Do not perform any later GSD step, even if the next action seems obvious.
+- Use the provided context-routing guidance first. Do not broaden into unrelated repository areas unless necessary, and explain any deviation.
 - Child prompts and child outputs must remain English, following the conversation-language policy defined in `AGENTS.md`.
 - When your assigned step is complete, return `Phase Status`, `Milestone Status`, and `Next-Step Prompt`, then stop immediately.
 
@@ -56,4 +67,5 @@ Every delegated child prompt should make the child role explicit. Use wording eq
 - The root session delegated each GSD step to sub-agents instead of doing the step work itself.
 - The loop continued across multiple phases when the milestone stayed in progress.
 - Child-role selection stayed root-owned, bounded, and derived from the current phase domain plus selected stack context rather than child autonomy.
+- The root session used context-routing guidance to keep child prompts bounded when the context index was available.
 - The loop stopped only on explicit milestone completion or explicit routing ambiguity.

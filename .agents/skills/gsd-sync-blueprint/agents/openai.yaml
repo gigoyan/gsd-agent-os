@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Sync Blueprint"
+  short_description: "Sync reusable blueprint assets"
+  default_prompt: "Use $gsd-sync-blueprint to install or update reusable GSD blueprint assets while preserving project-owned runtime artifacts."

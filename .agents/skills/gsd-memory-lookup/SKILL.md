@@ -11,6 +11,25 @@ It does not write durable memory and it does not bootstrap vault structure.
 ## Source Of Truth
 - Use [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for exact vault areas, routing rules, and linking expectations.
 
+## Namespace Resolution
+
+Before any lookup:
+
+1. Resolve `<vault-project-id>`:
+   - Prefer `PROJECT.md` -> `GSD Vault Project ID`.
+   - If missing, derive it from the current repository root folder name for this lookup only.
+   - Do not write the derived value from this skill.
+2. Scope all retrieval to:
+
+    projects/<vault-project-id>/
+
+3. Treat paths like `00-home/current priorities.md` as:
+
+    projects/<vault-project-id>/00-home/current priorities.md
+
+4. Do not search across sibling project namespaces unless the user explicitly asks for cross-project memory.
+5. If the namespace does not exist, return `no project vault scaffold found` and hand off to `gsd-vault-bootstrap`; do not broaden retrieval to the shared vault root.
+
 ## Primary Purpose
 - Retrieve the smallest useful project-first context pack for the current task.
 - Lightly normalize the result so later workflow surfaces can consume it without a vault dump.
@@ -33,6 +52,8 @@ It does not write durable memory and it does not bootstrap vault structure.
 - Retrieval intent.
 - Any explicit scope restrictions, such as phase-only or recent-only.
 - Relevant task class, such as planning, architecture change, integration work, debugging, workflow change, or business-rule lookup.
+- Active `GSD Vault Project ID` or derived repository folder name.
+- Active project namespace: `projects/<vault-project-id>/`.
 
 ## Output Contract
 - A concise context pack ranked by relevance.
@@ -42,6 +63,8 @@ It does not write durable memory and it does not bootstrap vault structure.
 - The context pack should identify the note area used, such as priorities, atlas, integration, decision, debugging, pattern, business, or session context.
 
 ## Retrieval Order
+All paths below are relative to `projects/<vault-project-id>/`.
+
 - Use the smallest useful project-first retrieval pack in this general order:
   1. `00-home/current priorities.md` when current durable focus or blockers matter.
   2. The directly relevant fixed atlas note when stable architecture, stack, database, or deployment context matters.
@@ -62,6 +85,7 @@ It does not write durable memory and it does not bootstrap vault structure.
 - No note creation.
 - No bootstrap actions.
 - No attempt to manage other memory responsibilities.
+- Memory lookup does not replace `.planning/CONTEXT_INDEX.md`. Use memory for durable context, and use the context index for repo navigation and task routing.
 
 ## Handoff Rules
 - Keep the output small enough for a workflow surface to consume directly.

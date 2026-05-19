@@ -1,6 +1,7 @@
-# Project Template
+# Project Charter Content Template
 
-Use this bootstrap charter when the current project still needs `PROJECT.md` refreshed from placeholder or sparse material.
+Use this project-owned bootstrap charter content when the current project still needs the `GSD-PROJECT: project-charter` block in `PROJECT.md` refreshed from placeholder or sparse material.
+This template is project-owned content only; it does not include blueprint sync guidance or managed block markers.
 When intake is document-first, extract from the supplied material first and keep each populated field's evidence status visible as `Confirmed`, `Suggested`, or `Unknown`.
 
 ## Objective
@@ -23,6 +24,11 @@ When intake is document-first, extract from the supplied material first and keep
 - Evidence status:
 - Source or rationale:
 
+## GSD Vault
+- GSD Vault Project ID:
+- GSD Vault Namespace:
+- Vault scaffold status:
+
 ## Constraints
 - What technical, product, compliance, or delivery constraints matter?
 - Evidence status:
@@ -32,6 +38,11 @@ When intake is document-first, extract from the supplied material first and keep
 - What is explicitly out of scope?
 - Evidence status:
 - Source or rationale:
+
+## Context Index
+- Context index status: `not applicable until structure exists` | `missing` | `placeholder` | `current` | `partial` | `stale`
+- Expected creation point:
+- Notes:
 
 ## Residual Intake Gaps
 - Unknown items that still block the next artifact:

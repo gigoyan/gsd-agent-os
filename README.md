@@ -87,6 +87,78 @@ There are only two starting scenarios:
 - the project starts from scratch
 - the project already exists
 
+## Obsidian Vault Setup For GSD
+GSD uses one shared Obsidian MCP vault root and one project namespace per repository.
+
+Codex config should point MCPVault to the shared vault root only:
+
+    [mcp_servers.obsidian]
+    command = "npx"
+    args = ["-y", "@bitbonsai/mcpvault@latest", "<shared-obsidian-vault-root>"]
+
+Each project stores durable GSD memory under:
+
+    projects/<vault-project-id>/
+
+`<vault-project-id>` is normally the repository root folder name. During `$gsd-new-project` or `$gsd-map-codebase`, Codex records the resolved value in `PROJECT.md`.
+
+Example:
+
+    Repository:
+    D:/CDM/SmartEcosystem
+
+    Vault namespace:
+    <shared-obsidian-vault-root>/projects/SmartEcosystem/
+
+Do not create one MCP server per project unless explicitly needed.
+Do not store milestone, phase, verification, roadmap, or live state files in Obsidian.
+
+## Context Index For Faster Agent Work
+GSD uses `.planning/CONTEXT_INDEX.md` as a compact task-routing guide for Codex.
+
+The context index helps the agent avoid scanning the whole repository by recording:
+- where to start for common task types
+- what to inspect next
+- what usually changes
+- which validation checks to run
+- which folders or files to avoid unless needed
+
+Use `$gsd-refresh-context-index` after `$gsd-map-codebase` or `$gsd-deep-map-codebase`, after major structure changes, or whenever agents repeatedly inspect too much of the project.
+
+For a project that has not started yet, the context index is not required until real structure exists.
+
+## Updating GSD From The Blueprint
+
+GSD is designed to be updated from a reusable blueprint without overwriting project-specific workflow data.
+
+Use:
+
+    $gsd-audit-blueprint-drift
+
+to check whether a project repository has drifted from the blueprint.
+
+Use:
+
+    $gsd-sync-blueprint
+
+to install or update reusable GSD files from the blueprint.
+
+Blueprint sync updates reusable assets such as skills, templates, managed `AGENTS.md` blocks, and the reusable guidance blocks in hybrid starter surfaces.
+
+Blueprint sync must preserve project-owned artifacts, including:
+
+    .planning/STATE.md
+    .planning/ROADMAP.md
+    .planning/CONTEXT_INDEX.md
+    .planning/milestones/**
+    .planning/phases/**
+    .planning/verification/**
+    project-local .codex outputs
+
+For `PROJECT.md` and `.planning/CODEBASE_MAP.md`, sync may create the starter file only when missing. If the file exists, sync may update only the marked `GSD-BLUEPRINT` guidance block and must preserve all `GSD-PROJECT` content.
+
+`README.md` and existing `.planning/STATE.md` are project-owned. Sync must not create or update a target project README and must never update existing runtime state.
+
 ## Scenario 1. Project From Scratch
 ### When To Choose This Path
 Choose this path if the repository does not contain a real codebase yet, or if you only have an idea, a brief, notes, or early project information.

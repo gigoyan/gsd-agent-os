@@ -23,6 +23,15 @@
 - Unknown:
   - Open scope, dependency, or readiness gaps that still need confirmation:
 
+## Context Routing
+- Context index status:
+- Relevant routing rows:
+- Relevant module cards:
+- Files or areas to inspect first:
+- Areas to avoid unless needed:
+- Validation route from context index:
+- Context-index refresh needed before execution: `yes` | `no` | `unknown`
+
 ## Assumptions
 - A1:
 - A2:
@@ -55,6 +64,7 @@
 - Record concrete instructions, examples, or sequencing constraints that later phases must preserve.
 - Include file or artifact targets when already known.
 - Keep recommendations and inferred sequencing visibly `Suggested` until stronger evidence or explicit confirmation makes them `Confirmed`.
+- Use `.planning/CONTEXT_INDEX.md` to keep later phase execution and verification scoped to the smallest relevant file set.
 
 ## Planned Phases
 | Phase | Name | Status | Goal |

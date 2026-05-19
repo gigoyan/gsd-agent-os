@@ -1,4 +1,7 @@
-# Codebase Map Template
+# Codebase Map Content Template
+
+Use this project-owned map content when `.planning/CODEBASE_MAP.md` needs the `GSD-PROJECT: codebase-map-content` block created or refreshed.
+This template is project-owned content only; it does not include blueprint sync guidance or managed block markers.
 
 Keep observable repo facts, forward-looking interpretations, and unresolved gaps visibly separated as `Confirmed`, `Suggested`, and `Unknown`.
 
@@ -84,6 +87,12 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Evidence status:
 - Source or rationale:
 
+## GSD Infrastructure Boundary
+- Installed GSD workflow files:
+- Application files:
+- Boundary notes:
+- If this repository is the reusable GSD blueprint itself, state that GSD files are the primary product.
+
 ## Suggested Interpretations Or Follow-On Mapping Slices
 - Suggested future-facing interpretations, likely mapping milestone framing, or recommended follow-up mapping slices:
 - Source or rationale:
@@ -101,3 +110,11 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Exact next-session prompt:
 - Why lightweight mapping is insufficient, if applicable:
 - Why orchestration is the right next step:
+
+## Context Index Handoff
+- Context index status:
+- Recommended `$gsd-refresh-context-index` scope:
+- Highest-value routing rows to create:
+- Highest-value module cards to create:
+- Validation paths to capture:
+- Do-not-scan boundaries to capture:

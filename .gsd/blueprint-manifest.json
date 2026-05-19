@@ -1,0 +1,656 @@
+{
+  "schema_version": 1,
+  "blueprint_name": "gsd",
+  "blueprint_version": "0.1.0",
+  "description": "Reusable GSD workflow blueprint manifest for safe project-repository installation, sync, and drift audit.",
+  "sync_rules": {
+    "default_strategy": "project_preserve",
+    "never_overwrite_project_runtime": true,
+    "require_diff_summary_before_changes": true,
+    "require_explicit_user_approval_for_destructive_changes": true,
+    "managed_block_markers": {
+      "start_prefix": "<!-- GSD-BLUEPRINT:START ",
+      "end_prefix": "<!-- GSD-BLUEPRINT:END "
+    }
+  },
+  "ownership_classes": {
+    "blueprint_replace": "Replace from blueprint during sync after diff review.",
+    "project_preserve": "Never overwrite during blueprint sync.",
+    "managed_block": "Update only explicitly marked blueprint-managed blocks.",
+    "bootstrap_then_managed_block": "Create the full starter file only when missing; for existing files, update only explicitly marked blueprint-managed guidance blocks and preserve project-owned content.",
+    "bootstrap_if_missing": "Create only when missing; preserve existing project copy.",
+    "generated_project_local": "Generated per project; not synced from reusable blueprint."
+  },
+  "files": [
+    {
+      "path": ".gsd/blueprint-manifest.json",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint-owned manifest in the source repository; installed manifest metadata in project repositories."
+    },
+    {
+      "path": ".gsd/managed-blocks/agents-operating-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint-managed AGENTS.md operating contract block source."
+    },
+    {
+      "path": ".agents/skills/gsd-audit-blueprint-drift/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Read-only blueprint drift audit skill."
+    },
+    {
+      "path": ".agents/skills/gsd-deep-map-codebase/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Deep codebase mapping skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-deep-map-codebase/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Deep mapping child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-execute-phase/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Phase execution skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-execute-phase/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Phase execution child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-map-codebase/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Codebase mapping skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-map-codebase/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Codebase mapping child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-memory-lookup/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault memory lookup skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-memory-lookup/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Memory lookup child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-new-project/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "New project bootstrap skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-new-project/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "New project child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-plan-milestone/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone planning skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-plan-milestone/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone planning child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-quick-task/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Quick task skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-quick-task/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Quick task child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-refresh-context-index/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Context index refresh skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-run-milestone/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone orchestration skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-run-milestone/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone orchestration child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-select-stack/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Stack selection skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-select-stack/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Stack selection child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-select-stack/references/nodejs-service-output-generation.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Stack selection output generation reference."
+    },
+    {
+      "path": ".agents/skills/gsd-session-save/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Durable session save skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-session-save/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Session save child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-sync-blueprint/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Safe blueprint install and update skill."
+    },
+    {
+      "path": ".agents/skills/gsd-vault-bootstrap/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault bootstrap skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-vault-bootstrap/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault bootstrap child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-verify-phase/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Phase verification skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-verify-phase/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Phase verification child-agent configuration."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/profile.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Node.js service stack profile."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/README.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Node.js service stack profile documentation."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/generated-agents-fragment.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Generated AGENTS fragment template for the Node.js service profile."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/generated-skills-manifest.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Generated skills manifest template for the Node.js service profile."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/output-manifest.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Output manifest for generated project-local Node.js service profile assets."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-local-agent-api-framework-specialist.template.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local API framework specialist agent template."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-local-agent-backend-debugger.template.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local backend debugger agent template."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-local-agent-backend-implementer.template.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local backend implementer agent template."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-local-agent-backend-reviewer.template.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local backend reviewer agent template."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-local-codex-config.template.toml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local Codex configuration template generated after stack selection."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/assets/project-structure-examples.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Node.js service project structure examples."
+    },
+    {
+      "path": ".agents/stack-profiles/backend/nodejs-service/references/sources.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Node.js service stack profile source references."
+    },
+    {
+      "path": ".planning/templates/blueprint-distribution-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint distribution and sync contract."
+    },
+    {
+      "path": ".planning/templates/blueprint-lock-template.json",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project-local blueprint lock template."
+    },
+    {
+      "path": ".planning/templates/blueprint-sync-verification-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint sync verification checklist template."
+    },
+    {
+      "path": ".planning/templates/codebase-map-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Codebase map template."
+    },
+    {
+      "path": ".planning/templates/context-index-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Context index template."
+    },
+    {
+      "path": ".planning/templates/document-first-intake-reference.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Document-first intake reference."
+    },
+    {
+      "path": ".planning/templates/intake-routing-and-evidence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Intake routing and evidence contract."
+    },
+    {
+      "path": ".planning/templates/milestone-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone template."
+    },
+    {
+      "path": ".planning/templates/phase-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Phase template."
+    },
+    {
+      "path": ".planning/templates/project-idea-document-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project Idea Document template."
+    },
+    {
+      "path": ".planning/templates/project-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Project charter starter template."
+    },
+    {
+      "path": ".planning/templates/quick-task-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Quick task template."
+    },
+    {
+      "path": ".planning/templates/requirements-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Requirements starter template."
+    },
+    {
+      "path": ".planning/templates/roadmap-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Roadmap template."
+    },
+    {
+      "path": ".planning/templates/stack-profile-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Stack profile contract."
+    },
+    {
+      "path": ".planning/templates/stack-selection-and-configuration-package-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Stack selection and configuration package template."
+    },
+    {
+      "path": ".planning/templates/state-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "State template."
+    },
+    {
+      "path": ".planning/templates/technical-specification-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Technical Specification template."
+    },
+    {
+      "path": ".planning/templates/vault-operating-spec.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault operating specification."
+    },
+    {
+      "path": ".planning/templates/verification-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Verification template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/business note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault business note template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/debugging note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault debugging note template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/decision note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault decision note template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/inbox capture.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault inbox capture template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/integration note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault integration note template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/pattern note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault pattern note template."
+    },
+    {
+      "path": ".planning/templates/vault-note-templates/session note.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault session note template."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/00-home/current priorities.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault current priorities scaffold note."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/00-home/index.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault home index scaffold note."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/atlas/database.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault database atlas scaffold note."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/atlas/deployment.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault deployment atlas scaffold note."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/atlas/project architecture.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault project architecture atlas scaffold note."
+    },
+    {
+      "path": ".planning/templates/vault-scaffold/atlas/tech stack.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Vault tech stack atlas scaffold note."
+    },
+    {
+      "path": "PROJECT.md",
+      "owner": "bootstrap_then_managed_block",
+      "sync_strategy": "bootstrap_then_managed_block",
+      "required": true,
+      "description": "Starter project charter surface; create when missing, then update only blueprint guidance while preserving project-owned charter content."
+    },
+    {
+      "path": ".planning/REQUIREMENTS.md",
+      "owner": "bootstrap_if_missing",
+      "sync_strategy": "create_if_missing",
+      "required": true,
+      "description": "Starter project requirements surface; preserve existing project copy."
+    },
+    {
+      "path": ".planning/CODEBASE_MAP.md",
+      "owner": "bootstrap_then_managed_block",
+      "sync_strategy": "bootstrap_then_managed_block",
+      "required": true,
+      "description": "Starter codebase map surface; create when missing, then update only blueprint guidance while preserving project-owned map content."
+    },
+    {
+      "path": ".planning/CONTEXT_INDEX.md",
+      "owner": "bootstrap_if_missing",
+      "sync_strategy": "create_if_missing",
+      "required": true,
+      "description": "Starter context index surface; preserve existing project copy."
+    },
+    {
+      "path": ".planning/ROADMAP.md",
+      "owner": "bootstrap_if_missing",
+      "sync_strategy": "create_if_missing",
+      "required": true,
+      "description": "Starter roadmap surface; preserve existing project copy."
+    },
+    {
+      "path": ".planning/STATE.md",
+      "owner": "bootstrap_if_missing",
+      "sync_strategy": "create_if_missing",
+      "required": true,
+      "description": "Starter workflow state surface; preserve existing project copy."
+    },
+    {
+      "path": ".planning/tool-capabilities.md",
+      "owner": "bootstrap_if_missing",
+      "sync_strategy": "create_if_missing",
+      "required": true,
+      "description": "Starter local tool capability registry; preserve existing project copy."
+    },
+    {
+      "path": "AGENTS.md",
+      "owner": "managed_block",
+      "sync_strategy": "managed_block",
+      "required": true,
+      "description": "Mixed local agent instructions; update only marked GSD blueprint blocks."
+    },
+    {
+      "path": "README.md",
+      "owner": "project_preserve",
+      "sync_strategy": "preserve",
+      "required": false,
+      "description": "Target project README is project-owned and must not be created or updated by GSD blueprint sync."
+    },
+    {
+      "path": ".planning/milestones/**",
+      "owner": "project_preserve",
+      "sync_strategy": "preserve",
+      "required": false,
+      "description": "Project milestone history; never overwrite during blueprint sync."
+    },
+    {
+      "path": ".planning/phases/**",
+      "owner": "project_preserve",
+      "sync_strategy": "preserve",
+      "required": false,
+      "description": "Project phase history; never overwrite during blueprint sync."
+    },
+    {
+      "path": ".planning/verification/**",
+      "owner": "project_preserve",
+      "sync_strategy": "preserve",
+      "required": false,
+      "description": "Project verification history; never overwrite during blueprint sync."
+    },
+    {
+      "path": ".planning/archive/**",
+      "owner": "project_preserve",
+      "sync_strategy": "preserve",
+      "required": false,
+      "description": "Project archived workflow history; never overwrite during blueprint sync."
+    },
+    {
+      "path": ".codex/config.toml",
+      "owner": "generated_project_local",
+      "sync_strategy": "ignore",
+      "required": false,
+      "description": "Project-local Codex configuration generated after stack selection; ignored by blueprint sync."
+    },
+    {
+      "path": ".codex/agents/*.toml",
+      "owner": "generated_project_local",
+      "sync_strategy": "ignore",
+      "required": false,
+      "description": "Project-local Codex agent configurations generated after stack selection; ignored by blueprint sync."
+    }
+  ]
+}

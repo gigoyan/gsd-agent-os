@@ -16,10 +16,9 @@
 
 ## Blueprint Distribution And Sync
 
-- GSD has a reusable blueprint source and installed project repository copies.
-- The blueprint source owns reusable GSD assets such as skills, templates, contracts, managed-block source content, and the blueprint manifest.
+- This repository is the reusable GSD blueprint when it is used as the source package.
 - Project repositories receive an installed local copy of selected GSD files.
-- Blueprint updates must be distributed through manifest-driven sync, not manual copy-paste.
+- Blueprint updates must be distributed through a manifest-driven sync, not manual copy-paste.
 - Use `.gsd/blueprint-manifest.json` as the source of file ownership and sync strategy.
 - Project repositories use `.gsd/blueprint.lock.json` to record the installed blueprint version or commit.
 - Treat files by ownership class:
@@ -33,12 +32,15 @@
 - Never overwrite project-specific `PROJECT.md`, `.planning/STATE.md`, `.planning/ROADMAP.md`, `.planning/CODEBASE_MAP.md`, `.planning/CONTEXT_INDEX.md`, milestones, phases, verification files, or `.codex` outputs during blueprint sync.
 - In `PROJECT.md` and `.planning/CODEBASE_MAP.md`, blueprint sync may update only the marked `GSD-BLUEPRINT` guidance block and must preserve all `GSD-PROJECT` content exactly.
 - `.planning/STATE.md` is active runtime state and must remain bootstrap-if-missing only; existing project state must never be sync-updated or converted to managed blocks.
-- Target project `README.md` is project-owned and must not be created, overwritten, replaced, compared, or managed-block-updated by GSD blueprint sync.
+- Target project `README.md` is project-owned and must not be created, overwritten, replaced, or managed-block-updated by GSD blueprint sync.
 - Keep `AGENTS.md` as the only `managed_block` project-facing documentation file unless another file is explicitly approved later. `PROJECT.md` and `.planning/CODEBASE_MAP.md` use `bootstrap_then_managed_block`, not generic `managed_block`.
-- In `AGENTS.md`, blueprint sync may update only the `GSD-BLUEPRINT: operating-contract` managed block.
-- Blueprint sync must preserve the project-owned `GSD-PROJECT: local-settings` block exactly, except when the user explicitly asks to change the local setting.
-- Do not place marker examples inside `AGENTS.md`; marker syntax and sync behavior are defined in `.planning/templates/blueprint-distribution-contract.md`.
-- Preserve all project-specific content outside the blueprint-managed block.
+- Use managed block markers for reusable content inside mixed files such as `AGENTS.md`:
+
+    <!-- GSD-BLUEPRINT:START <block-id> -->
+    blueprint-managed content
+    <!-- GSD-BLUEPRINT:END <block-id> -->
+
+- Update only the marked block. Preserve all project-specific content outside markers.
 
 ## Obsidian MCP Vault Namespace
 
@@ -167,9 +169,8 @@
 - Do not block work just because no conversation-language preference has been set yet.
 - If no explicit preference has been set for the current project, continue in the current ongoing conversation language by default.
 - The user may explicitly set or change the preferred conversation language at any time.
-- When the user explicitly asks to use a different conversation language, save that preference only in the project-owned `GSD-PROJECT: local-settings` block in `AGENTS.md`, then continue in that language for future main-agent discussion in the same project.
-- To determine whether a conversation-language preference has been set, read the `Main-agent conversation language:` field in the project-owned local settings block below the blueprint-managed GSD operating contract.
-- Do not store the conversation-language preference in `.planning/`, `.codex/`, the vault, templates, generated project-local artifacts, or inside the blueprint-managed `GSD-BLUEPRINT: operating-contract` block.
+- When the user explicitly asks to use a different conversation language, save that preference in project-scoped local Codex state outside the repository and continue in that language for future main-agent discussion in the same project.
+- Do not store the conversation-language preference in `.planning/`, `.codex/`, the vault, templates, or other repository artifacts.
 - Do not silently change the selected conversation language based on a single mixed-language message. Only switch when the user explicitly asks, or when the intent to switch is unmistakable.
 - This conversation-language preference affects only user-facing main-agent discussion.
 - All internal GSD work remains in English, including planning, execution, verification, memory lookup, state updates, documentation, markdown artifacts, sub-agent prompts, sub-agent outputs, and control labels such as `Phase Status`, `Milestone Status`, and `Next-Step Prompt`.
@@ -236,9 +237,3 @@ When a command fails due to environment/tool availability, record it once in `.p
 
 Do not repeatedly rediscover the same unavailable command.
 <!-- GSD-BLUEPRINT:END operating-contract -->
-
-<!-- GSD-PROJECT:START local-settings -->
-# Project Local Settings
-
-- Main-agent conversation language:
-<!-- GSD-PROJECT:END local-settings -->
