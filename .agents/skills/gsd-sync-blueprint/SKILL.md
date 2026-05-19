@@ -11,6 +11,7 @@ Sync reusable GSD blueprint assets into a project repository without overwriting
 
 - Use `.gsd/blueprint-manifest.json` from the blueprint source repository.
 - Use `.planning/templates/blueprint-distribution-contract.md` for ownership and sync safety rules.
+- Use `.gsd/managed-blocks/agents-operating-contract.md` as the canonical source for the `AGENTS.md` `GSD-BLUEPRINT: operating-contract` managed block. The root blueprint `AGENTS.md` operating-contract block must match this file exactly.
 - Use `.gsd/blueprint.lock.json` in the target project repository when present.
 
 ## Primary Purpose
@@ -77,11 +78,13 @@ Sync reusable GSD blueprint assets into a project repository without overwriting
    - `managed_block` + `managed_block`: update only matching marker blocks.
    - `project_preserve` + `preserve`: never overwrite.
    - `generated_project_local` + `ignore`: do not touch.
+   - Special case for `AGENTS.md`: when the target lacks the `GSD-BLUEPRINT: operating-contract` block, inspect for old unmarked GSD template or operating content before proposing insertion.
 6. Before modifying target files, produce a concise sync plan unless the user explicitly requested direct execution and the change is obviously safe.
 7. Stop and ask for approval if:
    - a project-owned file would be overwritten
    - a managed block marker is malformed
    - a `bootstrap_then_managed_block` target such as `PROJECT.md` or `.planning/CODEBASE_MAP.md` is missing expected markers and needs marker insertion
+   - target `AGENTS.md` contains old unmarked GSD template or operating content and needs legacy-template migration
    - target has local edits inside a managed block and replacement is not explicitly approved
    - ownership is unknown
    - the sync would delete files
@@ -102,6 +105,14 @@ Sync reusable GSD blueprint assets into a project repository without overwriting
 - Replace only content between matching marker comments.
 - Preserve all content outside markers.
 - `AGENTS.md` remains a `managed_block` file. `PROJECT.md` and `.planning/CODEBASE_MAP.md` use the separate `bootstrap_then_managed_block` strategy.
+- For `AGENTS.md`, the canonical managed block source is `.gsd/managed-blocks/agents-operating-contract.md`, not an ad hoc extraction from another file.
+- Before proposing insertion into a target `AGENTS.md` that lacks the `operating-contract` block, detect legacy unmarked GSD content. Treat these as legacy signals when they appear outside managed markers: `# Codex-Native GSD Template`, `## Operating Mode` with GSD planning references, `## Task Triage` with `$gsd-quick-task`, `## Milestone Workflow`, `## State Management`, `## Output Contract`, or old unmarked lists of GSD skill invocations.
+- If legacy unmarked GSD content is found, classify the action as `AGENTS.md legacy-template migration required`; do not propose adding the new managed block above the old content.
+- The legacy migration diff must replace the recognizable old unmarked GSD template content with:
+  - the canonical `GSD-BLUEPRINT: operating-contract` block from `.gsd/managed-blocks/agents-operating-contract.md`
+  - a `GSD-PROJECT: local-settings` block when the target lacks one
+- Preserve only genuinely project-specific local instructions outside the recognized old GSD template content. If the boundary between old GSD template content and local project instructions is ambiguous, stop and report a conflict instead of guessing.
+- Require explicit user approval before applying an `AGENTS.md legacy-template migration required` diff.
 - Never apply managed-block rules to target project `README.md`.
 - If the target file lacks the managed block, propose insertion.
 - If the target file has malformed markers, stop and report conflict.
@@ -137,6 +148,7 @@ Sync reusable GSD blueprint assets into a project repository without overwriting
 - Blueprint-owned files were updated or confirmed current.
 - Project-owned files were preserved.
 - Managed blocks were updated only inside markers.
+- `AGENTS.md` legacy unmarked GSD template content was not duplicated below a newly inserted managed block; it was either migrated through an approved reviewed diff or left unchanged with a migration-required finding.
 - Bootstrap-then-managed-block files were created only when missing or had only their `GSD-BLUEPRINT` guidance blocks updated.
 - Existing `PROJECT.md`, `.planning/CODEBASE_MAP.md`, and `.planning/STATE.md` project-owned content was preserved.
 - Lock file was created or updated when changes were applied.

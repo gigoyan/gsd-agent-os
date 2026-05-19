@@ -67,6 +67,12 @@ The blueprint repository owns:
 
     .gsd/blueprint-manifest.json
 
+The canonical reusable source for the `AGENTS.md` operating-contract managed block is:
+
+    .gsd/managed-blocks/agents-operating-contract.md
+
+The root blueprint `AGENTS.md` `GSD-BLUEPRINT: operating-contract` block must match that canonical file exactly.
+
 Each project repository owns:
 
     .gsd/blueprint.lock.json
@@ -81,10 +87,13 @@ For managed-block files:
 - Replace only matching marker blocks.
 - Preserve all content outside markers.
 - `AGENTS.md` is the only project-facing mixed managed-block documentation file unless another file is explicitly approved later.
+- For `AGENTS.md`, use `.gsd/managed-blocks/agents-operating-contract.md` as the canonical source for the `operating-contract` block.
 - Do not apply managed-block rules to target project `README.md`.
 - If a marker start exists without an end marker, stop and report a conflict.
 - If a project has local edits inside a managed block, report the diff before replacing.
 - If no managed block exists, propose insertion but do not silently rewrite the full file.
+- If target `AGENTS.md` has no `operating-contract` marker but contains old unmarked GSD template or operating content, do not insert the new block above the old content. Report `AGENTS.md legacy-template migration required`, show a reviewed diff that replaces the recognizable old GSD template content with the canonical managed block plus the `GSD-PROJECT: local-settings` block, preserve genuinely project-specific local instructions outside the old template content, and require explicit approval before applying the migration.
+- If the boundary between old unmarked GSD template content and project-specific local instructions is ambiguous, stop and report a conflict rather than guessing.
 
 ## Bootstrap-Then-Managed-Block Rules
 

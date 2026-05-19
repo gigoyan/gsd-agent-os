@@ -21,6 +21,8 @@
 - Project repositories receive an installed local copy of selected GSD files.
 - Blueprint updates must be distributed through manifest-driven sync, not manual copy-paste.
 - Use `.gsd/blueprint-manifest.json` as the source of file ownership and sync strategy.
+- Use `.gsd/managed-blocks/agents-operating-contract.md` as the canonical reusable source for the `AGENTS.md` `GSD-BLUEPRINT: operating-contract` managed block.
+- The root blueprint `AGENTS.md` `GSD-BLUEPRINT: operating-contract` block must match `.gsd/managed-blocks/agents-operating-contract.md` exactly.
 - Project repositories use `.gsd/blueprint.lock.json` to record the installed blueprint version or commit.
 - Treat files by ownership class:
   - `blueprint_replace`: reusable blueprint files that may be replaced during sync.
@@ -38,6 +40,8 @@
 - In `AGENTS.md`, blueprint sync may update only the `GSD-BLUEPRINT: operating-contract` managed block.
 - Blueprint sync must preserve the project-owned `GSD-PROJECT: local-settings` block exactly, except when the user explicitly asks to change the local setting.
 - Do not place marker examples inside `AGENTS.md`; marker syntax and sync behavior are defined in `.planning/templates/blueprint-distribution-contract.md`.
+- If target `AGENTS.md` lacks the `operating-contract` marker but contains old unmarked GSD template or operating content, blueprint sync and audit must report `AGENTS.md legacy-template migration required`, show a reviewed migration diff, and require explicit approval before replacing the old template content with the canonical managed block plus the `GSD-PROJECT: local-settings` block.
+- Preserve genuinely project-specific local instructions outside old unmarked GSD template content. If the boundary is ambiguous, stop and report a conflict instead of guessing.
 - Preserve all project-specific content outside the blueprint-managed block.
 
 ## Obsidian MCP Vault Namespace
