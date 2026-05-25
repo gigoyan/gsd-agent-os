@@ -10,18 +10,32 @@
 - Manifest:
 - Lock file:
 - Managed block files:
+- Blueprint-owned files compared:
+- Bootstrap guidance block files:
+- Removed-from-manifest lock entries:
 - Project-preserve files checked:
 
 ## Results
 - Files created:
 - Files replaced:
+- Files deleted:
 - Managed blocks updated:
 - Bootstrap-then-managed-block guidance blocks updated:
+- Removed-from-manifest files checked:
+- Deletions applied:
+- Deletions preserved:
 - Files preserved:
 - Files skipped:
 - Conflicts:
+- Unsafe or ambiguous items:
 
 ## Safety Evidence
+- Content comparisons performed:
+- Managed block comparisons performed:
+- Bootstrap block comparisons performed:
+- Removed-from-manifest files checked:
+- Approval obtained before mutations:
+- Lock updated after approved sync only:
 - PROJECT.md project-owned content preserved:
 - STATE.md preserved:
 - ROADMAP.md preserved:
@@ -29,13 +43,17 @@
 - CONTEXT_INDEX.md preserved:
 - Milestones/phases/verification preserved:
 - Generated `.codex` outputs untouched:
+- Project-owned files preserved:
 - Obsidian vault untouched:
 
 ## Checks Run
 - Manifest JSON valid:
 - Required blueprint files present:
 - Managed block markers balanced:
-- Diff reviewed:
+- Content diff reviewed:
+- Managed-block diff reviewed:
+- Bootstrap-block diff reviewed:
+- Removed-file candidates reviewed:
 - Whitespace check:
 
 ## Disposition

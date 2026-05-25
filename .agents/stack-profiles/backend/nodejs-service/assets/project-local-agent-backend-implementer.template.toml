@@ -1,6 +1,6 @@
 name = "backend-implementer"
 description = "Implementation-focused Node.js backend engineer for the selected project stack."
-model = "gpt-5.4"
+# Omit model by default so the runtime uses the latest available supported child-agent model.
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """

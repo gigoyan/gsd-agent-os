@@ -46,7 +46,7 @@ This skill is for tasks that do not justify a milestone but still need a visible
 - If the task competes with active milestone work, note that interaction in [`.planning/STATE.md`](../../../.planning/STATE.md).
 - Use memory lookup only when needed to resolve prior durable context; otherwise stay repo-local.
 - Quick tasks should still use the context index when the relevant file or validation path is not already explicit.
-- Do not let the quick path become broad repo discovery. If routing is unclear or the task expands, redirect to `$gsd-plan-milestone` or `$gsd-refresh-context-index` as appropriate.
+- Do not let the quick path become broad repo discovery. If routing is unclear or the task expands, redirect to `$gsd-plan-milestone` or `$gsd-map-codebase` as appropriate.
 - Record whether a context-index refresh follow-up is warranted or `none`.
 - Do not write durable memory from this skill.
 - At the end of the quick task, explicitly record whether a later `gsd-session-save` follow-up is warranted or `none`.

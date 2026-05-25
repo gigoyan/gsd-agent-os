@@ -8,6 +8,22 @@
   "source_blueprint_path": "",
   "project_repository_path": "",
   "sync_mode": "install | update | audit-only",
-  "files": [],
-  "notes": "This lock file tracks the reusable GSD blueprint version installed into this project. It must not store project secrets."
+  "files": [
+    {
+      "path": "",
+      "owner": "",
+      "sync_strategy": "",
+      "installed": true,
+      "last_action": "created | replaced | managed_block_updated | bootstrap_guidance_updated | preserved | deleted",
+      "source_hash": "",
+      "installed_hash": "",
+      "block_id": "",
+      "installed_at": "",
+      "updated_at": "",
+      "blueprint_version": "",
+      "blueprint_commit": ""
+    }
+  ],
+  "removed_from_manifest": [],
+  "notes": "This lock file tracks the reusable GSD blueprint version and concrete installed file metadata needed to detect future content changes, local modifications, and Blueprint-installed files removed from the current manifest. It must not store project secrets or absolute Obsidian vault paths."
 }

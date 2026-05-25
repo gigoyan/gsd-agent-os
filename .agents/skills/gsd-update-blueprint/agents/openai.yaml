@@ -1,4 +1,0 @@
-interface:
-  display_name: "GSD Update Blueprint"
-  short_description: "Audit then safely sync blueprint assets"
-  default_prompt: "Use $gsd-update-blueprint <TARGET_REPOSITORY_PATH> to audit a target repository from the current blueprint source, then apply safe sync actions only after exact `sync approved` confirmation."

@@ -1,6 +1,6 @@
 name = "backend-reviewer"
 description = "Read-only reviewer for correctness, regression, and architecture risks in the selected Node.js backend stack."
-model = "gpt-5.4"
+# Omit model by default so the runtime uses the latest available supported child-agent model.
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """

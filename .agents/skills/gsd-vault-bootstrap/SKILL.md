@@ -82,7 +82,7 @@ Before creating, repairing, or verifying anything:
 - No orchestration beyond scaffold initialization and repair.
 - No changes to existing GSD workflow roles.
 - No invention of alternate vault categories, extra fixed notes, or alternate filenames for the required home and atlas files.
-- Vault bootstrap does not create, update, or repair `.planning/CONTEXT_INDEX.md`; context routing is repo-local and handled by `$gsd-refresh-context-index`.
+- Vault bootstrap does not create, update, or repair `.planning/CONTEXT_INDEX.md`; context routing is repo-local and handled by `$gsd-map-codebase`.
 
 ## Handoff Rules
 - If the scaffold is already sufficient, report that fact and stop.

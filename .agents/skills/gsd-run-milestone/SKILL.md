@@ -19,26 +19,40 @@ This skill is for user-requested milestone automation where the main session sho
    - one verification-and-next-phase-planning child that verifies the active phase using `$gsd-verify-phase` rules, and only after a passing verification may create the next bounded phase in the same active milestone using `$gsd-plan-milestone` rules
 4. Choose the child role from the immediate delegated action plus the current phase domain and selected stack context already established by repo-local planning artifacts. Keep that role choice root-owned, stack-agnostic at the blueprint level, and constrained to the assigned planning, execution, or verification-and-next-phase-planning child step.
 5. Read `.planning/CONTEXT_INDEX.md` when available and pass only the relevant context-routing section, routing row, module card, or phase `Context Routing` summary to the delegated child. Do not pass the full repository map unless the delegated step genuinely requires it.
-6. Spawn exactly one bounded sub-agent for the next child action. The root session should pass only the minimal prompt and required file references, keep `fork_context: false` by default, set `model: "gpt-5.4"` and `reasoning_effort: "medium"` on the spawn unless the user explicitly overrides either setting, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
-7. Read the child result and route only from explicit response signals:
+6. Resolve child spawn settings for the current run before spawning.
+
+   Default child spawn settings:
+   - model: latest available supported child-agent model in the current runtime
+   - reasoning_effort: medium
+   - fork_context: false unless the delegated step truly requires full thread history
+
+   Invocation override:
+   - If the user request that invoked `$gsd-run-milestone` specifies a child-agent model, use that model for this run.
+   - If the user request specifies child-agent reasoning effort, use that reasoning effort for this run.
+   - If the override is scoped to a child type, apply it only to that child type.
+   - Otherwise apply the override to all child spawns in this run.
+7. Spawn exactly one bounded sub-agent for the next child action. The root session should pass only the minimal prompt and required file references, use the resolved child spawn settings, wait for the result, and not perform the delegated work itself. If the root session needs prior durable context to route correctly, it may request a narrow `gsd-memory-lookup` context pack before spawning, but it still remains the only orchestrator.
+8. After a child returns, the root orchestrator must read the result, close the completed child with `close_agent`, and only then spawn the next child if the milestone should continue. Route only from explicit response signals:
    - `Phase Status`
    - `Milestone Status`
    - `Next-Step Prompt`
-8. Continue spawning the next child action while `Milestone Status` is `in_progress`: execution for the active phase, then verification-and-next-phase-planning for that same phase. If a child result or stale state requires durable context to route safely, refresh the narrow memory context pack before the next loop; do not infer routing from memory alone.
-9. Stop only when a child result explicitly reports `Milestone Status: completed`, or when the child result says no automatic next-step prompt applies and the next action is genuinely unclear.
+9. Continue spawning the next child action while `Milestone Status` is `in_progress`: execution for the active phase, then verification-and-next-phase-planning for that same phase. If a child result or stale state requires durable context to route safely, refresh the narrow memory context pack before the next loop; do not infer routing from memory alone.
+10. Stop only when a child result explicitly reports `Milestone Status: completed`, or when the child result says no automatic next-step prompt applies and the next action is genuinely unclear.
 
 ## Rules
 - This skill requires an explicit user request for subagent-driven milestone automation.
 - Keep the root session as manager. Do not let child agents recursively fan out unless the environment is intentionally configured for deeper delegation.
 - Keep the root session at high reasoning for milestone orchestration. Do not inherit high reasoning into sub-agents by default.
-- For every planning, execution, and verification-and-next-phase-planning child, call `spawn_agent(..., model="gpt-5.4", reasoning_effort="medium")` unless the user explicitly asks for a different child model or child reasoning level.
+- For every planning, execution, and verification-and-next-phase-planning child, use the latest available supported child-agent model in the current runtime and `reasoning_effort: "medium"` by default.
+- If the user invocation that triggered `$gsd-run-milestone` explicitly specifies a child-agent model or child-agent reasoning effort, use that override for this run. If the override is scoped to a child type, apply it only to that child type; otherwise apply it to every child spawned during the run.
 - Use `fork_context: false` for child spawns unless the delegated step truly cannot proceed without full thread history.
 - Pass only the minimum step-specific instructions and artifact references needed for the delegated skill. Do not hand the child the full milestone loop responsibility.
 - The root orchestrator should use `.planning/CONTEXT_INDEX.md` to keep child prompts narrow.
 - Child prompts should include the active phase, parent milestone, and only the relevant context-routing guidance needed for the assigned step.
 - Do not hand child agents the full codebase map or broad repo-discovery task when the context index already identifies start-here paths and validation routes.
-- If a child reports broad scanning caused by missing or stale routing guidance, the root should route to `$gsd-refresh-context-index` when that is the clear next recovery action.
+- If a child reports broad scanning caused by missing or stale routing guidance, the root should route to `$gsd-map-codebase` for a targeted unified mapping refresh when that is the clear next recovery action.
 - The root session must never tell a child to spawn, wait for, route to, or manage other agents.
+- After a child returns, the root orchestrator must read `Phase Status`, `Milestone Status`, and `Next-Step Prompt`, close the completed child with `close_agent`, and only then decide whether to spawn the next child.
 - The verification-and-next-phase-planning child is the only allowed composite child. It may create the next bounded phase only when verification passes and the milestone remains incomplete.
 - The composite child must not create the next phase on `fail`, `partial`, blocked verification, or completed milestone.
 - The composite child must never execute the newly created phase, continue the milestone loop, or choose another delegated step after creating the next phase.

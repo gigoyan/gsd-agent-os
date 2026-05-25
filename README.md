@@ -53,29 +53,29 @@
 
 ### Որ skill-ը պետք է ընտրել
 - Օգտագործեք `$gsd-map-codebase`, եթե պետք է factual repo map, structure understanding և grounded onboarding։
-- Օգտագործեք `$gsd-deep-map-codebase`, եթե խնդիրը վերաբերում է major refactor, migration, upgrade, modernization կամ architecture-level change-ին։
+- Օգտագործեք `$gsd-map-codebase`, եթե խնդիրը վերաբերում է major refactor, migration, upgrade, modernization կամ architecture-level change-ին։
 
 ### Ինչ կանի agent-ը
 - Կուսումնասիրի իրական repository state-ը։
 - Կբացատրի նախագիծը պարզ և գործնական ձևով։
-- Կասի, արդյոք բավական է սովորական mapping, թե պետք է deep mapping։
+- Կասի, արդյոք բավական է սովորական mapping, թե պետք է serious mapping։
 - Կձևակերպի անվտանգ հաջորդ քայլը GSD flow-ի մեջ։
 
 ### Ինչ է հաջորդ քայլը GSD flow-ում
 - Եթե արդյունքը սովորական onboarding/map է, և readiness artifacts-ը բավարար են, հաջորդ planning step-ը կլինի `$gsd-plan-milestone`.
 - Եթե mapping-ից հետո պետք է որոշել stack-ը, հաջորդ skill-ը կլինի `$gsd-select-stack`.
-- Եթե deep mapping է պետք, նախ ավարտվում է `$gsd-deep-map-codebase`, և միայն հետո որոշվում է milestone planning-ի շրջանակը։
+- Եթե serious mapping է պետք, նախ ավարտվում է `$gsd-map-codebase`, և միայն հետո որոշվում է milestone planning-ի շրջանակը։
 - Երբ milestone-ը արդեն ստեղծված լինի, բացեք նոր Codex session և գործարկեք `$gsd-run-milestone`՝ ընտրելով այդ milestone-ը։
 - Այդ պահից orchestration flow-ը կվերցնի milestone-ի իրականացումը իր վրա և sub-agents-ի օգնությամբ կտանի այն մինչև completion։
 
 ### Ինչպես գրել առաջին հաղորդագրությունը
 - «Սա արդեն գոյություն ունեցող նախագիծ է։ Նախ արա `$gsd-map-codebase`»։
-- «Սա արդեն գոյություն ունեցող նախագիծ է։ Պետք է modernization-ի համար `$gsd-deep-map-codebase`»։
+- «Սա արդեն գոյություն ունեցող նախագիծ է։ Պետք է modernization-ի համար `$gsd-map-codebase`»։
 
 ## Օգտատիրոջ համար պարզ կանոն
 - Եթե նոր նախագիծ է, սկսեք `$gsd-new-project`-ով։
 - Եթե արդեն գոյություն ունեցող նախագիծ է և պետք է հասկանալ repo-ն, սկսեք `$gsd-map-codebase`-ով։
-- Եթե արդեն գոյություն ունեցող նախագիծ է և պետք է մեծ refactor կամ migration հասկանալ, սկսեք `$gsd-deep-map-codebase`-ով։
+- Եթե արդեն գոյություն ունեցող նախագիծ է և պետք է մեծ refactor կամ migration հասկանալ, սկսեք `$gsd-map-codebase`-ով։
 - Եթե milestone-ը արդեն ստեղծված է, հաջորդ session-ում գործարկեք `$gsd-run-milestone` և ընտրեք այդ milestone-ը execution-ի համար։
 
 # English
@@ -123,7 +123,7 @@ The context index helps the agent avoid scanning the whole repository by recordi
 - which validation checks to run
 - which folders or files to avoid unless needed
 
-Use `$gsd-refresh-context-index` after `$gsd-map-codebase` or `$gsd-deep-map-codebase`, after major structure changes, or whenever agents repeatedly inspect too much of the project.
+Use `$gsd-map-codebase` for initial mapping, serious mapping, targeted context-index refresh, major structure changes, or whenever agents repeatedly inspect too much of the project.
 
 For a project that has not started yet, the context index is not required until real structure exists.
 
@@ -133,9 +133,9 @@ GSD is designed to be updated from a reusable blueprint without overwriting proj
 
 Use:
 
-    $gsd-update-blueprint <TARGET_REPOSITORY_PATH>
+    $gsd-sync-blueprint audit-only|install|update <TARGET_REPOSITORY_PATH>
 
-to audit a project repository from the current reusable blueprint source and then, only after exact `sync approved` confirmation, install or update reusable GSD files from the blueprint.
+to audit a project repository from the current reusable blueprint source and then, only after explicit approval, install or update reusable GSD files from the blueprint.
 
 Blueprint sync updates reusable assets such as skills, templates, managed `AGENTS.md` blocks, and the reusable guidance blocks in hybrid starter surfaces.
 
@@ -198,31 +198,29 @@ Choose this path if the repository already contains a real codebase, modules, co
 3. If there are important files, risky areas, or known problems, point them out.
 
 ### Which Skill Should Be Used
-- Use `$gsd-map-codebase` if you need a factual repo map, structure understanding, and grounded onboarding.
-- Use `$gsd-deep-map-codebase` if the request is about a major refactor, migration, upgrade, modernization, or another architecture-level change.
+- Use `$gsd-map-codebase` for factual repo mapping, grounded onboarding, serious transformation-oriented mapping, or context-index routing refresh.
 
 ### What The Agent Will Do
 - It will inspect the real repository state.
 - It will explain the project in a plain, practical way.
-- It will say whether normal mapping is enough or deep mapping is required.
+- It will choose the right mapping depth and slices inside the unified mapping workflow.
 - It will define the safe next step in the GSD flow.
 
 ### What The Next Step Is In The GSD Flow
-- If the result is a normal onboarding/map and the readiness artifacts are current enough, the next planning step is `$gsd-plan-milestone`.
+- If mapping is complete enough and the readiness artifacts are current enough, the next planning step is `$gsd-plan-milestone`.
 - If stack choice is still needed after mapping, the next skill is `$gsd-select-stack`.
-- If deep mapping is needed, `$gsd-deep-map-codebase` now performs the exhaustive current-state map, creates the large structured mapping milestone, prepares the first bounded phase, and updates roadmap and state.
-- After that deep-mapping flow finishes, open a new Codex session and run `$gsd-run-milestone` on the created mapping milestone instead of executing the phase directly.
-- From that point, the orchestration flow takes over milestone execution and completes it through sub-agents.
+- If serious mapping is needed, `$gsd-map-codebase` performs the deeper current-state mapping itself through bounded mapping sub-agents and updates `CODEBASE_MAP.md` and `CONTEXT_INDEX.md`.
+- Mapping does not create milestones for mapping or hand mapping work to `$gsd-run-milestone`.
 
 ### How To Write The First Message
 - “This is an existing project. First run `$gsd-map-codebase`.”
-- “This is an existing project. We need `$gsd-deep-map-codebase` for modernization.”
+- “This is an existing project. We need `$gsd-map-codebase` for modernization.”
 
 ## Simple Rule For The User
 - If it is a new project, start with `$gsd-new-project`.
 - If it is an existing project and you need to understand the repo, start with `$gsd-map-codebase`.
-- If it is an existing project and you need to understand a major refactor or migration, start with `$gsd-deep-map-codebase`.
-- If deep mapping already created a mapping milestone, use a new Codex session and run `$gsd-run-milestone` on that created milestone.
+- If it is an existing project and you need to understand a major refactor or migration, start with `$gsd-map-codebase`.
+- Use `$gsd-run-milestone` only after normal implementation milestone planning has created an implementation milestone.
 
 # Русский
 
@@ -279,27 +277,27 @@ Choose this path if the repository already contains a real codebase, modules, co
 
 ### Какой Skill Нужно Использовать
 - Используйте `$gsd-map-codebase`, если нужен factual repo map, понимание структуры и grounded onboarding.
-- Используйте `$gsd-deep-map-codebase`, если запрос связан с major refactor, migration, upgrade, modernization или другим architecture-level change.
+- Используйте `$gsd-map-codebase`, если запрос связан с major refactor, migration, upgrade, modernization или другим architecture-level change.
 
 ### Что Сделает Агент
 - Он изучит реальное состояние repository.
 - Он объяснит проект простым и практичным языком.
-- Он скажет, достаточно ли обычного mapping или нужен deep mapping.
+- Он скажет, достаточно ли обычного mapping или нужен serious mapping.
 - Он определит безопасный следующий шаг внутри GSD flow.
 
 ### Какой Следующий Шаг В GSD Flow
 - Если результатом стал обычный onboarding/map и readiness artifacts уже достаточно актуальны, следующий planning step - `$gsd-plan-milestone`.
 - Если после mapping все еще нужно выбрать stack, следующий skill - `$gsd-select-stack`.
-- Если нужен deep mapping, сначала завершается `$gsd-deep-map-codebase`, и только потом определяется scope для milestone planning.
+- Если нужен serious mapping, сначала завершается `$gsd-map-codebase`, и только потом определяется scope для milestone planning.
 - После того как milestone уже создан, откройте новую Codex session и запустите `$gsd-run-milestone`, выбрав этот milestone.
 - После этого orchestration flow берет milestone execution на себя и доводит его до completion через sub-agents.
 
 ### Как Написать Первое Сообщение
 - «Это существующий проект. Сначала запусти `$gsd-map-codebase`.»
-- «Это существующий проект. Для modernization нужен `$gsd-deep-map-codebase`.»
+- «Это существующий проект. Для modernization нужен `$gsd-map-codebase`.»
 
 ## Простое Правило Для Пользователя
 - Если это новый проект, начинайте с `$gsd-new-project`.
 - Если это существующий проект и нужно понять repo, начинайте с `$gsd-map-codebase`.
-- Если это существующий проект и нужно разобраться с крупным refactor или migration, начинайте с `$gsd-deep-map-codebase`.
+- Если это существующий проект и нужно разобраться с крупным refactor или migration, начинайте с `$gsd-map-codebase`.
 - Если milestone уже создан, в новой Codex session запускайте `$gsd-run-milestone` и выбирайте этот milestone для execution.

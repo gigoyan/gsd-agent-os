@@ -1,6 +1,6 @@
 name = "backend-debugger"
 description = "Diagnosis-focused Node.js backend specialist for the selected project stack."
-model = "gpt-5.4"
+# Omit model by default so the runtime uses the latest available supported child-agent model.
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """

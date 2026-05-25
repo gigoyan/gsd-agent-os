@@ -10,12 +10,12 @@ Use this skill to compare implementation results against the phase and milestone
 
 ## Workflow
 1. Read [PROJECT.md](../../../PROJECT.md), [`.planning/STATE.md`](../../../.planning/STATE.md), the active phase file, the parent milestone file, and the governing spec or planning artifacts already named by those active artifacts.
-2. Read `.planning/CONTEXT_INDEX.md` and the phase `Context Routing` section to verify whether implementation and validation stayed within the intended routed areas or whether deviations were justified.
+2. Read `.planning/CODEBASE_MAP.md`, `.planning/CONTEXT_INDEX.md`, and the phase `Context Routing` section to verify whether implementation and validation stayed within the intended routed areas, followed canonical examples and local conventions, used the expected validation route, avoided unrelated or fragile areas, and justified any deviations.
 3. Review which tests or checks were added or changed and run the targeted and broader checks defined in the phase or the closest available equivalent. If the verification needs prior durable context, request a narrow `gsd-memory-lookup` context pack first; otherwise keep verification repo-local and driven by the active artifacts.
 4. Compare actual results with the phase done criteria, milestone acceptance criteria, the governing spec-defined behavior slice for the phase, and the adequacy of the validation used for the changed behavior.
 5. For blueprint-self-improvement work inside the reusable GSD package, verify traceability against the active milestone, active phase, shared contracts, and prior verification chain when project-specific Project Idea Document, Technical Specification, and stack-selection/configuration-package artifacts are intentionally absent.
 6. Verify that any `Confirmed`, `Suggested`, and `Unknown` handling used by the changed behavior matches the shared meanings in [`.planning/templates/intake-routing-and-evidence-contract.md`](../../../.planning/templates/intake-routing-and-evidence-contract.md), and verify that choice-shaped user interactions use UI options when practical.
-7. Write or refresh a verification file under [`.planning/verification/`](../../../.planning/verification/) using the active phase naming pattern, including test-first evidence, any justified exception, and context-routing evidence: whether the context index was consulted, which routing row or module card was used, whether unnecessary scanning was avoided, and whether a context-index refresh follow-up is needed. If verification exposes a durable insight worth keeping, record the later `gsd-session-save` follow-up as `candidate` or `none` instead of writing durable memory here.
+7. Write or refresh a verification file under [`.planning/verification/`](../../../.planning/verification/) using the active phase naming pattern, including test-first evidence, any justified exception, and mapping-artifact evidence: whether the codebase map and context index were consulted, which routing row or module card was used, whether canonical examples and conventions were followed, whether unnecessary scanning was avoided, whether validation used the intended route, and whether mapping artifacts were updated or a unified mapping refresh candidate was recorded. If verification exposes a durable insight worth keeping, record the later `gsd-session-save` follow-up as `candidate` or `none` instead of writing durable memory here.
 8. Decide whether the phase is complete and whether the milestone is now complete or still in progress with follow-up phases remaining.
 9. Standalone verification and normal delegated verification stop after the verification result and routing output. Exception: when the child prompt explicitly assigns the `$gsd-run-milestone` verification-and-next-phase-planning composite step, and verification passes while the milestone is incomplete, create exactly one next bounded phase in the same active milestone using `$gsd-plan-milestone` rules.
 10. If the milestone has completed and cleanup would remove temporary blueprint-improvement scaffolding, stop at the verification result and ask the user whether cleanup should run before any deletion or reset happens.
@@ -43,6 +43,10 @@ Use this skill to compare implementation results against the phase and milestone
 - Do not write durable memory from this skill; verification remains read-only on the vault and only identifies later session-save candidates.
 - At a meaningful verification stop point, explicitly decide whether later `gsd-session-save` is warranted. If not, record `none` rather than leaving the outcome implicit.
 - Mark `partial` or `fail` when behavior changed without adequate validation evidence, without a justified exception, or without a clear trace back to the governing spec artifacts and planned behavior slice.
+- Return `partial` or record explicit residual risk when implementation changed routing, conventions, symbols, canonical examples, or validation guidance but `CONTEXT_INDEX.md` was not updated or marked stale.
+- Return `partial` or record explicit residual risk when implementation changed architecture, dependency direction, runtime flow, data, persistence, or integration behavior but `CODEBASE_MAP.md` was not updated or a unified mapping refresh candidate was not recorded.
+- Return `partial` or record explicit residual risk when validation commands changed but the validation matrix or `.planning/tool-capabilities.md` was not updated as applicable.
+- Return `partial` or record explicit residual risk when context-index routing was materially wrong and no correction or unified mapping refresh candidate was recorded.
 - For blueprint-self-improvement work inside the reusable GSD package, treat the active milestone, active phase, shared contracts, and prior verification chain as acceptable governing traceability when project-specific Project Idea Document, Technical Specification, and stack-selection/configuration-package artifacts are intentionally absent.
 - Mark `partial` or `fail` when changed behavior silently blurs `Confirmed`, `Suggested`, and `Unknown`, or when choice-shaped user interaction falls back to free-text without justification.
 - If a failure suggests new work, capture it in the verification artifact and hand back to planning or a follow-up phase.
@@ -61,13 +65,13 @@ Use this skill to compare implementation results against the phase and milestone
 - Treat the `Next-Step Prompt` as response-only handoff text. Do not write it into verification, phase, milestone, roadmap, or state artifacts unless the user explicitly asks for that artifact content.
 - Prefer concrete evidence over narrative claims.
 - Verification should check not only whether behavior passed, but whether the implementation used the intended context route or justified deviations.
-- If implementation scanned broadly because the context index was missing, stale, or misleading, mark a `$gsd-refresh-context-index` follow-up candidate.
-- Do not fail a phase only because context routing was imperfect if behavior and validation are correct, but record the routing issue as residual risk or follow-up.
+- If implementation scanned broadly because the context index was missing, stale, or misleading, mark a `$gsd-map-codebase` unified mapping refresh follow-up candidate.
+- Do not fail a phase only because context routing was imperfect if behavior and validation are correct, but require the stale routing to be fixed or recorded as residual risk or a unified mapping refresh candidate.
 - If verification needs durable context, request `gsd-memory-lookup` scoped to `projects/<vault-project-id>/`.
 - Do not broaden verification into shared-vault or sibling-project retrieval.
 - If verification exposes durable insight, record a later `gsd-session-save` candidate only; do not write durable memory during verification.
 
 ## Completion Check
 - A verification artifact exists with checks, results, test-first evidence, spec-traceability evidence, residual risks, and disposition.
-- Verification records context-routing evidence and any context-index refresh follow-up.
+- Verification records context-routing evidence, mapping-artifact truthfulness checks, and any unified mapping refresh follow-up.
 - [`.planning/STATE.md`](../../../.planning/STATE.md) reflects the latest verification outcome and whether the milestone is still in progress or complete.

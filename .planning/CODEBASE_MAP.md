@@ -4,7 +4,7 @@
 This file is the current repository's grounded codebase map.
 Blueprint sync may update only this managed guidance block.
 All mapped repository content below is project-owned and must be preserved.
-Use `$gsd-map-codebase` or `$gsd-deep-map-codebase` to create or refresh the project-owned map content.
+Use `$gsd-map-codebase` to create or refresh the project-owned map content through the unified mapping orchestrator.
 <!-- GSD-BLUEPRINT:END codebase-map-surface-contract -->
 
 <!-- GSD-PROJECT:START codebase-map-content -->
@@ -31,9 +31,11 @@ Use `$gsd-map-codebase` or `$gsd-deep-map-codebase` to create or refresh the pro
 
 ## Context Index Handoff
 - Context index status:
-- Recommended `$gsd-refresh-context-index` scope:
+- Recommended `$gsd-map-codebase` unified mapping scope:
 - Highest-value routing rows to create:
 - Highest-value module cards to create:
+- Highest-value symbol/API rows to create:
+- Highest-value convention cards to create:
 - Validation paths to capture:
 - Do-not-scan boundaries to capture:
 <!-- GSD-PROJECT:END codebase-map-content -->

@@ -1,6 +1,6 @@
 # Context Index
 
-Use `$gsd-refresh-context-index` to replace this placeholder with a compact task-routing guide for the current repository.
+Use `$gsd-map-codebase` to replace this placeholder with a compact task-routing guide for the current repository through the unified mapping orchestrator.
 
 ## Purpose
 - Tell Codex where to start for common task types.
@@ -14,4 +14,4 @@ Use `$gsd-refresh-context-index` to replace this placeholder with a compact task
 - Staleness note:
 
 ## Routing Rule
-- If this file is placeholder, missing, or stale for the current task, refresh it with `$gsd-refresh-context-index` or use the closest repo-local evidence without broadening into unrelated areas.
+- If this file is placeholder, missing, or stale for the current task, refresh it with `$gsd-map-codebase` or use the closest repo-local evidence without broadening into unrelated areas.

@@ -11,12 +11,13 @@ Use this skill after milestone planning is complete and before verification has 
 ## Workflow
 1. Read [PROJECT.md](../../../PROJECT.md), [`.planning/STATE.md`](../../../.planning/STATE.md), and resolve the active phase path.
 2. Read the active phase file, the parent milestone file, and the governing spec or planning artifacts already named by those active artifacts so implementation stays anchored to the Project Idea Document, Technical Specification, and stack-selection/configuration-package context rather than treating the phase as detached.
-3. Read `.planning/CONTEXT_INDEX.md` and the phase `Context Routing` section before scanning source files. Start with the routed start-here paths and inspect-next paths. Avoid unrelated areas unless repo evidence shows the phase cannot be completed without them.
+3. Read `.planning/CODEBASE_MAP.md`, `.planning/CONTEXT_INDEX.md`, and the phase `Context Routing` section before scanning source files. Start with the routed start-here paths and inspect-next paths, copy the routed canonical examples, and follow the mapped symbols, naming, validation, error-handling, and test conventions. Avoid unrelated, generated, vendor, or fragile areas unless repo evidence shows the phase cannot be completed without them.
 4. For each meaningful behavior slice in scope, create or update the targeted tests or checks first when the change is reasonably testable. If the phase depends on prior durable context, request a narrow `gsd-memory-lookup` context pack first; otherwise stay repo-local and use the phase, milestone, and state artifacts as the source of truth.
 5. Run the targeted test or check first when practical to confirm the expected failing state, or record why that is not practical.
 6. Implement only the minimum scoped work needed to make the targeted validation pass. If the execution reveals a durable decision or recurring insight, classify the later `gsd-session-save` follow-up as `candidate` or `none` instead of writing durable memory here.
 7. Refactor only after green, then run the broader checks named in the phase file or the minimum available equivalent.
-8. Update [`.planning/STATE.md`](../../../.planning/STATE.md) with execution status, touched areas, checks run, and an explicit durable-memory follow-up decision of `candidate` or `none`.
+8. Before finishing, compare actual touched files, conventions used, and validation path against `.planning/CONTEXT_INDEX.md` and `.planning/CODEBASE_MAP.md`. If the work proves either artifact wrong, stale, incomplete, or missing, update the artifact when the correction is small and directly evidenced; otherwise record a precise `$gsd-map-codebase` unified mapping refresh candidate in state.
+9. Update [`.planning/STATE.md`](../../../.planning/STATE.md) with execution status, touched areas, checks run, context routing used, mapping artifact updates or refresh candidates, and an explicit durable-memory follow-up decision of `candidate` or `none`.
 
 ## Scope Guardrails
 - Do not expand into unplanned features, refactors, or architecture changes.
@@ -33,7 +34,7 @@ Use this skill after milestone planning is complete and before verification has 
   - phase status
   - touched files or areas
   - checks run
-  - context index consulted, routing used, any deviation from routed areas, and whether a context-index refresh follow-up is `candidate` or `none`
+  - codebase map and context index consulted, routing used, any deviation from routed areas, and whether a unified mapping refresh follow-up is `candidate` or `none`
   - next action
 
 ## Rules
@@ -46,8 +47,10 @@ Use this skill after milestone planning is complete and before verification has 
 - If the phase includes a justified exception to test-first, apply the nearest practical safeguard and record it.
 - Use memory lookup only when the active phase needs prior durable context that is not already present in repo-local state.
 - Do not begin execution with broad repository scanning when `.planning/CONTEXT_INDEX.md` or the phase `Context Routing` section gives a narrower route.
-- If execution must inspect files outside the routed areas, record why in `.planning/STATE.md` and mark whether a `$gsd-refresh-context-index` follow-up is needed.
-- If the context index is missing, placeholder, stale, or misleading, do not silently ignore that. Record a refresh follow-up candidate.
+- If execution must inspect files outside the routed areas, record why in `.planning/STATE.md` and mark whether a `$gsd-map-codebase` unified mapping refresh follow-up is needed.
+- If the context index is missing, placeholder, stale, or misleading, do not silently ignore that. Update it when the correction is local and evidenced, or record a unified mapping refresh candidate.
+- If implementation introduces or changes a route, convention, symbol/API, canonical example, validation command, or do-not-scan boundary, update `CONTEXT_INDEX.md` when the update is small and directly supported by the execution evidence.
+- If implementation changes architecture, dependency direction, runtime flow, persistence shape, data shape, or integration behavior, update `CODEBASE_MAP.md` when the update is small and directly supported by the execution evidence; otherwise record a unified mapping refresh candidate in `.planning/STATE.md`.
 - Prefer targeted validation from the context index before broader checks unless the phase explicitly requires a broader check first.
 - Do not write durable memory from this skill; execution only produces session-save candidates for later review.
 - At a meaningful execution stop point, do not leave durable-memory follow-up vague. Record whether `gsd-session-save` is warranted and why, or explicitly record `none`.
@@ -65,6 +68,6 @@ Use this skill after milestone planning is complete and before verification has 
 - Implementation matches the active phase objective.
 - Targeted tests or checks were updated first, or a justified exception was recorded.
 - Execution stayed inside scope or explicitly escalated when scope broke.
-- Execution followed the phase context route or recorded a justified deviation and refresh follow-up.
+- Execution followed the phase context route or recorded a justified deviation and mapping artifact update or unified refresh follow-up.
 - Execution evidence remains traceable to the governing spec-defined behavior slice named by planning.
 - [`.planning/STATE.md`](../../../.planning/STATE.md) records targeted and broader checks run, marks the phase as executed, and sets the next action as verification.

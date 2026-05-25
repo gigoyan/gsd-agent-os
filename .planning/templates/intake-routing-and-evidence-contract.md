@@ -6,7 +6,7 @@ Use it to keep later skills, templates, and verification behavior aligned withou
 ## Intake Route Classification
 - `placeholder_bootstrap`: use when the repo is new, effectively empty, or still on placeholder planning surfaces. Route to `$gsd-new-project`.
 - `document_first_intake`: use when the user supplies substantial docs, notes, or files that can answer bootstrap or Spec-First questions. Extract from those materials before re-asking.
-- `existing_project_mapping`: use when the repo already contains meaningful code and the need is factual onboarding or lightweight mapping. Route to `$gsd-map-codebase`.
+- `existing_project_mapping`: use when the repo already contains meaningful code and the need is factual onboarding, stale mapping repair, serious full mapping, transformation-oriented mapping, or context-index routing refresh. Route to the unified `$gsd-map-codebase` mapping orchestrator.
 - `explicit_stack_selection`: use when the user explicitly asks to choose or confirm the stack. Route to `$gsd-select-stack` using repo evidence first.
 - `partial_maturity_continuation`: use when some project artifacts already exist but are incomplete, stale, or unevenly mature. Continue from the highest valid readiness point instead of restarting earlier steps.
 
@@ -20,10 +20,11 @@ Use it to keep later skills, templates, and verification behavior aligned withou
 - Use free-text only when the required input cannot be reasonably reduced to options without losing important meaning.
 - Never silently promote `Suggested` values to `Confirmed`.
 
-## Serious Deep-Mapping Intent
-- Treat requests as serious deep-mapping intent when the user needs transformation-ready understanding for modernization, major refactor, version upgrade, platform migration, stack migration, or similar architecture-shaping work.
-- Do not collapse serious deep-mapping intent into a lightweight repo summary.
-- Preserve the intent explicitly so later phases can route to a dedicated deep-mapping workflow that performs exhaustive current-state mapping and, when needed, creates a large structured mapping milestone, the first bounded mapping phase, roadmap and state updates, and an exact next-session prompt for `$gsd-run-milestone`.
+## Unified Mapping Depth
+- Treat requests as serious full mapping or transformation/migration/refactor mapping when the user needs transformation-ready understanding for modernization, major refactor, version upgrade, platform migration, stack migration, or similar architecture-shaping work.
+- Do not collapse serious mapping intent into a shallow repo summary.
+- Preserve the mapping depth explicitly so the unified `$gsd-map-codebase` orchestrator can choose enough bounded factual slices.
+- Mapping must remain current-state understanding. It must not create milestones or phases for mapping, roadmap pointers, `$gsd-run-milestone` handoffs, migration design, target architecture design, or implementation plans.
 
 ## Cleanup Permission Gate
 - Temporary blueprint-improvement milestone, phase, verification, roadmap-pointer, and state-detail scaffolding must remain in place until final verification passes and the user explicitly approves cleanup.

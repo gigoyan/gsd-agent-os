@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Sync Blueprint"
+  short_description: "Audit-only or approval-gated install/update for Blueprint assets"
+  default_prompt: "Use $gsd-sync-blueprint audit-only|install|update <TARGET_REPOSITORY_PATH>. The workflow always audits first, compares real content and managed blocks, detects removed Blueprint-installed files, and applies only after explicit approval."

@@ -20,10 +20,17 @@
 - The blueprint source owns reusable GSD assets such as skills, templates, contracts, managed-block source content, and the blueprint manifest.
 - Project repositories receive an installed local copy of selected GSD files.
 - Blueprint updates must be distributed through manifest-driven sync, not manual copy-paste.
+- GSD has one Blueprint synchronization workflow: `$gsd-sync-blueprint`.
+- `$gsd-sync-blueprint` owns both audit-only reporting and approval-gated install/update.
+- Separate blueprint drift audit skill does not exist.
+- `$gsd-sync-blueprint` must compare real content for Blueprint-owned files and managed-block content for mixed files; file presence alone is insufficient.
+- `$gsd-sync-blueprint` must detect Blueprint-installed files removed from the current manifest by comparing the target lock with the source manifest.
+- `$gsd-sync-blueprint` must preserve project-owned runtime files and generated project-local files.
+- `$gsd-sync-blueprint` must stop for explicit approval before applying replacements, managed-block updates, starter creation, deletions, marker migrations, or lock updates.
 - Use `.gsd/blueprint-manifest.json` as the source of file ownership and sync strategy.
 - Use `.gsd/managed-blocks/agents-operating-contract.md` as the canonical reusable source for the `AGENTS.md` `GSD-BLUEPRINT: operating-contract` managed block.
 - The root blueprint `AGENTS.md` `GSD-BLUEPRINT: operating-contract` block must match `.gsd/managed-blocks/agents-operating-contract.md` exactly.
-- Project repositories use `.gsd/blueprint.lock.json` to record the installed blueprint version or commit.
+- Project repositories use `.gsd/blueprint.lock.json` to record installed Blueprint file metadata, ownership, sync strategy, content hashes when available, and installed version or commit.
 - Treat files by ownership class:
   - `blueprint_replace`: reusable blueprint files that may be replaced during sync.
   - `project_preserve`: project runtime files that must never be overwritten during sync.
@@ -40,7 +47,7 @@
 - In `AGENTS.md`, blueprint sync may update only the `GSD-BLUEPRINT: operating-contract` managed block.
 - Blueprint sync must preserve the project-owned `GSD-PROJECT: local-settings` block exactly, except when the user explicitly asks to change the local setting.
 - Do not place marker examples inside `AGENTS.md`; marker syntax and sync behavior are defined in `.planning/templates/blueprint-distribution-contract.md`.
-- If target `AGENTS.md` lacks the `operating-contract` marker but contains old unmarked GSD template or operating content, blueprint sync and audit must report `AGENTS.md legacy-template migration required`, show a reviewed migration diff, and require explicit approval before replacing the old template content with the canonical managed block plus the `GSD-PROJECT: local-settings` block.
+- If target `AGENTS.md` lacks the `operating-contract` marker but contains old unmarked GSD template or operating content, `$gsd-sync-blueprint` must report `AGENTS.md legacy-template migration required`, show a reviewed migration diff, and require explicit approval before replacing the old template content with the canonical managed block plus the `GSD-PROJECT: local-settings` block.
 - Preserve genuinely project-specific local instructions outside old unmarked GSD template content. If the boundary is ambiguous, stop and report a conflict instead of guessing.
 - Preserve all project-specific content outside the blueprint-managed block.
 
@@ -78,7 +85,26 @@
 - Use the shared intake routes and evidence semantics defined in [`.planning/templates/intake-routing-and-evidence-contract.md`](./.planning/templates/intake-routing-and-evidence-contract.md).
 - Keep route selection explicit across placeholder bootstrap, document-first intake, existing-project mapping, explicit stack-selection, and partial-maturity continuation entry states.
 - Use UI options as the default for choice-shaped user interactions whenever the needed input can reasonably be expressed as structured choices, combinations, or confirmations.
-- Treat serious deep-mapping intent as distinct from lightweight mapping so later workflow steps can route to dedicated deep-mapping work instead of a shallow repo summary.
+- GSD has one unified mapping capability: `$gsd-map-codebase`.
+- The unified mapping capability handles empty or nearly empty repositories, new projects with some files, existing projects without GSD mapping, partial mapping, stale mature mapping, serious full mapping, transformation/migration/refactor mapping, and targeted context-index routing refresh.
+- Do not route mapping to any other mapping workflow.
+
+## Unified Mapping
+- `$gsd-map-codebase` is a self-orchestrating mapping workflow, not a milestone-planning workflow.
+- The mapping orchestrator may spawn bounded mapping sub-agents for factual mapping slices.
+- Mapping sub-agents run at medium reasoning effort.
+- The mapping orchestrator must wait for each child result before continuing.
+- The mapping orchestrator owns mapping strategy, slice decomposition, child prompt quality, artifact updates, and final consistency review.
+- Mapping children own only their assigned slice: inspect assigned paths, report factual findings, suggest precise updates, identify gaps or stale assumptions, and return structured output.
+- Mapping children must not orchestrate, spawn agents, edit unrelated files, broaden beyond the assigned slice, invent architecture or conventions, or design future implementation, migration, or target architecture.
+- Mapping must not create milestones or phases for mapping, `$gsd-run-milestone` handoffs, mapping-specific verification bypasses, or special `$gsd-run-milestone` behavior.
+- `CODEBASE_MAP.md` records current system reality: architecture, dependency direction, runtime behavior, data and integration surfaces, operational surfaces, risks, fragile areas, and evidence status.
+- `CONTEXT_INDEX.md` is the repo-local coding-agent navigation guide: task routes, start-here paths, likely edit files, symbols/APIs, canonical examples, conventions, validation paths, search recipes, and do-not-touch boundaries.
+- Mapping artifacts are written for future coding agents first. Prioritize operational routing, canonical examples, symbols, conventions, validation paths, command evidence, and do-not-touch boundaries over human-facing narrative explanation.
+- Planning, execution, and verification agents must actively use `CODEBASE_MAP.md` and `CONTEXT_INDEX.md` to navigate the repo, follow conventions, select validation, and avoid unrelated, generated, vendor, or fragile areas.
+- Agents must update those artifacts when real work proves them stale or incomplete and the correction is local and evidence-supported; otherwise record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`.
+- Do not store `CONTEXT_INDEX.md` in the vault.
+- Do not use vault memory as a replacement for repo-local task routing.
 
 ## Spec-First Readiness Gate
 - Spec-First is mandatory for non-trivial greenfield work and non-trivial existing-project changes.
@@ -116,8 +142,8 @@
 ## Spec Artifact Boundaries
 - `PROJECT.md` is the current repository's project charter and bootstrap artifact; it is not the Project Idea Document.
 - `.planning/REQUIREMENTS.md` is the current repository's project requirements surface; it is not the Technical Specification.
-- `.planning/CODEBASE_MAP.md` is the current repository's grounded architecture map or a placeholder until `$gsd-map-codebase` replaces it.
-- `.planning/CONTEXT_INDEX.md` is the current repository's compact task-routing and context-minimization guide. It tells agents where to start, what to inspect next, what usually changes, how to validate, and what to avoid for common task types. It is not durable memory and must not be copied into the vault.
+- `.planning/CODEBASE_MAP.md` is the current repository's grounded current-system-reality map or a placeholder until `$gsd-map-codebase` replaces it.
+- `.planning/CONTEXT_INDEX.md` is the current repository's repo-local coding-agent navigation guide. It tells agents where to start, what to inspect next, what usually changes, which symbols/APIs and canonical examples matter, how to validate, and what to avoid for common task types. It is not durable memory and must not be copied into the vault.
 - `.planning/ROADMAP.md` and `.planning/STATE.md` are live workflow control surfaces and must stay reset when no project work is active.
 - `PROJECT.md` and `.planning/CODEBASE_MAP.md` may contain a small `GSD-BLUEPRINT` guidance block plus a `GSD-PROJECT` content block. Runtime skills update only the project-owned content blocks when markers exist.
 - `.planning/STATE.md` must not contain managed-block markers.
@@ -182,15 +208,14 @@
 - Preserve the existing GSD workflow model.
 - Keep these capabilities intact:
   - `$gsd-new-project`
-  - `$gsd-map-codebase`
-  - `$gsd-refresh-context-index`
+  - `$gsd-map-codebase` (unified mapping)
   - `$gsd-select-stack`
   - `$gsd-plan-milestone`
   - `$gsd-execute-phase`
   - `$gsd-verify-phase`
   - `$gsd-run-milestone`
   - `$gsd-quick-task`
-  - `$gsd-update-blueprint`
+  - `$gsd-sync-blueprint`
 - Use the milestone path for anything cross-file, architectural, ambiguous, multi-step, or likely to span multiple turns.
 - Use `$gsd-quick-task` only for small, low-risk, bounded work.
 - Default to test-first by meaningful behavior slice when practical.
@@ -199,6 +224,10 @@
 ## `gsd-run-milestone`
 - Preserve `$gsd-run-milestone` as a user-requested milestone automation capability.
 - The root session is the only milestone orchestrator.
+- `$gsd-run-milestone` uses the latest available supported child-agent model with medium reasoning effort by default.
+- A user-provided child model or child reasoning-effort value in the invocation of `$gsd-run-milestone` overrides the default for that run.
+- The root orchestrator closes each completed child after reading its output and before spawning the next child.
+- Child agents must not call `close_agent`; child cleanup is root-owned.
 - If no active milestone or phase exists and planning is needed, the root session may delegate one planning child as before.
 - The normal active-phase loop uses at most two child agents:
   1. one execution child that executes the active phase;
@@ -222,7 +251,7 @@
 - Keep milestone and phase names explicit in state so an orchestrator can resume without guessing.
 - Planning, execution, and verification outputs must include explicit `Phase Status` and `Milestone Status` lines.
 - Each completed GSD step must end with a minimal, directly usable `Next-Step Prompt` when another GSD step is needed.
-- When an agent scans broadly because the context index is missing, stale, or insufficient, record a `gsd-refresh-context-index` follow-up candidate in state instead of allowing repeated rediscovery.
+- When an agent scans broadly because the context index is missing, stale, or insufficient, record a `$gsd-map-codebase` unified mapping refresh candidate in state instead of allowing repeated rediscovery.
 - Long-form templates belong under [`.planning/templates/`](./.planning/templates/), not in this file.
 
 ## Repository Tool Capability Rule

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "blueprint_name": "gsd",
   "blueprint_version": "0.1.0",
-  "description": "Reusable GSD workflow blueprint manifest for safe project-repository installation, sync, and drift audit.",
+  "description": "Reusable GSD workflow blueprint manifest for safe project-repository audit-only reporting and approval-gated installation or update sync.",
   "sync_rules": {
     "default_strategy": "project_preserve",
     "never_overwrite_project_runtime": true,
@@ -35,20 +35,6 @@
       "sync_strategy": "replace",
       "required": true,
       "description": "Blueprint-managed AGENTS.md operating contract block source."
-    },
-    {
-      "path": ".agents/skills/gsd-deep-map-codebase/SKILL.md",
-      "owner": "blueprint_replace",
-      "sync_strategy": "replace",
-      "required": true,
-      "description": "Deep codebase mapping skill instructions."
-    },
-    {
-      "path": ".agents/skills/gsd-deep-map-codebase/agents/openai.yaml",
-      "owner": "blueprint_replace",
-      "sync_strategy": "replace",
-      "required": true,
-      "description": "Deep mapping child-agent configuration."
     },
     {
       "path": ".agents/skills/gsd-execute-phase/SKILL.md",
@@ -90,14 +76,14 @@
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
       "required": true,
-      "description": "Codebase mapping skill instructions."
+      "description": "Unified self-orchestrating codebase mapping skill instructions."
     },
     {
       "path": ".agents/skills/gsd-map-codebase/agents/openai.yaml",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
       "required": true,
-      "description": "Codebase mapping child-agent configuration."
+      "description": "Unified codebase mapping interface configuration."
     },
     {
       "path": ".agents/skills/gsd-memory-lookup/SKILL.md",
@@ -156,13 +142,6 @@
       "description": "Quick task child-agent configuration."
     },
     {
-      "path": ".agents/skills/gsd-refresh-context-index/SKILL.md",
-      "owner": "blueprint_replace",
-      "sync_strategy": "replace",
-      "required": true,
-      "description": "Context index refresh skill instructions."
-    },
-    {
       "path": ".agents/skills/gsd-run-milestone/SKILL.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
@@ -212,18 +191,18 @@
       "description": "Session save child-agent configuration."
     },
     {
-      "path": ".agents/skills/gsd-update-blueprint/SKILL.md",
+      "path": ".agents/skills/gsd-sync-blueprint/SKILL.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
       "required": true,
-      "description": "Audit-gated blueprint install and update skill."
+      "description": "Single Blueprint audit-only and approval-gated install/update sync skill."
     },
     {
-      "path": ".agents/skills/gsd-update-blueprint/agents/openai.yaml",
+      "path": ".agents/skills/gsd-sync-blueprint/agents/openai.yaml",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
       "required": true,
-      "description": "Audit-gated blueprint update child-agent configuration."
+      "description": "Single Blueprint audit/sync child-agent configuration."
     },
     {
       "path": ".agents/skills/gsd-vault-bootstrap/SKILL.md",

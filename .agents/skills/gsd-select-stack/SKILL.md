@@ -48,7 +48,7 @@ Project-local output generation and profile-specific expansion remain derived fo
 - Keep project-local `AGENTS.md` and `.codex` outputs as derived artifacts from the selected stack rather than blueprint truth, but defer their planning or generation until a later bounded stack-selection follow-on.
 - Keep narrow official-doc freshness checks tied to selected profiles as later follow-on work instead of folding them into this selection step.
 - Keep profile-specific integration details, generated-output manifests, and profile-asset expansion outside this skill until the later stack-selection phase explicitly takes ownership.
-- When stack selection changes expected structure, commands, validation strategy, generated project-local outputs, or runtime surfaces, record a `$gsd-refresh-context-index` follow-up candidate so the context index stays aligned with the selected stack.
+- When stack selection changes expected structure, commands, validation strategy, generated project-local outputs, or runtime surfaces, record a `$gsd-map-codebase` unified mapping follow-up candidate so mapping artifacts stay aligned with the selected stack.
 
 ## Required Outputs
 

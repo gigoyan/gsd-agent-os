@@ -28,7 +28,7 @@ Use this skill to interview for project intent, create the core planning docs, a
 - [`.planning/ROADMAP.md`](../../../.planning/ROADMAP.md): initialize milestone sequencing and the current pointer.
 - Readiness handoff: explicit pointer to the current project's next required artifacts, using [`.planning/templates/project-idea-document-template.md`](../../../.planning/templates/project-idea-document-template.md), [`.planning/templates/technical-specification-template.md`](../../../.planning/templates/technical-specification-template.md), and `$gsd-select-stack` with [`.planning/templates/stack-selection-and-configuration-package-template.md`](../../../.planning/templates/stack-selection-and-configuration-package-template.md) before non-trivial milestone planning starts.
 - Project namespace bootstrap status: `PROJECT.md` records the resolved `GSD Vault Project ID`, `GSD Vault Namespace`, and whether `projects/<vault-project-id>/` was verified or needs the next explicit `gsd-vault-bootstrap` handoff.
-- Context index status: record `not applicable until structure exists`, `placeholder`, or the next `$gsd-refresh-context-index` handoff when relevant.
+- Context index status: record `not applicable until structure exists`, `placeholder`, or the next `$gsd-map-codebase` unified mapping follow-up when relevant.
 - [`.planning/STATE.md`](../../../.planning/STATE.md): record status as bootstrap complete, milestone and phase as `none`, milestone status and phase status as `none`, the durable-memory follow-up as `none`, and the next action as either the spec-readiness artifact work or `$gsd-plan-milestone` only when those governing artifacts are already sufficiently current.
 
 ## Source Templates
@@ -57,7 +57,7 @@ Use this skill to interview for project intent, create the core planning docs, a
 - Prefer UI options for remaining choice-shaped questions whenever practical.
 - Treat stack selection as a later readiness artifact handled through `$gsd-select-stack`, not a bootstrap prerequisite.
 - If the user explicitly asks to select the stack before bootstrap is complete, allow `$gsd-select-stack` to run first and then route back to finish bootstrap and the stack-aware spec artifacts afterward.
-- Do not require `.planning/CONTEXT_INDEX.md` for a project that has not started and has no meaningful structure. Once real structure exists, route to `$gsd-refresh-context-index` so later agents can navigate efficiently.
+- Do not require `.planning/CONTEXT_INDEX.md` for a project that has not started and has no meaningful structure. Once real structure exists, route to `$gsd-map-codebase` so later agents can navigate efficiently.
 - Keep written normalization lightweight by default. Write a fuller problem or scope summary only when ambiguity, risk, scope, or explicit user request justifies it.
 - If the repository already contains meaningful code, stop and switch to `$gsd-map-codebase` unless the user explicitly wants a full rewrite of the planning docs.
 - Do not write durable project memory during bootstrap. Creating or verifying the project namespace scaffold under the shared Obsidian MCP vault root is allowed; writing durable notes is not.

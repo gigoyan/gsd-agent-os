@@ -21,7 +21,17 @@ DEFAULT_OUTPUT_ROOT = ".gsd/exports"
 MANIFEST_RELATIVE_PATH = ".gsd/blueprint-manifest.json"
 SKILL_ROOT = ".agents/skills"
 TEMPLATE_ROOT = ".planning/templates"
-GENERATED_FILES = [
+STACK_PROFILE_ROOT = ".agents/stack-profiles"
+KNOWN_STACK_PROFILE_DOMAINS = {
+    "backend",
+    "frontend",
+    "data",
+    "auth",
+    "integration",
+    "hosting",
+    "observability",
+}
+BASE_GENERATED_FILES = [
     "export-manifest.json",
     "checksums.sha256",
     "git-status.txt",
@@ -225,6 +235,10 @@ def has_glob(path: str) -> bool:
     return any(char in path for char in "*?[]")
 
 
+def sort_normalized_paths(paths: set[str] | list[str]) -> list[str]:
+    return sorted(paths, key=lambda path: path.lower())
+
+
 def is_skill_instruction(path: str) -> bool:
     parts = path.split("/")
     return (
@@ -239,12 +253,44 @@ def is_template(path: str) -> bool:
     return path.startswith(f"{TEMPLATE_ROOT}/") and not has_glob(path)
 
 
+def is_stack_profile_candidate(path: str) -> bool:
+    return path == STACK_PROFILE_ROOT or path.startswith(f"{STACK_PROFILE_ROOT}/")
+
+
+def is_stack_profile_source(path: str) -> bool:
+    parts = path.split("/")
+    return (
+        len(parts) >= 5
+        and parts[0] == ".agents"
+        and parts[1] == "stack-profiles"
+        and not has_glob(path)
+    )
+
+
 def template_title(path: str) -> str:
     return path[len(TEMPLATE_ROOT) + 1 :]
 
 
 def skill_title(path: str) -> str:
     return path.split("/")[2]
+
+
+def stack_profile_title(path: str) -> str:
+    return path[len(STACK_PROFILE_ROOT) + 1 :]
+
+
+def stack_profile_domain(path: str) -> str:
+    parts = path.split("/")
+    if len(parts) < 3:
+        return "other"
+    domain = parts[2]
+    if domain in KNOWN_STACK_PROFILE_DOMAINS:
+        return domain
+    return "other"
+
+
+def stack_profile_target_name(domain: str) -> str:
+    return f"stack-profiles-{domain}.md"
 
 
 def is_runtime_planning(path: str) -> bool:
@@ -298,11 +344,76 @@ def add_skip(
     skipped.append(item)
 
 
+def readable_text_source(repo_root: Path, relative_path: str) -> tuple[bool, str | None]:
+    path, error = source_path(repo_root, relative_path)
+    if error or path is None:
+        return False, error or "source path unavailable"
+    try:
+        path.read_bytes().decode("utf-8")
+    except UnicodeDecodeError:
+        return False, "source file is not UTF-8 text"
+    except OSError as exc:
+        return False, f"could not read source file: {exc}"
+    return True, None
+
+
+def add_stack_profile_source(
+    repo_root: Path,
+    stack_profile_sources_by_domain: dict[str, set[str]],
+    skipped: list[dict[str, str]],
+    warnings: list[str],
+    path: str,
+    entry: dict[str, Any] | None = None,
+) -> None:
+    if not is_stack_profile_source(path):
+        add_skip(skipped, path, "unsupported stack-profile path shape", entry)
+        return
+
+    is_readable, error = readable_text_source(repo_root, path)
+    if not is_readable:
+        add_skip(skipped, path, error or "stack-profile source is not readable", entry)
+        warnings.append(f"Skipped stack-profile source {path}: {error}.")
+        return
+
+    domain = stack_profile_domain(path)
+    stack_profile_sources_by_domain.setdefault(domain, set()).add(path)
+
+
+def expand_stack_profile_glob(repo_root: Path, pattern: str) -> list[str]:
+    matches: list[str] = []
+    patterns = [pattern]
+    if pattern.endswith("/**"):
+        patterns.append(f"{pattern}/*")
+
+    for current_pattern in patterns:
+        try:
+            candidates = repo_root.glob(current_pattern)
+            for candidate in candidates:
+                try:
+                    resolved = candidate.resolve(strict=True)
+                except (FileNotFoundError, OSError):
+                    continue
+                try:
+                    resolved.relative_to(repo_root)
+                except ValueError:
+                    continue
+                if not resolved.is_file():
+                    continue
+                relative = resolved.relative_to(repo_root).as_posix()
+                if is_stack_profile_source(relative):
+                    matches.append(relative)
+        except ValueError:
+            continue
+
+    return sort_normalized_paths(set(matches))
+
+
 def classify_manifest(
     repo_root: Path, manifest: dict[str, Any]
-) -> tuple[list[str], list[str], dict[str, str], list[dict[str, str]], list[str]]:
+) -> tuple[list[str], list[str], dict[str, list[str]], dict[str, str], list[dict[str, str]], list[str]]:
     skill_sources: set[str] = set()
     template_sources: set[str] = set()
+    stack_profile_sources_by_domain: dict[str, set[str]] = {}
     root_copy_sources: dict[str, str] = {}
     skipped: list[dict[str, str]] = []
     warnings: list[str] = []
@@ -334,6 +445,22 @@ def classify_manifest(
             continue
 
         if has_glob(path):
+            if is_stack_profile_candidate(path):
+                expanded_paths = expand_stack_profile_glob(repo_root, path)
+                if not expanded_paths:
+                    add_skip(skipped, path, "stack-profile wildcard matched no concrete source files", entry)
+                    warnings.append(f"Stack-profile wildcard matched no concrete source files: {path}.")
+                    continue
+                for expanded_path in expanded_paths:
+                    add_stack_profile_source(
+                        repo_root,
+                        stack_profile_sources_by_domain,
+                        skipped,
+                        warnings,
+                        expanded_path,
+                        entry,
+                    )
+                continue
             add_skip(skipped, path, "wildcard manifest entries are not copied into export packages", entry)
             continue
 
@@ -343,6 +470,17 @@ def classify_manifest(
 
         if is_template(path):
             template_sources.add(path)
+            continue
+
+        if is_stack_profile_candidate(path):
+            add_stack_profile_source(
+                repo_root,
+                stack_profile_sources_by_domain,
+                skipped,
+                warnings,
+                path,
+                entry,
+            )
             continue
 
         if path in ROOT_COPY_TARGETS:
@@ -380,6 +518,10 @@ def classify_manifest(
     return (
         sorted(skill_sources),
         sorted(template_sources),
+        {
+            domain: sort_normalized_paths(sources)
+            for domain, sources in sorted(stack_profile_sources_by_domain.items())
+        },
         dict(sorted(root_copy_sources.items())),
         sorted(skipped, key=lambda item: item["path"]),
         sorted(warnings),
@@ -406,6 +548,50 @@ def append_section(buffer: list[str], title: str, source: str, content: str) -> 
         buffer.append("\n")
 
 
+def markdown_source(path: str) -> bool:
+    return path.lower().endswith((".md", ".markdown"))
+
+
+def code_fence_language(path: str) -> str:
+    lowered = path.lower()
+    if lowered.endswith(".toml"):
+        return "toml"
+    if lowered.endswith(".json"):
+        return "json"
+    if lowered.endswith((".yaml", ".yml")):
+        return "yaml"
+    if lowered.endswith(".txt"):
+        return "text"
+    if ".template" in lowered:
+        return "text"
+    return "text"
+
+
+def code_fence_for(content: str) -> str:
+    longest = 0
+    for match in re.finditer(r"`+", content):
+        longest = max(longest, len(match.group(0)))
+    return "`" * max(3, longest + 1)
+
+
+def append_stack_profile_section(buffer: list[str], title: str, source: str, content: str) -> None:
+    if markdown_source(source):
+        append_section(buffer, title, source, content)
+        return
+
+    if buffer:
+        buffer.append("\n---\n\n")
+    buffer.append(f"## {title}\n\n")
+    buffer.append(f"<!-- source: {source} -->\n\n")
+    fence = code_fence_for(content)
+    language = code_fence_language(source)
+    buffer.append(f"{fence}{language}\n")
+    buffer.append(content)
+    if not content.endswith("\n"):
+        buffer.append("\n")
+    buffer.append(f"{fence}\n")
+
+
 def build_skills_md(repo_root: Path, skill_sources: list[str], warnings: list[str]) -> str:
     sections: list[str] = ["# skills.md\n\n"]
     for relative_path in skill_sources:
@@ -428,6 +614,31 @@ def build_templates_md(repo_root: Path, template_sources: list[str], warnings: l
             continue
         append_section(sections, template_title(relative_path), relative_path, content)
     return "".join(sections)
+
+
+def build_stack_profile_markdown(
+    repo_root: Path,
+    stack_profile_sources_by_domain: dict[str, list[str]],
+    warnings: list[str],
+) -> dict[str, str]:
+    outputs: dict[str, str] = {}
+    for domain, sources in stack_profile_sources_by_domain.items():
+        target_name = stack_profile_target_name(domain)
+        sections: list[str] = [f"# {target_name}\n\n"]
+        for relative_path in sources:
+            try:
+                content = read_source_text(repo_root, relative_path)
+            except (OSError, UnicodeError) as exc:
+                warnings.append(f"Skipped stack-profile source {relative_path}: {exc}.")
+                continue
+            append_stack_profile_section(
+                sections,
+                stack_profile_title(relative_path),
+                relative_path,
+                content,
+            )
+        outputs[target_name] = "".join(sections)
+    return dict(sorted(outputs.items()))
 
 
 def now_utc() -> dt.datetime:
@@ -521,6 +732,7 @@ def print_dry_run(
     git_info: GitInfo,
     skill_sources: list[str],
     template_sources: list[str],
+    stack_profile_sources_by_domain: dict[str, list[str]],
     root_copy_sources: dict[str, str],
     skipped: list[dict[str, str]],
     warnings: list[str],
@@ -537,6 +749,16 @@ def print_dry_run(
     print(f"Templates to consolidate ({len(template_sources)}):")
     for path in template_sources:
         print(f"  - {path}")
+    print()
+    stack_profile_source_count = sum(len(sources) for sources in stack_profile_sources_by_domain.values())
+    print(
+        "Stack-profile sources to consolidate "
+        f"({stack_profile_source_count}) into {len(stack_profile_sources_by_domain)} domain file(s):"
+    )
+    for domain, sources in stack_profile_sources_by_domain.items():
+        print(f"  - {stack_profile_target_name(domain)}")
+        for path in sources:
+            print(f"    - {path}")
     print()
     print(f"Root files to copy ({len(root_copy_sources)}):")
     for source, target in root_copy_sources.items():
@@ -561,7 +783,14 @@ def create_export(args: argparse.Namespace) -> Path:
     git_info = collect_git_info(repo_root)
     export_root = output_root / export_dir_name(version, generated_at, git_info)
 
-    skill_sources, template_sources, root_copy_sources, skipped, warnings = classify_manifest(
+    (
+        skill_sources,
+        template_sources,
+        stack_profile_sources_by_domain,
+        root_copy_sources,
+        skipped,
+        warnings,
+    ) = classify_manifest(
         repo_root, manifest
     )
 
@@ -571,6 +800,7 @@ def create_export(args: argparse.Namespace) -> Path:
             git_info,
             skill_sources,
             template_sources,
+            stack_profile_sources_by_domain,
             root_copy_sources,
             skipped,
             warnings,
@@ -584,15 +814,27 @@ def create_export(args: argparse.Namespace) -> Path:
 
     skills_md = build_skills_md(repo_root, skill_sources, warnings)
     templates_md = build_templates_md(repo_root, template_sources, warnings)
+    stack_profile_markdown = build_stack_profile_markdown(
+        repo_root,
+        stack_profile_sources_by_domain,
+        warnings,
+    )
     write_bytes(export_root / "skills.md", skills_md)
     write_bytes(export_root / "templates.md", templates_md)
+    for target_name, content in stack_profile_markdown.items():
+        write_bytes(export_root / target_name, content)
 
     copied_root_files = copy_root_files_to_export(
         repo_root, export_root, root_copy_sources, skipped, warnings
     )
     write_bytes(export_root / "git-status.txt", git_status_text(git_info))
 
-    generated_files = GENERATED_FILES.copy()
+    generated_files = BASE_GENERATED_FILES.copy() + sorted(stack_profile_markdown)
+    consolidated_stack_profile_sources = {
+        stack_profile_target_name(domain): sources
+        for domain, sources in stack_profile_sources_by_domain.items()
+        if stack_profile_target_name(domain) in stack_profile_markdown
+    }
     export_manifest = {
         "export_schema_version": EXPORT_SCHEMA_VERSION,
         "generated_at": generated_at.isoformat().replace("+00:00", "Z"),
@@ -606,12 +848,17 @@ def create_export(args: argparse.Namespace) -> Path:
         "generated_files": generated_files,
         "consolidated_skill_sources": skill_sources,
         "consolidated_template_sources": template_sources,
+        "consolidated_stack_profile_sources": consolidated_stack_profile_sources,
         "root_file_sources": sorted(copied_root_files, key=lambda item: item["target"]),
         "skipped_manifest_sources": sorted(skipped, key=lambda item: item["path"]),
         "warnings": sorted(set(warnings)),
         "counts": {
             "skills_consolidated": len(skill_sources),
             "templates_consolidated": len(template_sources),
+            "stack_profile_files_generated": len(stack_profile_markdown),
+            "stack_profile_sources_consolidated": sum(
+                len(sources) for sources in consolidated_stack_profile_sources.values()
+            ),
             "root_files_copied": len(copied_root_files),
             "files_skipped": len(skipped),
             "warnings": len(set(warnings)),
@@ -628,6 +875,8 @@ def create_export(args: argparse.Namespace) -> Path:
         "Counts: "
         f"skills={len(skill_sources)}, "
         f"templates={len(template_sources)}, "
+        f"stack_profile_files={len(stack_profile_markdown)}, "
+        f"stack_profile_sources={sum(len(sources) for sources in consolidated_stack_profile_sources.values())}, "
         f"root_files={len(copied_root_files)}, "
         f"skipped={len(skipped)}, "
         f"warnings={len(set(warnings))}"

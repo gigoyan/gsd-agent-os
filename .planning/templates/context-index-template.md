@@ -1,13 +1,16 @@
 # Context Index Template
 
 Use this template for `.planning/CONTEXT_INDEX.md`.
-This artifact is a compact routing guide for agents. It is not a full architecture document and it is not durable vault memory.
+This artifact is the primary coding-agent navigation guide for a repository. It is not a full architecture document, not durable vault memory, and not a replacement for source inspection.
+
+Keep it compact, task-routing oriented, and evidence-based. Prefer paths, symbols, canonical examples, commands, validation routes, and do-not-touch boundaries over narrative explanation.
 
 ## Purpose
 - Help Codex choose the smallest useful context for a task.
+- Tell planning, execution, verification, quick-task, mapping, and milestone orchestration skills where to start.
+- Capture how agents should work safely in this repo.
 - Reduce repeated repository discovery.
-- Tell planning, execution, verification, quick-task, and orchestration skills where to start.
-- Keep repository navigation guidance evidence-based and task-shaped.
+- Keep repository navigation guidance repo-local and evidence-based.
 
 ## Status
 - Status: `placeholder` | `current` | `stale` | `partial`
@@ -21,22 +24,29 @@ This artifact is a compact routing guide for agents. It is not a full architectu
   - Technical Specification:
   - Stack-selection/configuration package:
   - Repo inspection:
+  - Tool capability evidence:
   - Other:
 - Staleness triggers:
   - major folder restructuring
-  - new module or service boundary
-  - changed build/test/lint commands
+  - new module, service, package, or app boundary
+  - changed build/test/lint/run commands
   - changed framework/runtime/tooling
   - changed validation strategy
+  - changed architecture or dependency direction
+  - changed runtime, data, persistence, or integration behavior
   - repeated agent over-scanning in the same area
   - failed task because routing guidance was missing or wrong
 
-## Use Rule
-- Before broad repo scanning, read this file and choose the narrowest relevant route.
-- Treat this file as routing guidance, not source-of-truth code evidence.
-- Verify important claims against actual files before changing behavior.
-- If this file conflicts with repo evidence, repo evidence wins and this file should be refreshed.
-- Do not use this file to bypass the active milestone, phase, specification, or verification criteria.
+## Agent Editing Contract
+- Start from the matching task-routing row before broad search.
+- Inspect the `Start here` paths before `Then inspect` paths.
+- Copy canonical examples before inventing new syntax, naming, error-handling, validation, or test patterns.
+- Verify important routing claims against source files before changing behavior.
+- Prefer targeted validation from the matching row or module card before broader checks.
+- Avoid generated, vendor, cache, build-output, unrelated, and fragile areas unless the task explicitly requires them.
+- If a route is missing, stale, or contradicted by actual work, update this file when the correction is small and directly evidenced.
+- If the needed correction is broad or uncertain, record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`.
+- Do not use this file to bypass active milestone, phase, specification, acceptance, or verification criteria.
 - Do not store this file or its contents in the Obsidian vault.
 
 ## Project Navigation Summary
@@ -77,7 +87,28 @@ This artifact is a compact routing guide for agents. It is not a full architectu
 - Local validation:
 - Related tests:
 - Related configuration:
+- Canonical examples:
+- Key symbols/APIs:
 - Avoid touching unless:
+- Evidence status:
+
+## Symbol And API Map
+
+| Area | File | Symbol/API | Responsibility | Used by | Change notes | Evidence status |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  | Unknown |
+
+## Convention Cards
+
+### `<convention name>`
+- Applies to:
+- Canonical examples:
+- Required syntax:
+- Naming:
+- Error handling:
+- Validation:
+- Tests:
+- Anti-examples / avoid:
 - Evidence status:
 
 ## Validation Matrix
@@ -118,6 +149,18 @@ This artifact is a compact routing guide for agents. It is not a full architectu
 - Validation:
 - Avoid:
 
+## Change Impact Routing
+
+| Change observed | Required routing artifact action | Evidence status |
+| --- | --- | --- |
+| Module ownership/path changes | Update the matching `CONTEXT_INDEX.md` task row and module card. | Unknown |
+| Validation command changes | Update the validation matrix and update `.planning/tool-capabilities.md` if a command failed due to environment/tool availability. | Unknown |
+| Architecture or dependency direction changes | Update `.planning/CODEBASE_MAP.md`. | Unknown |
+| Runtime, data, persistence, or integration behavior changes | Update `.planning/CODEBASE_MAP.md`. | Unknown |
+| Reusable implementation pattern changes | Update the matching `CONTEXT_INDEX.md` convention card and record a `gsd-session-save` candidate in `.planning/STATE.md` when the pattern has durable reuse value. | Unknown |
+| Durable decision or debugging insight emerges | Record a `gsd-session-save` candidate in `.planning/STATE.md`; do not write vault memory from planning, execution, verification, quick-task, or mapping unless the session-save skill is explicitly invoked. | Unknown |
+| Route is missing, stale, or misleading | Update `CONTEXT_INDEX.md` when local and evidence-supported, otherwise record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`. | Unknown |
+
 ## Do-Not-Scan Boundaries
 - Do not inspect generated files unless the task concerns generated output or build artifacts.
 - Do not inspect vendor, dependency, cache, or build-output folders unless the task explicitly concerns those areas.
@@ -139,4 +182,4 @@ This artifact is a compact routing guide for agents. It is not a full architectu
 - Last structural change considered:
 - Last command-surface change considered:
 - Known stale sections:
-- Recommended refresh trigger:
+- Recommended unified mapping trigger:

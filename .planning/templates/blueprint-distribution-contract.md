@@ -1,11 +1,14 @@
 # Blueprint Distribution Contract
 
-This contract defines how the reusable GSD blueprint is installed, synchronized, and audited across project repositories.
+This contract defines how the reusable GSD blueprint is audited, installed, and synchronized across project repositories.
 
 ## Core Rule
 
 Reusable GSD workflow assets may be updated from the blueprint.
 Project runtime artifacts must be preserved.
+`$gsd-sync-blueprint` is the only Blueprint synchronization workflow. It owns `audit-only`, `install`, and `update` modes.
+Every install or update starts with an audit plan and stops for explicit approval before any mutation.
+There is no separate blueprint drift audit skill.
 
 ## Ownership Classes
 
@@ -50,6 +53,8 @@ Marker format:
 ## Sync Safety Rules
 
 - Never overwrite project runtime artifacts during blueprint sync.
+- Compare real content for Blueprint-owned files; file presence alone is not enough.
+- Compare only marked Blueprint-managed block content for managed and bootstrap-then-managed-block files.
 - `PROJECT.md` and `.planning/CODEBASE_MAP.md` may receive reusable guidance updates only through `bootstrap_then_managed_block`; their project-owned content must be preserved exactly.
 - Existing `.planning/STATE.md` is active runtime state. Blueprint sync may create it only when missing and must never update it when it exists.
 - Target project `README.md` is project-owned. Blueprint sync must not create, overwrite, replace, or managed-block-update target `README.md`.
@@ -58,6 +63,9 @@ Marker format:
 - Never overwrite files with uncommitted project changes without surfacing a diff and asking for approval.
 - Never update `.codex` project-local outputs through blueprint sync.
 - Never copy milestone, phase, verification, roadmap history, or state history from the blueprint into a project repository.
+- Detect files previously installed by Blueprint sync but removed from the current manifest by comparing target lock entries with the current source manifest.
+- Do not delete anything unless it is a proven Blueprint-installed delete candidate, local modification can be safely ruled out, and the user explicitly approves deletion.
+- Stop for explicit approval before file creation, replacement, managed-block updates, bootstrap guidance updates, marker insertion, legacy `AGENTS.md` migration, deletion, lock updates, or verification report writes.
 - Do not treat the Obsidian vault as the blueprint distribution channel.
 - If ownership is unknown, preserve the file and report it as unresolved.
 
@@ -79,6 +87,8 @@ Each project repository owns:
 
 The manifest defines what should be installed or updated.
 The lock records what was installed.
+Lock entries for concrete installed files should include `path`, `owner`, `sync_strategy`, installed/source content hash when available, install/update action, and installed version/commit or timestamp when available.
+The lock must support future checks for whether a file was installed by Blueprint sync, what hash was installed, whether the target is now locally modified, and whether the file was removed from the current manifest.
 
 ## Managed Block Rules
 
@@ -107,13 +117,24 @@ For bootstrap-then-managed-block files:
 - Do not compare project-owned content as drift and do not use project-owned differences as permission to overwrite the file.
 - `.planning/STATE.md` must not use managed blocks; it remains bootstrap-if-missing active runtime state.
 
-## Drift Rules
+## Audit And Drift Rules
 
-Drift is allowed in project-owned files.
-Drift in blueprint-owned files should be reported.
-Drift in managed blocks should be reported by block ID.
-Drift in bootstrap-then-managed-block files should be reported only for the `GSD-BLUEPRINT` block when markers exist.
-Missing markers in bootstrap-then-managed-block files should be reported as a managed-block insertion requirement, not as permission to overwrite the whole file.
+- `audit-only` reports drift and sync candidates but performs no writes.
+- Content drift is allowed in project-owned files and must not be treated as Blueprint sync drift.
+- Drift in `blueprint_replace` files is detected by comparing full source and target content.
+- Drift in managed blocks is detected by comparing only the marked block content by block ID.
+- Drift in bootstrap-then-managed-block files is reported only for the `GSD-BLUEPRINT` block when markers exist.
+- Missing markers in bootstrap-then-managed-block files must be reported as a marker insertion requirement, not as permission to overwrite the whole file.
+- Generated project-local files are ignored, not compared.
+
+## Removed-From-Manifest Rules
+
+- Compare the target `.gsd/blueprint.lock.json` installed file list with the current source manifest file list.
+- Report every lock entry absent from the current manifest under removed-from-manifest candidates.
+- Classify each candidate as `delete candidate`, `preserve because project-owned/runtime`, `conflict because locally modified`, `ignore because generated_project_local`, or `unknown ownership`.
+- Delete only concrete files previously installed by Blueprint sync, not protected by project/runtime/generated ownership, unchanged from the installed hash when hash evidence exists, and explicitly approved by the user.
+- If local modification cannot be determined, preserve and report a manual-review conflict.
+- Never delete managed-block host files, bootstrap/project surfaces, runtime/history files, generated project-local files, wildcard entries, or files not recorded in the lock.
 
 ## Verification
 
@@ -121,10 +142,20 @@ A sync or audit must report:
 
 - blueprint source version or commit
 - project target path
+- mode: `audit-only`, `install`, or `update`
+- content comparisons performed
+- managed block comparisons performed
+- bootstrap block comparisons performed
+- removed-from-manifest files checked
 - files replaced
 - files created
+- files deleted
+- deletions applied or preserved
 - files preserved
 - managed blocks updated
+- bootstrap guidance blocks updated
 - conflicts
 - skipped files
+- approval obtained before mutations
+- lock updated only after approved sync
 - verification checks run

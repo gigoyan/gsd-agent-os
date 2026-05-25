@@ -135,7 +135,7 @@ Capture the inputs required for project-local configuration generation once stac
 - Secrets and environment variable categories:
 - Local development expectations:
 - CI or automation expectations:
-- Default delegated child-agent model: `gpt-5.4`
+- Default delegated child-agent model: latest available supported child-agent model in the current runtime unless the current project explicitly overrides it
 - Default delegated child-agent reasoning effort:
 - Required agent roles or workflow specializations:
 - Generated `AGENTS.md` instruction layers or fragments:
@@ -155,7 +155,7 @@ Capture the inputs required for project-local configuration generation once stac
 ## Context Index Impact
 - Does selected stack change expected structure, commands, validation strategy, generated project-local outputs, or runtime surfaces:
 - Context-index action: `none` | `create` | `refresh`
-- Recommended `$gsd-refresh-context-index` scope:
+- Recommended `$gsd-map-codebase` unified mapping scope:
 - Notes:
 
 ## Project-Local `.codex` Generation Checklist
@@ -164,7 +164,7 @@ Use this only after the stack domains and configuration-package inputs above are
 - Confirm generation happens inside the current project's local runtime copy, not inside a reusable source package.
 - Confirm the selected stack, stack-aware Technical Specification, runtime environments, and review constraints are current enough to generate project-local `.codex/config.toml` and `.codex/agents/*.toml`.
 - Confirm the selected curated profile manifests and template assets were the sources for generated project-local outputs.
-- When the current project uses delegated child agents, explicitly set the child model in the generated TOML configuration to `gpt-5.4` unless the current project intentionally overrides it.
+- When delegated child agents are used, rely on the runtime default latest available supported child-agent model unless the current project explicitly selects a concrete child model override. Record explicit project-level overrides in generated project-local configuration.
 - Generate only the project-local files the current project actually needs; do not create placeholder roles or unsupported config fields.
 - Keep generated role prompts and permissions aligned with bounded-child orchestration and conservative reviewer defaults unless the current project explicitly overrides them.
 - If schema details are needed, verify them narrowly from official Codex or OpenAI guidance at generation time.

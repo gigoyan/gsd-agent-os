@@ -1,6 +1,6 @@
 ---
 name: gsd-export-blueprint-package
-description: export the reusable gsd blueprint into a versioned root-only package by consolidating skills and templates, copying root agents and project files, and marking git clean or dirty state. use when the user needs a file-count-friendly chatgpt project package, a portable blueprint export, export audit metadata, or a compact upload bundle for reusable gsd workflow assets.
+description: export the reusable gsd blueprint into a versioned root-only package by consolidating skills, templates, and stack profiles, copying root agents and project files, and marking git clean or dirty state. use when the user needs a file-count-friendly chatgpt project package, a portable blueprint export, export audit metadata, or a compact upload bundle for reusable gsd workflow assets.
 ---
 
 # GSD Export Blueprint Package
@@ -18,6 +18,7 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
 
 - Reduce ChatGPT Project file count by consolidating GSD skill instructions into `skills.md`.
 - Reduce template file count by consolidating `.planning/templates/**` into `templates.md`.
+- Reduce stack-profile file count by consolidating `.agents/stack-profiles/**` into root-level `stack-profiles-<domain>.md` files.
 - Copy repository root `AGENTS.md` to export-root `agents.md`.
 - Copy repository root `PROJECT.md` to export-root `project.md`.
 - Record Git branch, commit, clean or dirty state, source lists, skip reasons, warnings, and checksums.
@@ -25,7 +26,7 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
 
 ## Non-Trigger Conditions
 
-- User wants to audit, install, or update a blueprint in a target repository. Use `$gsd-update-blueprint <TARGET_REPOSITORY_PATH>`.
+- User wants to audit, install, or update a blueprint in a target repository. Use `$gsd-sync-blueprint audit-only|install|update <TARGET_REPOSITORY_PATH>`.
 - User wants to execute project work, plan a milestone, update vault memory, or generate project-local `.codex` outputs.
 
 ## Input Contract
@@ -43,9 +44,10 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
   - `git-status.txt`
   - `skills.md`
   - `templates.md`
+  - `stack-profiles-<domain>.md` for each stack-profile domain with manifest-listed content
   - `agents.md`
   - `project.md`
-- Export manifest with generated time, source repository path, manifest path, blueprint version, Git identity, dirty flag, generated files, consolidated sources, root copied sources, skipped sources with reasons, warnings, and counts.
+- Export manifest with generated time, source repository path, manifest path, blueprint version, Git identity, dirty flag, generated files, consolidated skill sources, consolidated template sources, consolidated stack-profile sources, root copied sources, skipped sources with reasons, warnings, and counts.
 - Console summary of the package path and classification counts.
 
 ## Workflow
@@ -86,12 +88,21 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
 - Use the template-relative path as each section title.
 - Preserve template content exactly inside its section.
 - Do not copy original template files separately.
+- Consolidate manifest-listed `.agents/stack-profiles/<domain>/<profile>/**` source files into root-level domain files named `stack-profiles-<domain>.md`.
+- Create only stack-profile domain files that have concrete, readable manifest-listed source content.
+- Expand wildcard stack-profile manifest entries deterministically from the filesystem under `.agents/stack-profiles/**`.
+- Use `stack-profiles-other.md` for stack-profile domains outside the known set: `backend`, `frontend`, `data`, `auth`, `integration`, `hosting`, and `observability`.
+- Sort stack-profile sections by normalized source path.
+- Use the stack-profile-relative path, such as `backend/nodejs-service/profile.toml`, as each section title.
+- Preserve Markdown stack-profile sources directly; wrap non-Markdown text sources such as TOML, JSON, YAML, text, and template files in fenced code blocks for readable Markdown output.
+- Do not copy original stack-profile files separately.
 
 ## Copy Rules
 
 - For each manifest entry:
   - consolidate `.agents/skills/**/SKILL.md` into `skills.md`
   - consolidate `.planning/templates/**` into `templates.md`
+  - consolidate `.agents/stack-profiles/**` into root-level `stack-profiles-<domain>.md` files
   - copy `AGENTS.md` to root-level `agents.md`
   - copy `PROJECT.md` to root-level `project.md`
   - skip every other manifest source file after recording a reason
@@ -100,6 +111,7 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
 - Never copy a broad `.planning/` directory.
 - Never copy `.planning/STATE.md`, `.planning/ROADMAP.md`, `.planning/CONTEXT_INDEX.md`, `.planning/milestones/**`, `.planning/phases/**`, or `.planning/verification/**`.
 - Never copy `.planning/templates/**` separately; these belong only in `templates.md`.
+- Never copy `.agents/stack-profiles/**` separately; these belong only in `stack-profiles-<domain>.md` files.
 - Never copy files outside the repository root.
 - Never follow symlinks outside the repository root.
 
@@ -121,10 +133,14 @@ Export the reusable GSD blueprint into a compact, versioned package for ChatGPT 
 - Temporary output export created the expected files.
 - `skills.md` contains consolidated GSD skill sections.
 - `templates.md` contains consolidated `.planning/templates/**` sections.
+- `stack-profiles-<domain>.md` files contain manifest-listed stack-profile source sections for each domain with content.
 - `agents.md` exists at the export root.
 - `project.md` exists at the export root.
 - No export subdirectories exist.
 - `.planning/templates/**` files are not duplicated outside `templates.md`.
+- `.agents/stack-profiles/**` files are not duplicated outside domain-level `stack-profiles-<domain>.md` files.
+- `export-manifest.json` includes `consolidated_stack_profile_sources`, stack-profile generated files, and stack-profile counts.
 - Dirty Git state is represented in the package directory and `export-manifest.json` when the repository is dirty.
 - `checksums.sha256` includes hashes only for final root-level export files that can be checksummed without self-reference.
+- `checksums.sha256` includes every generated `stack-profiles-<domain>.md` file.
 - Temporary validation output is removed when repository convention prefers no generated artifacts left behind.

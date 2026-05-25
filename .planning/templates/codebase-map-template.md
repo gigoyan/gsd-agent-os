@@ -6,9 +6,13 @@ This template is project-owned content only; it does not include blueprint sync 
 Keep observable repo facts, forward-looking interpretations, and unresolved gaps visibly separated as `Confirmed`, `Suggested`, and `Unknown`.
 
 ## Mapping Mode
-- Mapping mode: `lightweight` or `serious_deep_mapping`
+- Mapping state: `no_meaningful_project_structure` | `structure_exists_but_no_mapping` | `partial_mapping_exists` | `mature_mapping_may_be_stale` | `serious_full_mapping_needed` | `transformation_migration_refactor_mapping_requested`
 - Confirmed user goal or repo-backed trigger:
-- Why this mapping depth is appropriate:
+- Mapping depth chosen by the unified mapping orchestrator:
+- Completed mapping slices:
+- Remaining mapping gaps:
+- Evidence status:
+- Source or rationale:
 
 ## Repository Shape And Operational Surfaces
 - Repository shape: mono-repo, multi-package, multi-service, modular, hybrid, or other observable structure
@@ -53,6 +57,21 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Evidence status:
 - Source or rationale:
 
+## Agent Working Model
+- Primary edit surfaces:
+- Primary read-only/reference surfaces:
+- Main extension points:
+- Canonical implementation examples:
+- Reusable internal APIs/utilities:
+- Dependency boundaries agents must respect:
+- Common wrong edit locations:
+- Fragile areas:
+- Generated, vendor, cache, or build-output areas:
+- Validation paths agents should prefer:
+- Mapping artifacts that must be updated when this area changes:
+- Evidence status:
+- Source or rationale:
+
 ## Runtime And Behavior Flows
 - Startup or bootstrap flow:
 - Request or response flow:
@@ -94,7 +113,7 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - If this repository is the reusable GSD blueprint itself, state that GSD files are the primary product.
 
 ## Suggested Interpretations Or Follow-On Mapping Slices
-- Suggested future-facing interpretations, likely mapping milestone framing, or recommended follow-up mapping slices:
+- Suggested future-facing interpretations or recommended follow-up mapping slices:
 - Source or rationale:
 
 ## Unknowns Requiring Confirmation
@@ -102,19 +121,13 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Unknown blockers or hidden dependencies:
 - Next choice-shaped questions to present as UI options:
 
-## Serious-Mapping Handoff
-- Created mapping milestone:
-- Created first bounded phase:
-- Recommended next GSD action:
-- Suggested milestone shape:
-- Exact next-session prompt:
-- Why lightweight mapping is insufficient, if applicable:
-- Why orchestration is the right next step:
-
 ## Context Index Handoff
 - Context index status:
-- Recommended `$gsd-refresh-context-index` scope:
+- Recommended `$gsd-map-codebase` unified mapping scope:
 - Highest-value routing rows to create:
 - Highest-value module cards to create:
+- Highest-value symbol/API rows to create:
+- Highest-value convention cards to create:
 - Validation paths to capture:
 - Do-not-scan boundaries to capture:
+- Exact stale or missing routes to correct:
