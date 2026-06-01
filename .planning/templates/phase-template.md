@@ -37,10 +37,19 @@
 - Validation path:
 - Refresh needed before execution: `yes` | `no` | `unknown`
 
+## Performance And Reuse Check
+- Performance-sensitive path: `yes | no | unknown`; notes:
+- Existing reusable surfaces to inspect:
+- Canonical examples to follow:
+- Extension point preferred:
+- Duplication risk:
+- New abstraction allowed: `yes | no | only-if-justified`
+- Minimum-new-code constraint:
+
 ## Source Traceability
 - Registry consulted: `yes` | `no` | `not-present`
 - Registry path: `.planning/source-materials/SOURCE_MATERIALS.md`
-- Consumption rule: cite compact `source_id`, claim IDs, anchors, and evidence statuses; do not duplicate registry rows or copy raw source bodies.
+- Consumption rule: follow `.planning/templates/source-materials-contract.md`; cite compact `source_id`, claim IDs, anchors, and evidence statuses; do not duplicate registry rows or copy raw source bodies.
 
 | Applies To | source_id | claim_id | anchor | evidence_status | Execution use | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -57,6 +66,7 @@
 - When the phase relies on registered source material, preserve the source claim evidence status; do not turn a `Suggested` claim into a `Confirmed` requirement during execution.
 
 ## Test-First Validation
+- Contract: `.planning/templates/validation-evidence-contract.md`
 - Primary test level:
 - Minimum sufficient pre-implementation validation set:
 - First decisive failing test or check:
@@ -72,9 +82,11 @@
 - DC4: Phase-specific constraints and implementation notes were respected, or any necessary deviation was escalated for replanning.
 - DC5: Context routing was followed or a justified exception was recorded when the context index was missing, stale, or insufficient.
 - DC6: Source traceability was followed when present, with `Suggested` and `Unknown` claims preserved as non-authoritative unless later confirmed.
+- DC7: Performance/reuse evidence is recorded and supports the implementation decision.
 
 ## Post-Verification Routing
 - In standalone verification, if this phase passes and the milestone is incomplete, the next action should be `$gsd-plan-milestone` for the next bounded phase in the same milestone.
+- Any verification-and-next-phase-planning child must follow `.planning/templates/delegated-agent-contract.md`.
 - In `$gsd-run-milestone`, the root orchestrator may assign a verification-and-next-phase-planning child that verifies this phase and, after a pass with an incomplete milestone, creates the next bounded phase in the same delegated step.
 - The `$gsd-run-milestone` composite child must not create a next phase on `fail`, `partial`, blocked verification, or completed milestone, and must not execute the newly created phase.
 - Keep the phase repo-local unless the next phase explicitly needs a memory lookup or later session-save follow-up.

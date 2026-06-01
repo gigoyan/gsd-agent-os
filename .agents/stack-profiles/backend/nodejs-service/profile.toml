@@ -35,6 +35,7 @@ compatibility_notes = [
 
 recommended_architecture_baseline = "Start with a feature-first modular monolith. Keep transport adapters thin, business logic out of route handlers, and I/O boundaries explicit."
 recommended_project_structure = "Default to a single service package with src/app, src/config, src/modules, src/shared, and test/. Move to npm workspaces only when there is a real need for multiple packages."
+performance_reuse_baseline = "Inspect existing services, adapters, schemas, tests, and utilities before adding new code. Justify new abstractions by current duplication, boundary need, a known near-term phase, or an existing extension point. Request-path, database, network, file, and queue changes must include performance risk checks."
 testing_baseline = [
   "Use node:test for unit and integration seams when the repo does not already standardize on another runner",
   "Keep fast unit tests close to modules and broader integration tests under test/integration",

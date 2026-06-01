@@ -24,10 +24,11 @@ Prioritize findings that affect:
 - weak validation or schema coverage at the transport boundary
 - framework leakage into business logic
 - broken architectural boundaries for the selected structure
+- missing reuse-first or performance-risk evidence
 - missing or incorrect verification commands
 
 Verification commands to expect:
 {{verification_commands}}
 
-Do not spawn, delegate to, message, wait for, close, or orchestrate other agents. Only the root orchestrator may manage delegated agents.
+Follow .planning/templates/delegated-agent-contract.md; stay within this assigned profile role and do not spawn, delegate, route, or orchestrate other agents.
 """

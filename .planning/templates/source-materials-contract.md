@@ -101,3 +101,12 @@ The registration skill may create only lightweight, source-local claim index ent
 - An `Unknown` source material or claim can identify a gap, risk, or follow-up question but must not be treated as implementation authority.
 - When a downstream artifact changes or rejects a source-backed claim, update the registry consumption log or record a follow-up to refresh it.
 - Project-context export may include compact source indexes and claims, but must avoid copying full sensitive or oversized materials into export packages.
+
+## Runtime Consumption Contract
+- Planning, execution, verification, orchestration, mapping, intake, and export workflows must consume registered source material through `.planning/source-materials/SOURCE_MATERIALS.md` first.
+- Runtime artifacts should cite compact references: `source_id`, `claim_id`, `source_id#anchor`, `evidence_status`, and the downstream use or status.
+- Raw source-material folders may be inspected only when the registry, milestone, phase, or verification artifact cites a narrow file and anchor needed to resolve ambiguity.
+- Do not broad-scan `.planning/source-materials/materials/**`, `.planning/source-materials/extracts/**`, or other raw source-material folders to discover requirements during execution or verification.
+- Preserve the registry evidence status when carrying a claim downstream. A `Suggested` claim remains non-authoritative until explicit confirmation or stronger evidence exists; an `Unknown` claim may record a gap or risk but must not authorize implementation.
+- Runtime artifacts must not duplicate registry rows, paste full source bodies, or become secondary source-material registries.
+- When source-backed claims are changed, rejected, consumed, or found stale, update the registry consumption log when in scope; otherwise record a source-registry follow-up.

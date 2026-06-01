@@ -1,6 +1,7 @@
 # Verification Template
 
 ## Checks Run
+- Contract: `.planning/templates/validation-evidence-contract.md`
 - Execution targeted validation reviewed:
 - Execution validation-set sufficiency:
 - Execution targeted result:
@@ -26,6 +27,7 @@
 
 ## Evidence
 - Spec-traceability evidence:
+- Source-traceability evidence:
 - Context-routing evidence:
 - Blueprint-sync safety evidence, if applicable:
   - project-owned files preserved:

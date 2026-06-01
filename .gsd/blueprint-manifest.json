@@ -436,6 +436,13 @@
       "description": "Context index template."
     },
     {
+      "path": ".planning/templates/delegated-agent-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Delegated agent contract for root-owned orchestration and bounded child-agent behavior."
+    },
+    {
       "path": ".planning/templates/document-first-intake-reference.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
@@ -462,6 +469,13 @@
       "sync_strategy": "replace",
       "required": true,
       "description": "Phase template."
+    },
+    {
+      "path": ".planning/templates/performance-first-reuse-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Performance-first reuse contract for planning, execution, quick-task, and verification evidence."
     },
     {
       "path": ".planning/templates/project-idea-document-template.md",
@@ -588,6 +602,13 @@
       "sync_strategy": "replace",
       "required": true,
       "description": "Technical Specification template."
+    },
+    {
+      "path": ".planning/templates/validation-evidence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Validation evidence contract for minimum sufficient validation, failing-first checks, and verification disposition."
     },
     {
       "path": ".planning/templates/vault-operating-spec.md",

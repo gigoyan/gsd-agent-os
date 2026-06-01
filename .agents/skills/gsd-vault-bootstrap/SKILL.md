@@ -29,7 +29,7 @@ Before creating, repairing, or verifying anything:
    - `Vault scaffold status`
 
 ## Source Of Truth
-- Use [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) as the exact structure and boundary contract.
+- Apply [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) as the exact structure and boundary contract, including repository-vs-vault responsibilities, project namespace resolution, sibling-namespace limits, and the prohibition on shared-root durable memory writes.
 - Use [`.planning/templates/vault-scaffold/`](../../../.planning/templates/vault-scaffold/) as the source for fixed home and atlas files.
 
 ## Primary Purpose

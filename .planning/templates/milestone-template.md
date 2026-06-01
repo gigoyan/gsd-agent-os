@@ -63,11 +63,18 @@
 - Make each criterion specific enough that verification can clearly pass or fail it.
 
 ## Validation Strategy
+- Contract: `.planning/templates/validation-evidence-contract.md`
 - Behavior slices:
 - Test level(s) and first tests or checks:
 - Exception note or fallback:
 - Memory-aware handoff note:
 - Link each slice to the acceptance criteria it proves.
+
+## Performance And Reuse Strategy
+- Reuse-first surfaces:
+- Performance-sensitive slices:
+- Hot-path / I/O / API / database / queue risks:
+- New abstraction policy:
 
 ## Dependencies
 - External:

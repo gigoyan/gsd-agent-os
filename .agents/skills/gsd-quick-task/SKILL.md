@@ -11,11 +11,12 @@ This skill is for tasks that do not justify a milestone but still need a visible
 ## Workflow
 1. Read [`.planning/STATE.md`](../../../.planning/STATE.md) and understand the current active work.
 2. Confirm the requested task is small, low-risk, and unlikely to spill across multiple phases.
-3. Read `.planning/CONTEXT_INDEX.md` when available and use the relevant routing row or module card to identify the smallest start-here path and validation path. If the task is so explicit that the file is already known, record that no broader routing was needed.
+3. Read `.planning/CONTEXT_INDEX.md` when available and follow its `Agent Context Routing Contract` to choose the smallest relevant task row or module card, start-here path, canonical example, and validation path. If the task is so explicit that the file is already known, record that no broader routing was needed.
 4. Use [`.planning/templates/quick-task-template.md`](../../../.planning/templates/quick-task-template.md) as a lightweight planning aid if the task needs a short written record.
-5. Define the smallest meaningful behavior slice and the targeted test or check to update first. If the task depends on prior durable context, request a narrow `gsd-memory-lookup` context pack first. If test-first is impractical, record the reason and nearest safeguard before implementation.
-6. Update the targeted test or check first when practical, run proportional validation, implement the minimum change needed, and log the outcome in [`.planning/STATE.md`](../../../.planning/STATE.md). If the task produces durable insight, record the later `gsd-session-save` follow-up as `candidate` or `none` rather than writing durable memory here.
-7. If the task expands, stop and redirect to `$gsd-plan-milestone`.
+5. For code-changing quick tasks, apply [`.planning/templates/performance-first-reuse-contract.md`](../../../.planning/templates/performance-first-reuse-contract.md) lightly: inspect obvious reusable surfaces first, identify whether a performance-sensitive path is touched, and avoid new abstraction unless the task is redirected to milestone planning.
+6. Apply [`.planning/templates/validation-evidence-contract.md`](../../../.planning/templates/validation-evidence-contract.md) proportionally. Define the smallest meaningful behavior slice and the targeted test or check to update first. If the task depends on prior durable context, request a narrow `gsd-memory-lookup` context pack first. If test-first is impractical, record the reason and nearest safeguard before implementation.
+7. Update the targeted test or check first when practical, run proportional validation, implement the minimum change needed, and log the outcome in [`.planning/STATE.md`](../../../.planning/STATE.md). If the task produces durable insight, record the later `gsd-session-save` follow-up as `candidate` or `none` rather than writing durable memory here.
+8. If the task expands, stop and redirect to `$gsd-plan-milestone`.
 
 ## Quick Path Criteria
 - Fits in one focused implementation pass.
@@ -34,6 +35,7 @@ This skill is for tasks that do not justify a milestone but still need a visible
 - Small task implemented and validated.
 - Test-first validation step recorded, or an explicit exception with the nearest safeguard.
 - Context-routing result recorded: routing used, explicit file known, or refresh follow-up candidate.
+- Compact performance/reuse result recorded for code-changing tasks: reuse decision, performance-sensitive path touched, and validation run.
 - [`.planning/STATE.md`](../../../.planning/STATE.md) updated with:
   - task summary
   - checks run
@@ -46,6 +48,7 @@ This skill is for tasks that do not justify a milestone but still need a visible
 - If the task competes with active milestone work, note that interaction in [`.planning/STATE.md`](../../../.planning/STATE.md).
 - Use memory lookup only when needed to resolve prior durable context; otherwise stay repo-local.
 - Quick tasks should still use the context index when the relevant file or validation path is not already explicit.
+- Redirect to `$gsd-plan-milestone` when the task needs a new abstraction or has unclear hot-path, request-path, database/API/I/O/network/file/queue risk.
 - Do not let the quick path become broad repo discovery. If routing is unclear or the task expands, redirect to `$gsd-plan-milestone` or `$gsd-map-codebase` as appropriate.
 - Record whether a context-index refresh follow-up is warranted or `none`.
 - Do not write durable memory from this skill.

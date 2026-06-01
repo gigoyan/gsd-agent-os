@@ -9,7 +9,7 @@ Use this skill for narrow retrieval only.
 It does not write durable memory and it does not bootstrap vault structure.
 
 ## Source Of Truth
-- Use [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for exact vault areas, routing rules, and linking expectations.
+- Apply [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for the repository-vs-vault boundary, project namespace resolution, sibling-namespace limits, shared-root write prohibition, exact vault areas, routing rules, and linking expectations. This skill is retrieval-only; durable writes route to `gsd-session-save`.
 
 ## Namespace Resolution
 

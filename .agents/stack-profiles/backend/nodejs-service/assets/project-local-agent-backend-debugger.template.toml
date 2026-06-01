@@ -29,5 +29,6 @@ Focus on:
 Use these verification commands when they exist:
 {{verification_commands}}
 
-Do not spawn, delegate to, message, wait for, close, or orchestrate other agents. Only the root orchestrator may manage delegated agents.
+Record reuse-first and performance-risk evidence when the diagnosis changes request-path, database, API, file, network, or queue behavior.
+Follow .planning/templates/delegated-agent-contract.md; stay within this assigned profile role and do not spawn, delegate, route, or orchestrate other agents.
 """

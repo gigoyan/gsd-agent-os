@@ -37,16 +37,16 @@ Keep it compact, task-routing oriented, and evidence-based. Prefer paths, symbol
   - repeated agent over-scanning in the same area
   - failed task because routing guidance was missing or wrong
 
-## Agent Editing Contract
-- Start from the matching task-routing row before broad search.
-- Inspect the `Start here` paths before `Then inspect` paths.
-- Copy canonical examples before inventing new syntax, naming, error-handling, validation, or test patterns.
+## Agent Context Routing Contract
+- Start from the matching `Task Routing Matrix` row before broad repository search.
+- Inspect the row's `Start here` paths before `Then inspect` paths.
+- Copy canonical examples before inventing syntax, naming, error-handling, validation, test, or extension patterns.
+- Prefer targeted validation from the matching task row, module card, or validation matrix before broader checks.
+- Avoid generated, vendor, dependency, cache, build-output, unrelated, and fragile areas unless the task explicitly requires them.
 - Verify important routing claims against source files before changing behavior.
-- Prefer targeted validation from the matching row or module card before broader checks.
-- Avoid generated, vendor, cache, build-output, unrelated, and fragile areas unless the task explicitly requires them.
-- If a route is missing, stale, or contradicted by actual work, update this file when the correction is small and directly evidenced.
-- If the needed correction is broad or uncertain, record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`.
-- Do not use this file to bypass active milestone, phase, specification, acceptance, or verification criteria.
+- Update this file when a routing row, module card, convention, symbol/API, canonical example, validation path, command note, or avoid boundary is small, local, and directly evidenced by the task.
+- Record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md` when the needed routing correction is broad, uncertain, cross-cutting, or based on thin evidence.
+- Do not use this file to bypass active milestone, phase, specification, acceptance, source-traceability, or verification criteria.
 - Do not store this file or its contents in the Obsidian vault.
 
 ## Project Navigation Summary
@@ -56,6 +56,8 @@ Keep it compact, task-routing oriented, and evidence-based. Prefer paths, symbol
 - Main configuration surfaces:
 - Main test surfaces:
 - Main build/lint/typecheck surfaces:
+- Main reusable surfaces and extension points:
+- Main performance-sensitive paths:
 - Main data/persistence surfaces:
 - Main external integration surfaces:
 - Main generated or vendor areas to avoid:
@@ -88,6 +90,10 @@ Keep it compact, task-routing oriented, and evidence-based. Prefer paths, symbol
 - Related tests:
 - Related configuration:
 - Canonical examples:
+- Reusable surfaces:
+- Extension points:
+- Performance-sensitive paths:
+- Hot-path risks:
 - Key symbols/APIs:
 - Avoid touching unless:
 - Evidence status:
@@ -158,8 +164,9 @@ Keep it compact, task-routing oriented, and evidence-based. Prefer paths, symbol
 | Architecture or dependency direction changes | Update `.planning/CODEBASE_MAP.md`. | Unknown |
 | Runtime, data, persistence, or integration behavior changes | Update `.planning/CODEBASE_MAP.md`. | Unknown |
 | Reusable implementation pattern changes | Update the matching `CONTEXT_INDEX.md` convention card and record a `gsd-session-save` candidate in `.planning/STATE.md` when the pattern has durable reuse value. | Unknown |
+| Reusable surface, extension point, or performance-sensitive route changes | Update the matching task row, module card, convention card, or validation matrix. | Unknown |
 | Durable decision or debugging insight emerges | Record a `gsd-session-save` candidate in `.planning/STATE.md`; do not write vault memory from planning, execution, verification, quick-task, or mapping unless the session-save skill is explicitly invoked. | Unknown |
-| Route is missing, stale, or misleading | Update `CONTEXT_INDEX.md` when local and evidence-supported, otherwise record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`. | Unknown |
+| Route is missing, stale, or misleading | Update `CONTEXT_INDEX.md` when local and evidence-supported; otherwise record a precise `$gsd-map-codebase` unified mapping refresh candidate in `.planning/STATE.md`. | Unknown |
 
 ## Do-Not-Scan Boundaries
 - Do not inspect generated files unless the task concerns generated output or build artifacts.

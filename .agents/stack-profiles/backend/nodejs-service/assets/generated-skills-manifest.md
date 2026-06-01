@@ -16,6 +16,7 @@ These are dormant generation targets, not active repo skills yet.
   - thin transport handlers
   - explicit validation boundaries
   - non-blocking request-path rules
+  - reuse-first and minimum-new-code evidence
   - selected module-system conventions
 
 ### `node-backend-testing`
@@ -33,6 +34,7 @@ These are dormant generation targets, not active repo skills yet.
   - local-only inspector guidance
   - environment-variable boundary checks
   - event-loop and sync-API review
+  - performance-sensitive path and reuse-decision evidence
 
 ## Variant-Specific Skills
 

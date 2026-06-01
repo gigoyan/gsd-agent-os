@@ -24,6 +24,7 @@
 - Active phase verification -> `$gsd-verify-phase`.
 - Full active milestone orchestration -> `$gsd-run-milestone`.
 - Small bounded task that does not need milestone ceremony -> `$gsd-quick-task`.
+- Source-material registration, organization, classification, or durable project evidence intake from repository file/directory paths -> `$gsd-register-source-materials`.
 - Blueprint install/update/audit -> `$gsd-sync-blueprint`; do not sync manually.
 - Durable memory lookup -> `$gsd-memory-lookup`.
 - Durable memory writeback -> `$gsd-session-save`.

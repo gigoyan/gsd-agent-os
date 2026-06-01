@@ -98,19 +98,7 @@ Generated project-local outputs include:
 
 ## Delegation Invariant
 
-The root orchestrator owns delegation.
-
-Delegated children own only their assigned slice.
-
-Delegated children must not spawn, delegate to, message, wait for, close, or orchestrate other agents.
-
-### Codex Translation
-
-In Codex, delegated children must not call `spawn_agent`, `send_input`, `wait_agent`, or `close_agent`.
-
-### Claude Code Translation
-
-In Claude Code, delegated subagents must not invoke other subagents, agent teams, dynamic workflows, or recursive delegation behavior.
+Generic delegated-agent behavior is governed by [delegated-agent-contract.md](delegated-agent-contract.md). Runtime adapters must preserve that contract when projecting Codex or Claude Code agent surfaces.
 
 ## Hooks Policy
 

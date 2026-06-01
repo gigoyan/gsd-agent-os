@@ -9,7 +9,7 @@ Use this skill for durable writeback only.
 It must respect the canonical `do not write` default.
 
 ## Source Of Truth
-- Use [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for exact save rules, note routing, naming rules, update-vs-create behavior, and linking requirements.
+- Apply [`.planning/templates/vault-operating-spec.md`](../../../.planning/templates/vault-operating-spec.md) for the repository-vs-vault boundary, project namespace resolution, sibling-namespace limits, shared-root write prohibition, exact save rules, note routing, naming rules, update-vs-create behavior, and linking requirements.
 - Use [`.planning/templates/vault-note-templates/`](../../../.planning/templates/vault-note-templates/) for note payload structure.
 
 ## Namespace Resolution

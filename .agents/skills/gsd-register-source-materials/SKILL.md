@@ -58,9 +58,8 @@ The skill may register external references discovered inside repository files, b
    - exploratory notes, comparisons, investigations, or unresolved findings -> `research_note`;
    - unclear material -> `unknown`.
 7. Preserve evidence semantics:
-   - Use `Confirmed` only for direct supplied repository material, direct repo evidence, external references discovered inside registered repository files, or explicit user decisions.
-   - Use `Suggested` for inferred titles, classifications, scopes, recommendations, or applicability that the user has not confirmed.
-   - Use `Unknown` for missing, conflicting, private, inaccessible, ambiguous, or stale inputs.
+   - Use exact `Confirmed`, `Suggested`, and `Unknown` meanings from [`.planning/templates/intake-routing-and-evidence-contract.md`](../../../.planning/templates/intake-routing-and-evidence-contract.md).
+   - Registration-specific examples: direct supplied repository material, direct repo evidence, external references discovered inside registered repository files, or explicit user decisions can be `Confirmed`; inferred titles, classifications, scopes, recommendations, or applicability stay `Suggested`; missing, conflicting, private, inaccessible, ambiguous, or stale inputs stay `Unknown`.
    - Never silently promote `Suggested` to `Confirmed`, and never downgrade `Confirmed` without recording the reason and affected downstream artifacts.
 8. Choose custody:
    - `registered-in-place` for stable repo paths the project should reference without copying.

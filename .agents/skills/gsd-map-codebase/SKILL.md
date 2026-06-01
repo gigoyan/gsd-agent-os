@@ -28,6 +28,7 @@ Read these before choosing the first slice:
 - [`.planning/CONTEXT_INDEX.md`](../../../.planning/CONTEXT_INDEX.md)
 - [`.planning/tool-capabilities.md`](../../../.planning/tool-capabilities.md) when present
 - [`.planning/templates/intake-routing-and-evidence-contract.md`](../../../.planning/templates/intake-routing-and-evidence-contract.md)
+- [`.planning/templates/delegated-agent-contract.md`](../../../.planning/templates/delegated-agent-contract.md)
 - [`.planning/templates/codebase-map-template.md`](../../../.planning/templates/codebase-map-template.md)
 - [`.planning/templates/context-index-template.md`](../../../.planning/templates/context-index-template.md)
 - Relevant repository structure, manifests, commands, entry points, modules, tests, generated or vendor boundaries, and directly related docs.
@@ -91,13 +92,10 @@ Keep slices factual and current-state only. Do not turn mapping into implementat
 
 Every mapping child prompt must include wording equivalent to all of the following:
 
-- You are a delegated mapping child agent, not the mapping orchestrator.
+- Follow [`.planning/templates/delegated-agent-contract.md`](../../../.planning/templates/delegated-agent-contract.md); you are a delegated mapping child agent, not the mapping orchestrator.
 - Perform only the assigned mapping slice.
-- Do not spawn, delegate to, message, wait for, close, or orchestrate other agents. Only the root orchestrator may manage delegated agents.
 - Do not edit files unless the root prompt explicitly allows it.
 - Do not design implementation, migration, target architecture, or future milestone work.
-- Do not broaden into unrelated repository areas.
-- Inspect only the assigned paths plus directly necessary adjacent files.
 - Keep facts labeled as `Confirmed`, `Suggested`, or `Unknown`.
 - Report exact file paths, symbols, commands, conventions, and evidence.
 - Return proposed updates for `CODEBASE_MAP.md` and/or `CONTEXT_INDEX.md` as structured sections.
@@ -126,6 +124,7 @@ The child must return these sections:
 
 - `CODEBASE_MAP.md` records current system reality: architecture, runtime flows, data and integration surfaces, dependency direction, operational surfaces, risks, and transformation-sensitive constraints.
 - `CONTEXT_INDEX.md` records how coding agents should work safely in the repo: task routes, start-here files, inspect-next files, likely edit files, symbols and APIs, canonical examples, conventions, validation paths, command notes, and avoid-unless-needed areas.
+- Treat `.planning/templates/context-index-template.md` `Agent Context Routing Contract` as the canonical contract for how future agents consume and update context routing.
 - Keep `CONTEXT_INDEX.md` compact and task-routing oriented. Do not duplicate the full `CODEBASE_MAP.md`.
 - When `.planning/CODEBASE_MAP.md` has `GSD-BLUEPRINT: codebase-map-surface-contract` and `GSD-PROJECT: codebase-map-content` markers, update only the `GSD-PROJECT: codebase-map-content` block.
 - When `PROJECT.md` has markers and needs minimal backfill, update only the `GSD-PROJECT: project-charter` block.

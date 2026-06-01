@@ -62,10 +62,13 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Primary read-only/reference surfaces:
 - Main extension points:
 - Canonical implementation examples:
+- Canonical extension points:
+- Canonical reuse examples:
 - Reusable internal APIs/utilities:
+- Minimum-new-code constraints:
 - Dependency boundaries agents must respect:
 - Common wrong edit locations:
-- Fragile areas:
+- Fragile areas where minimum-code shortcuts are dangerous:
 - Generated, vendor, cache, or build-output areas:
 - Validation paths agents should prefer:
 - Mapping artifacts that must be updated when this area changes:
@@ -75,6 +78,8 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 ## Runtime And Behavior Flows
 - Startup or bootstrap flow:
 - Request or response flow:
+- Performance-sensitive paths:
+- Hot paths:
 - Background job flow:
 - Event or messaging flow:
 - Auth or permission flow:
@@ -90,6 +95,8 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - External integrations:
 - Internal and external API boundaries:
 - Jobs, cron, queues, webhooks, or messaging surfaces:
+- Expensive database/API/I/O/queue/file/network surfaces:
+- Hot-path, request-path, I/O, API, database, file, network, and queue risk notes:
 - Provider constraints visible from code, config, or docs:
 - Evidence status:
 - Source or rationale:
@@ -101,6 +108,7 @@ Keep observable repo facts, forward-looking interpretations, and unresolved gaps
 - Hidden dependencies:
 - Upgrade blockers:
 - Migration-sensitive constraints:
+- Minimum-code shortcut risks:
 - Subsystem seams useful for future refactor:
 - Subsystem seams that currently block safe transformation:
 - Evidence status:

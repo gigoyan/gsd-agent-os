@@ -179,6 +179,7 @@ In the routing rules below, paths such as `00-home/current priorities.md` mean:
 
 ## Save Rules
 - Default rule: `do not write`.
+- Routine durable memory writes must go through `$gsd-session-save`; other workflow skills should only identify `gsd-session-save` candidates unless they are `$gsd-vault-bootstrap` creating or repairing the baseline scaffold.
 - Before writing, ask:
   - Is this durable?
   - Will future work benefit from finding this again?

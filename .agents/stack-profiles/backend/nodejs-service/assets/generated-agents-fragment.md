@@ -8,6 +8,9 @@ Do not activate it globally in the blueprint.
 - Use explicit module-system markers in `package.json` and file extensions where needed. Do not rely on accidental module detection.
 - Keep request handlers and job entrypoints thin. Delegate business logic to feature or core modules.
 - Do not put blocking synchronous filesystem, crypto, compression, or large CPU work on request paths.
+- Inspect existing services, adapters, schemas, tests, and utilities before adding new code.
+- Justify new abstractions with current duplication, boundary need, a known near-term phase, or an existing extension point.
+- Validate request-path, event-loop, database, API, file, network, and queue risk when touched.
 - Read configuration from `process.env` through one config boundary. Keep environment variable names in `UPPER_SNAKE_CASE`.
 - Use `package.json` scripts as the stable command surface for `dev`, `test`, `lint`, `build`, `typecheck`, and `start`.
 - Prefer `node:test` as the default testing baseline when the repo does not already standardize on another runner.

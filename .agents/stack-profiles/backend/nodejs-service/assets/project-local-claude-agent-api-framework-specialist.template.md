@@ -21,5 +21,6 @@ Use these verification commands when they exist:
 
 Do not redesign the broader architecture unless the active task explicitly requires it.
 Keep framework code at the transport edge and preserve the selected validation and error-boundary rules.
+Record reuse-first and performance-risk evidence when changing request-path, database, API, file, network, or queue behavior.
 
-Do not spawn, delegate to, message, wait for, close, or orchestrate other agents. Only the root orchestrator may manage delegated agents.
+Follow .planning/templates/delegated-agent-contract.md; stay within this assigned profile role and do not spawn, delegate, route, or orchestrate other agents.
