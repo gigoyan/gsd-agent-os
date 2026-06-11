@@ -1,13 +1,19 @@
 ---
 name: gsd-generate-runtime-adapters
-description: Generate project-local runtime adapter outputs for selected GSD stack profiles. Use when stack selection has captured target runtimes and the next step is to project Codex outputs, Claude Code outputs, or both without treating generated files as blueprint truth.
+description: Generate or safely repair project-local runtime adapter outputs for selected GSD stack profiles. Use when stack selection has captured target runtimes and the next step is to project Codex outputs, Claude Code outputs, or both without treating generated files as blueprint truth, or when Claude Code runtime surfaces are missing, incomplete, or stale enough to prevent skill invocation.
 ---
 
 # GSD Generate Runtime Adapters
 
 Generate runtime-specific project-local outputs from the current stack-selection/configuration-package artifact and the selected stack profile output manifest.
+Also use this skill for conservative Claude Code runtime repair when missing or incomplete `.claude/**` adapter files would otherwise prevent GSD skill invocation.
 
-Use this skill after stack selection is current. Do not use it to choose the stack, change reusable stack-profile truth, update export behavior, or verify a phase.
+This skill supports two use cases:
+
+1. Normal generation after stack selection is current.
+2. Runtime repair for missing Claude Code adapter files.
+
+Do not use it to choose the stack, change reusable stack-profile truth, update export behavior, or verify a phase.
 
 ## Supported Runtime Targets
 
@@ -25,7 +31,7 @@ Use this skill after stack selection is current. Do not use it to choose the sta
    - `Confirmed`: explicit user choice, current artifact decision, or repo-proven fact.
    - `Suggested`: profile-backed recommendation that still needs acceptance.
    - `Unknown`: missing or conflicting decision; stop and ask for confirmation before writing outputs.
-4. Run a dry run first and inspect the created/updated/skipped report. Do not write generated runtime outputs until target runtimes, selected profile, output root, and preservation behavior are clear.
+4. Run a dry run first when practical and inspect the created/updated/skipped/blocked report. Do not write generated runtime outputs until target runtimes, selected profile, output root, and preservation behavior are clear.
 5. Generate only project-local runtime adapter outputs:
    - Codex: `.codex/config.toml` and `.codex/agents/*.toml` from the selected profile templates and output-manifest mappings.
    - Claude Code: `.claude/settings.json`, `.claude/agents/*.md`, and `.claude/skills/**/SKILL.md` from selected profile templates plus canonical `.agents/skills/**/SKILL.md` projection rules.
@@ -34,8 +40,31 @@ Use this skill after stack selection is current. Do not use it to choose the sta
    - Report existing different files as `skipped` unless the user explicitly approves replacement.
    - Treat `.codex/**` and generated `.claude/**` as project-local runtime outputs, not blueprint truth.
 7. Do not generate root `CLAUDE.md` from stack profile data. `CLAUDE.md` remains governed by the global bootstrap-then-managed-block adapter rule established in the root Claude Code adapter phase.
-8. Report all outputs as `created`, `updated`, or `skipped`, with a short reason for each skipped file.
+8. Report all outputs as `created`, `updated`, `skipped`, `blocked`, or `missing_prerequisites`, with a short reason for each skipped or blocked file.
 9. If validation uses a temporary output root, remove or ignore that temporary root before handoff. Do not leave generated `.codex/**` or `.claude/**` changes in the repository unless the user explicitly requested generation into the project.
+
+## Claude Runtime Repair
+
+Use repair mode when Claude Code cannot invoke a requested GSD skill from `.claude/skills/**` and the canonical source exists under `.agents/skills/<skill-name>/SKILL.md`.
+
+Repair mode is intentionally conservative:
+
+- Generate missing files.
+- Preserve existing different `.claude/**` files unless `--force` is explicitly used.
+- Prefer `--dry-run` first when practical.
+- Project canonical `.agents/skills/**/SKILL.md` into `.claude/skills/**/SKILL.md` using the Claude skill projection rules below.
+- Attempt `.claude/settings.json` and `.claude/agents/*.md` from the selected profile templates when prerequisites exist.
+- If stack/profile values or templates are unavailable, still project Claude skills when possible and report settings or agents as `skipped`, `blocked`, or `missing_prerequisites`.
+- Do not update root `CLAUDE.md` from the generator.
+- Do not treat `.claude/**` as blueprint truth.
+- Report created, updated, skipped, blocked, and missing-prerequisite outputs.
+
+Repair command:
+
+```powershell
+python .agents\skills\gsd-generate-runtime-adapters\scripts\generate_runtime_adapters.py --target claude_code --repair --dry-run
+python .agents\skills\gsd-generate-runtime-adapters\scripts\generate_runtime_adapters.py --target claude_code --repair
+```
 
 ## Scripted Projection
 
@@ -53,6 +82,7 @@ Useful arguments:
 - `--selection-file <path>` reads simple stack-selection values when present
 - `--var key=value` supplies explicit render values for template placeholders
 - `--force` allows updating existing generated files whose content differs
+- `--repair` runs conservative Claude Code runtime-surface repair; supported with `--target claude_code`
 - `--dry-run` reports without writing files
 - `--json` emits a machine-readable report
 
@@ -127,7 +157,8 @@ allowed-tools: Read, Glob, Grep, Bash
 - Do not classify generated `.codex/**` or generated `.claude/**` as blueprint truth.
 - Do not update `AGENTS.md`, root `CLAUDE.md`, export scripts, project-context export files, sync/distribution contracts, flattened generated export files, or vault notes from this skill.
 - Do not generate runtime outputs during stack selection; this workflow is the bounded follow-on.
-- Stop instead of guessing when target runtime, selected profile, or material stack-selection values remain `Unknown`.
+- For normal generation, stop instead of guessing when target runtime, selected profile, or material stack-selection values remain `Unknown`.
+- For Claude repair mode, do not require stack-selection values just to project generic GSD skills; report missing agent/settings prerequisites without blocking skill projection when possible.
 - Preserve existing project-owned runtime files unless replacement was explicitly approved.
 
 ## Completion Check

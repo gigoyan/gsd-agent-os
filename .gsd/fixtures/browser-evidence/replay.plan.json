@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "fixture": "internal-browser-evidence-replay",
+  "base_url": "http://127.0.0.1:43111",
+  "steps": [
+    {
+      "step_id": "fixture-step-001",
+      "action": "navigate",
+      "target": "/",
+      "evidence_status": "Suggested"
+    },
+    {
+      "step_id": "fixture-step-002",
+      "action": "unsupported-internal-fixture-action",
+      "target": "page",
+      "evidence_status": "Unknown"
+    }
+  ]
+}

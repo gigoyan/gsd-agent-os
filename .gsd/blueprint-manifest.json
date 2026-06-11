@@ -72,6 +72,27 @@
       "description": "Deterministic script for creating file-count-friendly blueprint export packages."
     },
     {
+      "path": ".agents/skills/gsd-clean-blueprint-source/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint source cleanup audit skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-clean-blueprint-source/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Blueprint source cleanup audit child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-clean-blueprint-source/scripts/clean_blueprint_source.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Deterministic audit-only classifier for reusable blueprint source cleanup candidates."
+    },
+    {
       "path": ".agents/skills/gsd-export-project-context/SKILL.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
@@ -98,6 +119,13 @@
       "sync_strategy": "replace",
       "required": true,
       "description": "Runtime adapter generation skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-generate-runtime-adapters/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Runtime adapter generation child-agent configuration."
     },
     {
       "path": ".agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py",
@@ -184,6 +212,13 @@
       "description": "Source material registration skill instructions."
     },
     {
+      "path": ".agents/skills/gsd-register-source-materials/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Source material registration child-agent configuration."
+    },
+    {
       "path": ".agents/skills/gsd-run-milestone/SKILL.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
@@ -247,6 +282,20 @@
       "description": "Single Blueprint audit/sync child-agent configuration."
     },
     {
+      "path": ".agents/skills/gsd-ui-discovery-orchestrator/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery orchestration skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-ui-discovery-orchestrator/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery orchestration child-agent configuration."
+    },
+    {
       "path": ".agents/skills/gsd-vault-bootstrap/SKILL.md",
       "owner": "blueprint_replace",
       "sync_strategy": "replace",
@@ -273,6 +322,76 @@
       "sync_strategy": "replace",
       "required": true,
       "description": "Phase verification child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer skill instructions."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer interface configuration."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/accessibility-checklist.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer accessibility checklist reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/audit-report-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer audit report template reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/change-plan-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer change plan template reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/frontend-inspection-workflow.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer frontend inspection workflow reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/information-preservation-rules.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer information preservation rules reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/manual-qa-checklist.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer manual QA checklist reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/microcopy-checklist.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer microcopy checklist reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/ui-ux-review-checklist.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer UI/UX review checklist reference."
     },
     {
       "path": ".agents/stack-profiles/backend/nodejs-service/profile.toml",
@@ -861,6 +980,314 @@
       "sync_strategy": "ignore",
       "required": false,
       "description": "Optional project-local Claude Code hooks generated after runtime adapter generation; ignored by blueprint sync."
+    },
+    {
+      "path": ".agents/skills/gsd-discover-flow-evidence/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Flow Intelligence discovery skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-discover-flow-evidence/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Flow Intelligence discovery child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-create-user-stories/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "User story generation skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-create-user-stories/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "User story generation child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-qa-tester/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "QA tester evidence skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-qa-tester/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "QA tester child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/gsd-publish-story-knowledge/SKILL.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Story knowledge mirror publishing skill instructions."
+    },
+    {
+      "path": ".agents/skills/gsd-publish-story-knowledge/agents/openai.yaml",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Story knowledge mirror publishing child-agent configuration."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/interaction-model-diagnosis.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer interaction model diagnosis reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/root-cause-clustering.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer root-cause clustering reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/target-ui-behavior-model.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer target behavior model reference."
+    },
+    {
+      "path": ".agents/skills/ui-ux-product-reviewer/references/ui-ux-evidence-report-template.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX Product Reviewer evidence report template reference."
+    },
+    {
+      "path": ".planning/templates/evidence-status-and-reference-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Evidence status and compact reference contract."
+    },
+    {
+      "path": ".planning/templates/evidence-redaction-safety-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Evidence redaction and safety boundary contract."
+    },
+    {
+      "path": ".planning/templates/browser-evidence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime artifact and command contract."
+    },
+    {
+      "path": ".planning/templates/browser-evidence-install-guide.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime first-goal install and user-prerequisite guide."
+    },
+    {
+      "path": ".planning/templates/browser-session-reuse-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime goal-scoped tab reuse contract."
+    },
+    {
+      "path": ".planning/templates/flow-intelligence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Flow Intelligence artifact contract."
+    },
+    {
+      "path": ".planning/templates/ui-ux-evidence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI/UX evidence artifact contract."
+    },
+    {
+      "path": ".planning/templates/interaction-model-and-target-behavior-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Interaction model and target behavior contract."
+    },
+    {
+      "path": ".planning/templates/root-cause-finding-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Root-cause finding schema contract."
+    },
+    {
+      "path": ".planning/templates/qa-evidence-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "QA evidence artifact contract."
+    },
+    {
+      "path": ".planning/templates/user-story-generation-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "User story generation artifact contract."
+    },
+    {
+      "path": ".planning/templates/story-knowledge-mirror-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Story knowledge mirror delta sync contract."
+    },
+    {
+      "path": ".planning/templates/ui-discovery-scope-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery scope capsule contract."
+    },
+    {
+      "path": ".planning/templates/ui-discovery-coverage-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery coverage report contract."
+    },
+    {
+      "path": ".planning/templates/ui-role-session-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery role/session matrix contract."
+    },
+    {
+      "path": ".planning/templates/ui-inventory-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery compact UI inventory contract."
+    },
+    {
+      "path": ".planning/templates/milestone-handoff-prompt-contract.md",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Milestone handoff prompt contract."
+    },
+    {
+      "path": ".gsd/browser-evidence.config.json",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Default Browser Evidence Runtime configuration."
+    },
+    {
+      "path": ".gsd/fixtures/browser-evidence/replay.plan.json",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Internal Browser Evidence replay fixture used by runtime mode validation."
+    },
+    {
+      "path": ".gsd/browser-evidence.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Deterministic Browser Evidence Runtime wrapper."
+    },
+    {
+      "path": ".gsd/browser_harness_adapter.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime engine adapter module imported by the wrapper."
+    },
+    {
+      "path": ".gsd/browser-harness.lock.json",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Pinned external Browser Harness engine reference for user-cache bootstrap."
+    },
+    {
+      "path": ".gsd/ensure-browser-harness.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Agent-runnable Browser Harness resolver and user-cache installer."
+    },
+    {
+      "path": ".gsd/check-browser-evidence-runtime.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime static validation script."
+    },
+    {
+      "path": ".gsd/check-ui-discovery-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "UI discovery orchestration static validation script."
+    },
+    {
+      "path": ".gsd/check-browser-evidence-modes.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Browser Evidence Runtime replay/QA/smoke validation script."
+    },
+    {
+      "path": ".gsd/check-blueprint-hygiene.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Reusable blueprint hygiene contamination validation script."
+    },
+    {
+      "path": ".gsd/check-flow-intelligence-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Flow Intelligence static validation script."
+    },
+    {
+      "path": ".gsd/check-user-stories-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "User story generation static validation script."
+    },
+    {
+      "path": ".gsd/check-qa-evidence-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "QA evidence static validation script."
+    },
+    {
+      "path": ".gsd/check-story-knowledge-mirror-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Story knowledge mirror dry-run static validation script."
+    },
+    {
+      "path": ".gsd/check-story-knowledge-mirror-apply-static.py",
+      "owner": "blueprint_replace",
+      "sync_strategy": "replace",
+      "required": true,
+      "description": "Story knowledge mirror apply/conflict static validation script."
     }
   ]
 }

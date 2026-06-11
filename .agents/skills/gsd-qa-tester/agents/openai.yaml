@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD QA Tester"
+  short_description: "Generate QA evidence from Flow Intelligence"
+  default_prompt: "Use $gsd-qa-tester to generate repo-local QA charters, test cases, reports, and defect candidates from existing Flow Intelligence."

@@ -71,6 +71,27 @@ Claude-specific instructions may mention:
 
 `.claude/skills/**` is a generated/projected runtime surface unless explicitly classified otherwise.
 
+## Claude Runtime Auto-Repair
+
+`.agents/skills/**/SKILL.md` remains the canonical reusable source for GSD skills.
+`.claude/skills/**/SKILL.md` remains the generated/project-local Claude Code runtime projection.
+
+Missing `.claude/**` files are a repairable runtime-surface condition, not a reason to silently bypass the Claude adapter.
+Before executing a non-trivial GSD task, Claude Code should check for the required Claude runtime surfaces:
+
+- `.claude/settings.json`
+- `.claude/skills/**/SKILL.md`
+- `.claude/agents/*.md`
+
+If the requested GSD skill is missing under `.claude/skills/**`, but the canonical skill exists under `.agents/skills/<skill-name>/SKILL.md`, Claude Code should run the Claude Code runtime adapter repair/generation workflow before manually reading `.agents/skills/**`.
+After repair/generation, Claude Code should re-check `.claude/skills/**` and continue with the projected Claude skill when available.
+If repair is blocked, Claude Code must report the blocker and may fall back to canonical `.agents/skills/**` only for the current task.
+
+Repair must be conservative.
+It may generate missing `.claude/settings.json`, `.claude/agents/*.md`, and `.claude/skills/**/SKILL.md` files from canonical GSD sources and approved runtime templates.
+Existing different `.claude/**` files must not be overwritten unless repair is explicitly run with `--force`.
+Generated `.claude/**` files remain `generated_project_local` outputs and are not blueprint truth.
+
 ## Source-Of-Truth Rule
 
 Do not maintain separate Codex and Claude versions of the GSD workflow manually.

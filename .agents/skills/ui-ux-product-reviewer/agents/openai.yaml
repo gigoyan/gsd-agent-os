@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI/UX Product Reviewer"
+  short_description: "Evidence-based frontend UX, accessibility, microcopy, and information-preservation review."
+  default_prompt: "Use $ui-ux-product-reviewer to review frontend UI and produce an evidence-backed audit/change plan without editing files unless requested."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Register Source Materials"
+  short_description: "Register repo-local source materials"
+  default_prompt: "Use $gsd-register-source-materials to register repository-local files or directories as GSD source materials without copying unsafe raw material."

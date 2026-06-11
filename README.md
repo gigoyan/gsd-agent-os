@@ -105,10 +105,10 @@ Each project stores durable GSD memory under:
 Example:
 
     Repository:
-    D:/CDM/SmartEcosystem
+    D:/path/to/example-project
 
     Vault namespace:
-    <shared-obsidian-vault-root>/projects/SmartEcosystem/
+    <shared-obsidian-vault-root>/projects/example-project/
 
 Do not create one MCP server per project unless explicitly needed.
 Do not store milestone, phase, verification, roadmap, or live state files in Obsidian.

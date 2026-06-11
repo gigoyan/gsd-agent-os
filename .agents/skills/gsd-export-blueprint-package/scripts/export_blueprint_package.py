@@ -17,13 +17,15 @@ from typing import Any
 
 
 EXPORT_SCHEMA_VERSION = 1
-EXPORT_RENDERER_VERSION = 2
+EXPORT_RENDERER_VERSION = 4
 DEFAULT_OUTPUT_ROOT = ".gsd/exports"
 MANIFEST_RELATIVE_PATH = ".gsd/blueprint-manifest.json"
 SKILL_ROOT = ".agents/skills"
 TEMPLATE_ROOT = ".planning/templates"
 STACK_PROFILE_ROOT = ".agents/stack-profiles"
 SKILL_SCRIPTS_TARGET = "skill-scripts.md"
+SKILL_REFERENCES_TARGET = "skill-references.md"
+GSD_TOOLS_TARGET = "gsd-tools.md"
 SECTION_START_PREFIX = "<!-- GSD-EXPORT-SECTION:START "
 SECTION_END_PREFIX = "<!-- GSD-EXPORT-SECTION:END "
 METADATA_FILES = [
@@ -87,6 +89,26 @@ SKILL_SCRIPT_EXCLUDED_FILENAMES = {".DS_Store"}
 SKILL_SCRIPT_EXCLUDED_SUFFIXES = {".pyc", ".pyo"}
 SKILL_SCRIPT_EXCLUDED_DIRS = {"__pycache__"}
 MAX_SKILL_SCRIPT_BYTES = 1024 * 1024
+SKILL_REFERENCE_EXCLUDED_FILENAMES = {".DS_Store"}
+SKILL_REFERENCE_EXCLUDED_SUFFIXES = {
+    ".class",
+    ".dll",
+    ".dylib",
+    ".exe",
+    ".jar",
+    ".o",
+    ".obj",
+    ".pyc",
+    ".pyd",
+    ".pyo",
+    ".so",
+}
+SKILL_REFERENCE_EXCLUDED_DIRS = {"__pycache__", ".cache", ".mypy_cache", ".pytest_cache", ".ruff_cache"}
+MAX_SKILL_REFERENCE_BYTES = 1024 * 1024
+GSD_TOOL_EXCLUDED_FILENAMES = {".DS_Store"}
+GSD_TOOL_EXCLUDED_SUFFIXES = {".pyc", ".pyo"}
+GSD_TOOL_EXCLUDED_DIRS = {"__pycache__"}
+MAX_GSD_TOOL_BYTES = 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -127,6 +149,8 @@ class RenderPlan:
     copy_outputs: dict[str, CopyOutput]
     skill_sources: list[str]
     skill_script_sources: list[str]
+    skill_reference_sources: list[str]
+    gsd_tool_sources: list[str]
     template_sources: list[str]
     stack_profile_sources_by_target: dict[str, list[str]]
     copied_root_files: list[dict[str, str]]
@@ -355,6 +379,28 @@ def is_skill_script_source(path: str) -> bool:
     )
 
 
+def is_skill_reference_source(path: str) -> bool:
+    parts = path.split("/")
+    return (
+        len(parts) >= 5
+        and parts[0] == ".agents"
+        and parts[1] == "skills"
+        and parts[3] == "references"
+        and not has_glob(path)
+    )
+
+
+def is_gsd_tool_source(path: str) -> bool:
+    parts = path.split("/")
+    return (
+        len(parts) >= 2
+        and parts[0] == ".gsd"
+        and parts[1] not in {"exports", "managed-blocks"}
+        and path != MANIFEST_RELATIVE_PATH
+        and not has_glob(path)
+    )
+
+
 def is_template(path: str) -> bool:
     return path.startswith(f"{TEMPLATE_ROOT}/") and not has_glob(path)
 
@@ -384,6 +430,20 @@ def skill_title(path: str) -> str:
 def skill_script_title(path: str) -> str:
     parts = path.split("/")
     return "/".join([parts[2], "scripts", *parts[4:]])
+
+
+def skill_reference_title(path: str) -> str:
+    parts = path.split("/")
+    return "/".join([parts[2], "references", *parts[4:]])
+
+
+def gsd_tool_title(path: str) -> str:
+    return path.split("/", 1)[1]
+
+
+def skill_reference_metadata(path: str) -> tuple[str, str]:
+    parts = path.split("/")
+    return parts[2], "/".join(["references", *parts[4:]])
 
 
 def stack_profile_title(path: str) -> str:
@@ -426,6 +486,28 @@ def is_excluded_skill_script_asset(path: str) -> bool:
         filename in SKILL_SCRIPT_EXCLUDED_FILENAMES
         or suffix in SKILL_SCRIPT_EXCLUDED_SUFFIXES
         or any(part in SKILL_SCRIPT_EXCLUDED_DIRS for part in parts)
+    )
+
+
+def is_excluded_skill_reference_asset(path: str) -> bool:
+    parts = path.split("/")
+    filename = parts[-1]
+    suffix = Path(filename).suffix.lower()
+    return (
+        filename in SKILL_REFERENCE_EXCLUDED_FILENAMES
+        or suffix in SKILL_REFERENCE_EXCLUDED_SUFFIXES
+        or any(part in SKILL_REFERENCE_EXCLUDED_DIRS for part in parts)
+    )
+
+
+def is_excluded_gsd_tool_asset(path: str) -> bool:
+    parts = path.split("/")
+    filename = parts[-1]
+    suffix = Path(filename).suffix.lower()
+    return (
+        filename in GSD_TOOL_EXCLUDED_FILENAMES
+        or suffix in GSD_TOOL_EXCLUDED_SUFFIXES
+        or any(part in GSD_TOOL_EXCLUDED_DIRS for part in parts)
     )
 
 
@@ -541,6 +623,96 @@ def add_skill_script_source(
     skill_script_sources.add(path)
 
 
+def add_skill_reference_source(
+    repo_root: Path,
+    skill_reference_sources: set[str],
+    skipped: list[dict[str, str]],
+    warnings: list[str],
+    path: str,
+    entry: dict[str, Any] | None = None,
+) -> None:
+    if not is_skill_reference_source(path):
+        add_skip(skipped, path, "unsupported non-text skill reference asset", entry)
+        return
+
+    if is_excluded_skill_reference_asset(path):
+        add_skip(skipped, path, "unsupported non-text skill reference asset", entry)
+        return
+
+    source_file, source_error = source_path(repo_root, path)
+    if source_error or source_file is None:
+        add_skip(skipped, path, source_error or "source path unavailable", entry)
+        warnings.append(f"Skipped skill reference source {path}: {source_error}.")
+        return
+
+    try:
+        if source_file.stat().st_size > MAX_SKILL_REFERENCE_BYTES:
+            add_skip(skipped, path, "unsupported non-text skill reference asset", entry)
+            warnings.append(f"Skipped skill reference source {path}: file is too large for root-only export.")
+            return
+        raw = source_file.read_bytes()
+        if b"\x00" in raw:
+            add_skip(skipped, path, "unsupported non-text skill reference asset", entry)
+            warnings.append(f"Skipped skill reference source {path}: source file appears to be binary.")
+            return
+        raw.decode("utf-8")
+    except UnicodeDecodeError:
+        add_skip(skipped, path, "unsupported non-text skill reference asset", entry)
+        warnings.append(f"Skipped skill reference source {path}: source file is not UTF-8 text.")
+        return
+    except OSError as exc:
+        add_skip(skipped, path, f"could not read source file: {exc}", entry)
+        warnings.append(f"Skipped skill reference source {path}: {exc}.")
+        return
+
+    skill_reference_sources.add(path)
+
+
+def add_gsd_tool_source(
+    repo_root: Path,
+    gsd_tool_sources: set[str],
+    skipped: list[dict[str, str]],
+    warnings: list[str],
+    path: str,
+    entry: dict[str, Any] | None = None,
+) -> None:
+    if not is_gsd_tool_source(path):
+        add_skip(skipped, path, "unsupported .gsd tool path shape", entry)
+        return
+
+    if is_excluded_gsd_tool_asset(path):
+        add_skip(skipped, path, "unsupported non-text .gsd tool asset", entry)
+        return
+
+    source_file, source_error = source_path(repo_root, path)
+    if source_error or source_file is None:
+        add_skip(skipped, path, source_error or "source path unavailable", entry)
+        warnings.append(f"Skipped .gsd tool source {path}: {source_error}.")
+        return
+
+    try:
+        if source_file.stat().st_size > MAX_GSD_TOOL_BYTES:
+            add_skip(skipped, path, "unsupported non-text .gsd tool asset", entry)
+            warnings.append(f"Skipped .gsd tool source {path}: file is too large for root-only export.")
+            return
+        raw = source_file.read_bytes()
+        if b"\x00" in raw:
+            add_skip(skipped, path, "unsupported non-text .gsd tool asset", entry)
+            warnings.append(f"Skipped .gsd tool source {path}: source file appears to be binary.")
+            return
+        raw.decode("utf-8")
+    except UnicodeDecodeError:
+        add_skip(skipped, path, "unsupported non-text .gsd tool asset", entry)
+        warnings.append(f"Skipped .gsd tool source {path}: source file is not UTF-8 text.")
+        return
+    except OSError as exc:
+        add_skip(skipped, path, f"could not read source file: {exc}", entry)
+        warnings.append(f"Skipped .gsd tool source {path}: {exc}.")
+        return
+
+    gsd_tool_sources.add(path)
+
+
 def discover_skill_script_sources(
     repo_root: Path,
     skipped: list[dict[str, str]],
@@ -566,6 +738,38 @@ def discover_skill_script_sources(
                 continue
             relative = resolved.relative_to(repo_root).as_posix()
             add_skill_script_source(repo_root, discovered, skipped, warnings, relative)
+
+    return discovered
+
+
+def discover_skill_reference_sources(
+    repo_root: Path,
+    skipped: list[dict[str, str]],
+    warnings: list[str],
+) -> set[str]:
+    discovered: set[str] = set()
+    skill_root = repo_root / ".agents" / "skills"
+    if not skill_root.is_dir():
+        return discovered
+
+    for references_dir in sorted(skill_root.glob("*/references"), key=lambda path: path.as_posix().lower()):
+        if not references_dir.is_dir():
+            continue
+        for candidate in sorted(references_dir.rglob("*"), key=lambda path: path.as_posix().lower()):
+            if not candidate.is_file():
+                continue
+            try:
+                resolved = candidate.resolve(strict=True)
+                resolved.relative_to(repo_root)
+            except (FileNotFoundError, OSError, ValueError):
+                try:
+                    relative = candidate.relative_to(repo_root).as_posix()
+                except ValueError:
+                    relative = candidate.as_posix()
+                add_skip(skipped, relative, "source path resolves outside repository root")
+                continue
+            relative = resolved.relative_to(repo_root).as_posix()
+            add_skill_reference_source(repo_root, discovered, skipped, warnings, relative)
 
     return discovered
 
@@ -601,9 +805,11 @@ def expand_stack_profile_glob(repo_root: Path, pattern: str) -> list[str]:
 
 def classify_manifest(
     repo_root: Path, manifest: dict[str, Any]
-) -> tuple[list[str], list[str], list[str], dict[str, list[str]], dict[str, str], list[dict[str, str]], list[str]]:
+) -> tuple[list[str], list[str], list[str], list[str], list[str], dict[str, list[str]], dict[str, str], list[dict[str, str]], list[str]]:
     skill_sources: set[str] = set()
     skill_script_sources: set[str] = set()
+    skill_reference_sources: set[str] = set()
+    gsd_tool_sources: set[str] = set()
     template_sources: set[str] = set()
     stack_profile_sources_by_domain: dict[str, set[str]] = {}
     root_copy_sources: dict[str, str] = {}
@@ -664,6 +870,14 @@ def classify_manifest(
             add_skill_script_source(repo_root, skill_script_sources, skipped, warnings, path, entry)
             continue
 
+        if is_skill_reference_source(path):
+            add_skill_reference_source(repo_root, skill_reference_sources, skipped, warnings, path, entry)
+            continue
+
+        if is_gsd_tool_source(path):
+            add_gsd_tool_source(repo_root, gsd_tool_sources, skipped, warnings, path, entry)
+            continue
+
         if is_template(path):
             template_sources.add(path)
             continue
@@ -711,6 +925,14 @@ def classify_manifest(
         )
     skill_script_sources.update(discovered_skill_scripts)
 
+    discovered_skill_references = discover_skill_reference_sources(repo_root, skipped, warnings)
+    missing_references_from_manifest = discovered_skill_references - skill_reference_sources
+    for relative_path in sorted(missing_references_from_manifest):
+        warnings.append(
+            f"Consolidated local skill reference {relative_path} even though it was not listed in the manifest."
+        )
+    skill_reference_sources.update(discovered_skill_references)
+
     local_export_skill = f"{SKILL_ROOT}/gsd-export-blueprint-package/SKILL.md"
     if (repo_root / ".agents" / "skills" / "gsd-export-blueprint-package" / "SKILL.md").is_file():
         if local_export_skill not in skill_sources:
@@ -722,6 +944,8 @@ def classify_manifest(
     return (
         sorted(skill_sources),
         sort_normalized_paths(skill_script_sources),
+        sort_normalized_paths(skill_reference_sources),
+        sort_normalized_paths(gsd_tool_sources),
         sorted(template_sources),
         {
             domain: sort_normalized_paths(sources)
@@ -911,6 +1135,60 @@ def render_skill_script_section(repo_root: Path, source: str) -> Section:
     )
 
 
+def render_skill_reference_section(repo_root: Path, source: str) -> Section:
+    content = read_source_text(repo_root, source)
+    section_id = skill_reference_title(source)
+    skill_name, reference_path = skill_reference_metadata(source)
+    start_marker, end_marker = section_markers("skill-references", section_id)
+    rendered = (
+        f"{start_marker}\n\n"
+        f"## {section_id}\n\n"
+        f"<!-- source: {source} -->\n\n"
+        f"<!-- skill: {skill_name} -->\n\n"
+        f"<!-- reference: {reference_path} -->\n\n"
+        f"{ensure_trailing_newline(content)}"
+        f"{end_marker}\n"
+    )
+    return Section(
+        group="skill-references",
+        section_id=section_id,
+        source_path=source,
+        source_hash=source_hash(repo_root, source),
+        rendered=rendered,
+        rendered_hash=sha256_text(rendered),
+        content_mode="reference",
+        start_marker=start_marker,
+        end_marker=end_marker,
+    )
+
+
+def render_gsd_tool_section(repo_root: Path, source: str) -> Section:
+    content = read_source_text(repo_root, source)
+    fence = code_fence_for(content)
+    language = code_fence_language(source)
+    body = f"{fence}{language}\n{ensure_trailing_newline(content)}{fence}\n"
+    section_id = gsd_tool_title(source)
+    section = render_section(
+        "gsd-tools",
+        section_id,
+        section_id,
+        source,
+        body,
+        f"fenced:{language}",
+    )
+    return Section(
+        group=section.group,
+        section_id=section.section_id,
+        source_path=section.source_path,
+        source_hash=source_hash(repo_root, source),
+        rendered=section.rendered,
+        rendered_hash=section.rendered_hash,
+        content_mode=section.content_mode,
+        start_marker=section.start_marker,
+        end_marker=section.end_marker,
+    )
+
+
 def build_consolidated_file(target_file: str, sections: list[Section]) -> str:
     content = f"# {target_file}\n\n"
     if sections:
@@ -947,6 +1225,8 @@ def build_render_plan(repo_root: Path, manifest: dict[str, Any]) -> RenderPlan:
     (
         skill_sources,
         skill_script_sources,
+        skill_reference_sources,
+        gsd_tool_sources,
         template_sources,
         stack_profile_sources_by_domain,
         root_copy_sources,
@@ -968,6 +1248,24 @@ def build_render_plan(repo_root: Path, manifest: dict[str, Any]) -> RenderPlan:
             warnings.append(f"Skipped skill script source {relative_path}: {exc}.")
     if skill_script_sections:
         consolidated_outputs[SKILL_SCRIPTS_TARGET] = skill_script_sections
+
+    skill_reference_sections: list[Section] = []
+    for relative_path in skill_reference_sources:
+        try:
+            skill_reference_sections.append(render_skill_reference_section(repo_root, relative_path))
+        except (OSError, UnicodeError) as exc:
+            warnings.append(f"Skipped skill reference source {relative_path}: {exc}.")
+    if skill_reference_sections:
+        consolidated_outputs[SKILL_REFERENCES_TARGET] = skill_reference_sections
+
+    gsd_tool_sections: list[Section] = []
+    for relative_path in gsd_tool_sources:
+        try:
+            gsd_tool_sections.append(render_gsd_tool_section(repo_root, relative_path))
+        except (OSError, UnicodeError) as exc:
+            warnings.append(f"Skipped .gsd tool source {relative_path}: {exc}.")
+    if gsd_tool_sections:
+        consolidated_outputs[GSD_TOOLS_TARGET] = gsd_tool_sections
 
     stack_profile_sources_by_target: dict[str, list[str]] = {}
     for domain, sources in stack_profile_sources_by_domain.items():
@@ -1013,6 +1311,8 @@ def build_render_plan(repo_root: Path, manifest: dict[str, Any]) -> RenderPlan:
         copy_outputs=dict(sorted(copy_outputs.items())),
         skill_sources=skill_sources,
         skill_script_sources=skill_script_sources,
+        skill_reference_sources=skill_reference_sources,
+        gsd_tool_sources=gsd_tool_sources,
         template_sources=template_sources,
         stack_profile_sources_by_target=dict(sorted(stack_profile_sources_by_target.items())),
         copied_root_files=sorted(copied_root_files, key=lambda item: item["target"]),
@@ -1026,14 +1326,16 @@ def build_index_md() -> str:
 
 This package is a root-only export of the reusable GSD blueprint for ChatGPT Project upload or portable review. It is a flattened representation, not the original repository layout.
 
-The source repository contains directories such as `.agents/skills/**`, `.planning/templates/**`, `.agents/stack-profiles/**`, `.gsd/**`, plus root files such as `AGENTS.md`, `CLAUDE.md`, and `PROJECT.md`. This export intentionally consolidates those sources into a small set of root files, so separate skill folders, script folders, template files, stack-profile folders, runtime planning files, and generated runtime adapter outputs such as `.codex/**` and generated `.claude/**` are intentionally absent.
+The source repository contains directories such as `.agents/skills/**`, `.planning/templates/**`, `.agents/stack-profiles/**`, `.gsd/**`, plus root files such as `AGENTS.md`, `CLAUDE.md`, and `PROJECT.md`. This export intentionally consolidates those sources into a small set of root files, so separate skill folders, script folders, template files, stack-profile folders, `.gsd` tool files, runtime planning files, and generated runtime adapter outputs such as `.codex/**` and generated `.claude/**` are intentionally absent.
 
-Consolidated sections in `skills.md`, `skill-scripts.md`, `templates.md`, and `stack-profiles-<domain>.md` represent original source files. `skill-scripts.md` contains text/code script implementations used by skills. It is included for review, validation, and portable understanding. It does not recreate the original executable folder layout. Skipped files are intentional and are recorded in `export-manifest.json`. Runtime planning files, milestones, phases, verification artifacts, generated runtime adapter outputs such as `.codex/**` and generated `.claude/**`, and project history are not exported. `export-lock.json` tracks source-to-section mappings for incremental export. `export-manifest.json` summarizes the export run. `checksums.sha256` covers final root-level export files except itself.
+Consolidated sections in `skills.md`, `skill-scripts.md`, `skill-references.md`, `gsd-tools.md`, `templates.md`, and `stack-profiles-<domain>.md` represent original source files. `skill-scripts.md` contains text/code script implementations used by skills. `skill-references.md` contains supported UTF-8 text references from skill `references/**` folders. `gsd-tools.md` contains selected reusable `.gsd` runtime tools, static validators, and internal fixtures listed in the source manifest. These files are included for review, validation, and portable understanding. They do not recreate the original executable, reference, or `.gsd` folder layout. Skipped files are intentional and are recorded in `export-manifest.json`. Runtime planning files, milestones, phases, verification artifacts, generated runtime adapter outputs such as `.codex/**` and generated `.claude/**`, and project history are not exported. `export-lock.json` tracks source-to-section mappings for incremental export. `export-manifest.json` summarizes the export run. `checksums.sha256` covers final root-level export files except itself.
 
 | Original GSD source                                                            | Export representation                                                                  |
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
 | `.agents/skills/**/SKILL.md`                                                   | sections inside `skills.md`                                                            |
 | `.agents/skills/**/scripts/**`                                                 | sections inside `skill-scripts.md`                                                     |
+| `.agents/skills/**/references/**`                                              | sections inside `skill-references.md`                                                  |
+| selected reusable `.gsd/**` tools, validators, configs, and fixtures             | sections inside `gsd-tools.md`                                                         |
 | `.planning/templates/**`                                                       | sections inside `templates.md`                                                         |
 | `.agents/stack-profiles/<domain>/**`                                           | sections inside `stack-profiles-<domain>.md`                                           |
 | `AGENTS.md`                                                                    | copied as `agents.md`                                                                  |
@@ -1107,6 +1409,8 @@ def validate_content_plan(
 ) -> None:
     has_script_sources = bool(render_plan.skill_script_sources)
     has_script_target = SKILL_SCRIPTS_TARGET in content_by_file
+    has_reference_sources = bool(render_plan.skill_reference_sources)
+    has_reference_target = SKILL_REFERENCES_TARGET in content_by_file
     if has_script_sources and not has_script_target:
         fail("validation failed: skill-scripts.md is required when text/code skill scripts exist")
     if not has_script_sources and has_script_target:
@@ -1115,6 +1419,24 @@ def validate_content_plan(
         fail("validation failed: generated_files does not include skill-scripts.md")
     if not has_script_target and SKILL_SCRIPTS_TARGET in generated_files:
         fail("validation failed: generated_files includes skill-scripts.md without script content")
+    if has_reference_sources and not has_reference_target:
+        fail("validation failed: skill-references.md is required when supported skill references exist")
+    if not has_reference_sources and has_reference_target:
+        fail("validation failed: skill-references.md must be omitted when no supported skill references exist")
+    if has_reference_target and SKILL_REFERENCES_TARGET not in generated_files:
+        fail("validation failed: generated_files does not include skill-references.md")
+    if not has_reference_target and SKILL_REFERENCES_TARGET in generated_files:
+        fail("validation failed: generated_files includes skill-references.md without reference content")
+    has_gsd_tool_sources = bool(render_plan.gsd_tool_sources)
+    has_gsd_tool_target = GSD_TOOLS_TARGET in content_by_file
+    if has_gsd_tool_sources and not has_gsd_tool_target:
+        fail("validation failed: gsd-tools.md is required when text/code .gsd tool sources exist")
+    if not has_gsd_tool_sources and has_gsd_tool_target:
+        fail("validation failed: gsd-tools.md must be omitted when no text/code .gsd tool sources exist")
+    if has_gsd_tool_target and GSD_TOOLS_TARGET not in generated_files:
+        fail("validation failed: generated_files does not include gsd-tools.md")
+    if not has_gsd_tool_target and GSD_TOOLS_TARGET in generated_files:
+        fail("validation failed: generated_files includes gsd-tools.md without .gsd tool content")
 
     skipped_paths = {item.get("path") for item in render_plan.skipped}
     leaked_skips = sorted(set(render_plan.skill_script_sources) & skipped_paths)
@@ -1123,6 +1445,12 @@ def validate_content_plan(
             "validation failed: consolidated skill scripts are listed as skipped sources: "
             + ", ".join(leaked_skips)
         )
+    leaked_reference_skips = sorted(set(render_plan.skill_reference_sources) & skipped_paths)
+    if leaked_reference_skips:
+        fail(
+            "validation failed: consolidated skill references are listed as skipped sources: "
+            + ", ".join(leaked_reference_skips)
+        )
 
     output_by_target = {
         output.get("target_file"): output
@@ -1130,11 +1458,17 @@ def validate_content_plan(
         if isinstance(output.get("target_file"), str)
     }
     script_output = output_by_target.get(SKILL_SCRIPTS_TARGET) if has_script_target else None
+    reference_output = output_by_target.get(SKILL_REFERENCES_TARGET) if has_reference_target else None
     if has_script_target:
         if not script_output or script_output.get("output_kind") != "consolidated":
             fail("validation failed: export-lock output missing consolidated skill-scripts.md entry")
         if script_output.get("group") != "skill-scripts":
             fail("validation failed: skill-scripts.md lock entry has the wrong group")
+    if has_reference_target:
+        if not reference_output or reference_output.get("output_kind") != "consolidated":
+            fail("validation failed: export-lock output missing consolidated skill-references.md entry")
+        if reference_output.get("group") != "skill-references":
+            fail("validation failed: skill-references.md lock entry has the wrong group")
 
     for target_file, sections in render_plan.consolidated_outputs.items():
         content = content_by_file.get(target_file)
@@ -1166,6 +1500,18 @@ def validate_content_plan(
         expected_ids = [skill_script_title(path) for path in render_plan.skill_script_sources]
         if sorted(section_ids) != sorted(expected_ids):
             fail("validation failed: skill-scripts.md lock section ids do not match expected script ids")
+
+    if reference_output:
+        reference_sections = reference_output.get("sections")
+        if not isinstance(reference_sections, list):
+            fail("validation failed: skill-references.md lock entry is missing sections")
+        section_paths = [section.get("source_path") for section in reference_sections if isinstance(section, dict)]
+        if sorted(section_paths) != sorted(render_plan.skill_reference_sources):
+            fail("validation failed: skill-references.md lock sections do not match consolidated reference sources")
+        section_ids = [section.get("section_id") for section in reference_sections if isinstance(section, dict)]
+        expected_ids = [skill_reference_title(path) for path in render_plan.skill_reference_sources]
+        if sorted(section_ids) != sorted(expected_ids):
+            fail("validation failed: skill-references.md lock section ids do not match expected reference ids")
 
 
 def validate_written_export(export_root: Path, generated_files: list[str]) -> None:
@@ -1543,6 +1889,8 @@ def generated_files_for(render_plan: RenderPlan) -> list[str]:
         | set(render_plan.stack_profile_sources_by_target)
         | set(render_plan.copy_outputs)
         | ({SKILL_SCRIPTS_TARGET} if SKILL_SCRIPTS_TARGET in render_plan.consolidated_outputs else set())
+        | ({SKILL_REFERENCES_TARGET} if SKILL_REFERENCES_TARGET in render_plan.consolidated_outputs else set())
+        | ({GSD_TOOLS_TARGET} if GSD_TOOLS_TARGET in render_plan.consolidated_outputs else set())
         | {"index.md"}
     )
     return sorted(set(METADATA_FILES) | set(content_files))
@@ -1563,7 +1911,7 @@ def build_export_lock(
         "schema_version": EXPORT_SCHEMA_VERSION,
         "export_renderer_version": EXPORT_RENDERER_VERSION,
         "generated_at": generated_at.isoformat().replace("+00:00", "Z"),
-        "source_repository_path": str(repo_root),
+        "source_repository_path": "<source-repository>",
         "source_manifest_path": MANIFEST_RELATIVE_PATH,
         "source_manifest_hash": manifest_hash,
         "blueprint_version": version,
@@ -1610,7 +1958,7 @@ def build_export_manifest(
         "reused_copied_files": incremental_stats.get("reused_copied_files", []),
         "full_render_verification": verification_result,
         "generated_at": generated_at.isoformat().replace("+00:00", "Z"),
-        "source_repository_path": str(repo_root),
+        "source_repository_path": "<source-repository>",
         "source_manifest_path": MANIFEST_RELATIVE_PATH,
         "blueprint_version": version,
         "git_branch": git_info.branch,
@@ -1620,10 +1968,16 @@ def build_export_manifest(
         "index_file": "index.md",
         "export_lock_file": "export-lock.json",
         "skill_scripts_file": SKILL_SCRIPTS_TARGET,
+        "skill_references_file": SKILL_REFERENCES_TARGET if render_plan.skill_reference_sources else "",
+        "gsd_tools_file": GSD_TOOLS_TARGET if render_plan.gsd_tool_sources else "",
         "generated_files": generated_files,
         "consolidated_skill_sources": render_plan.skill_sources,
         "consolidated_skill_script_sources": render_plan.skill_script_sources,
+        "consolidated_skill_reference_sources": render_plan.skill_reference_sources,
+        "consolidated_gsd_tool_sources": render_plan.gsd_tool_sources,
         "skill_scripts_consolidated": len(render_plan.skill_script_sources),
+        "skill_references_consolidated": len(render_plan.skill_reference_sources),
+        "gsd_tools_consolidated": len(render_plan.gsd_tool_sources),
         "consolidated_template_sources": render_plan.template_sources,
         "consolidated_stack_profile_sources": consolidated_stack_profile_sources,
         "root_file_sources": render_plan.copied_root_files,
@@ -1632,6 +1986,8 @@ def build_export_manifest(
         "counts": {
             "skills_consolidated": len(render_plan.skill_sources),
             "skill_scripts_consolidated": len(render_plan.skill_script_sources),
+            "skill_references_consolidated": len(render_plan.skill_reference_sources),
+            "gsd_tools_consolidated": len(render_plan.gsd_tool_sources),
             "templates_consolidated": len(render_plan.template_sources),
             "stack_profile_files_generated": len(render_plan.stack_profile_sources_by_target),
             "stack_profile_sources_consolidated": sum(
@@ -1696,6 +2052,14 @@ def print_dry_run(
     print()
     print(f"Skill scripts to consolidate ({len(render_plan.skill_script_sources)}):")
     for path in render_plan.skill_script_sources:
+        print(f"  - {path}")
+    print()
+    print(f"Skill references to consolidate ({len(render_plan.skill_reference_sources)}):")
+    for path in render_plan.skill_reference_sources:
+        print(f"  - {path}")
+    print()
+    print(f"GSD tools to consolidate ({len(render_plan.gsd_tool_sources)}):")
+    for path in render_plan.gsd_tool_sources:
         print(f"  - {path}")
     print()
     print(f"Templates to consolidate ({len(render_plan.template_sources)}):")
@@ -1845,6 +2209,8 @@ def create_export(args: argparse.Namespace) -> Path:
         "Counts: "
         f"skills={len(render_plan.skill_sources)}, "
         f"skill_scripts={len(render_plan.skill_script_sources)}, "
+        f"skill_references={len(render_plan.skill_reference_sources)}, "
+        f"gsd_tools={len(render_plan.gsd_tool_sources)}, "
         f"templates={len(render_plan.template_sources)}, "
         f"stack_profile_files={len(render_plan.stack_profile_sources_by_target)}, "
         f"stack_profile_sources={sum(len(sources) for sources in render_plan.stack_profile_sources_by_target.values())}, "

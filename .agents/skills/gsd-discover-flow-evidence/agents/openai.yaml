@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Discover Flow Evidence"
+  short_description: "Discover Flow Intelligence evidence"
+  default_prompt: "Use $gsd-discover-flow-evidence to discover and maintain repo-local Flow Intelligence artifacts without creating stories, QA reports, or Vault notes."

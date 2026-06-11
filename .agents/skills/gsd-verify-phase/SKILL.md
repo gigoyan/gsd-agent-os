@@ -41,6 +41,7 @@ Use this skill to compare implementation results against the phase and milestone
 - Residual risks listed even when the phase passes, if any uncertainty remains.
 
 ## Rules
+- Verification requests may be natural language. Resolve and run the required validators, test commands, browser checks, and artifact inspections internally. Ask the user only for blockers the agent cannot satisfy.
 - Verification is not implementation. Do not silently expand the phase while verifying.
 - Do not perform a second execution pass. Do not recreate tests, refactor implementation, change production code, or add new behavior while verifying.
 - Use execution evidence as the starting point. Verification confirms adequacy and truthfulness with selective independent checks, not by blindly repeating every execution command.

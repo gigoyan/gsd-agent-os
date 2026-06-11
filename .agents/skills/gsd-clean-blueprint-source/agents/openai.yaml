@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Clean Blueprint Source"
+  short_description: "Audit blueprint cleanup candidates"
+  default_prompt: "Use $gsd-clean-blueprint-source to audit reusable GSD blueprint source cleanup candidates without applying cleanup."

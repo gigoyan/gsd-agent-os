@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Create User Stories"
+  short_description: "Generate user stories from Flow Intelligence"
+  default_prompt: "Use $gsd-create-user-stories to generate deterministic repo-local user story artifacts from existing Flow Intelligence without rediscovering flows."

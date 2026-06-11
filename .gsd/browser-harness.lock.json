@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "engine": "browser-harness",
+  "repository": "https://github.com/browser-use/browser-harness.git",
+  "revision": "6d20866664ea3d9691b27bbf64f42ae097437dc3",
+  "version": "0.1.0",
+  "cacheNamespace": "gsd/tools/browser-harness",
+  "pythonModule": "browser_harness.run",
+  "entrypoint": "browser-harness",
+  "installStrategy": "git-clone-venv-editable",
+  "notes": [
+    "Browser Harness source is not vendored into GSD-enabled repositories.",
+    "Agents install or reuse this pinned engine in a user-level cache outside the project repository."
+  ]
+}

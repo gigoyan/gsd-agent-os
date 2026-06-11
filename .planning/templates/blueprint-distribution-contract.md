@@ -96,9 +96,11 @@ The lock must support future checks for whether a file was installed by Blueprin
 ## Root-Only Blueprint Export
 
 The blueprint export package is a flattened review and upload representation, not an installable repository layout.
-It may include root-level consolidated files such as `skills.md`, `skill-scripts.md`, `templates.md`, and `stack-profiles-<domain>.md`.
+It may include root-level consolidated files such as `skills.md`, `skill-scripts.md`, `skill-references.md`, `gsd-tools.md`, `templates.md`, and `stack-profiles-<domain>.md`.
 `skill-scripts.md` contains text/code implementations from `.agents/skills/**/scripts/**` for review and validation only; it must not recreate script folders or change runtime/project-preserve sync semantics.
+`gsd-tools.md` contains selected manifest-listed reusable `.gsd/*.py` and `.gsd/*.json` runtime tools and static validators for review and validation only; it must not recreate the `.gsd` folder layout or include raw runtime evidence/history.
 When generated, `skill-scripts.md` must be represented in `export-lock.json`, `export-manifest.json`, and `checksums.sha256`.
+When generated, `gsd-tools.md` must be represented in `export-lock.json`, `export-manifest.json`, and `checksums.sha256`.
 
 ## Managed Block Rules
 

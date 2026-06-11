@@ -1,25 +1,32 @@
-# State
+# State Template
 
 ## Current Status
-- Status: reusable blueprint starter surfaces ready; no active project work
-- Current milestone: `none`
-- Milestone status: `none`
-- Current phase: `none`
-- Phase status: `none`
-- Latest verification: `none`
-- Memory-aware context pack: `none`
+- Status:
+- Current milestone:
+- Milestone status:
+- Current phase:
+- Phase status:
+- Latest verification:
+- Memory-aware context pack:
+  - If used, it must come from `projects/<vault-project-id>/`.
+  - Do not store the vault project ID here; `PROJECT.md` owns that value.
 - Context index:
-  - Status: `placeholder`
-  - Last consulted: `none`
-  - Refresh follow-up: `run $gsd-map-codebase for unified mapping after blueprint structure changes, stale mapping, or before non-trivial GSD maintenance when routing is needed`
-- Durable-memory follow-up: `none`
+  - Status: `missing` | `placeholder` | `current` | `partial` | `stale`
+  - Last consulted:
+  - Refresh follow-up: `none` | `candidate: <why>`
+- Source materials registry:
+  - Status: `missing` | `not-needed` | `current` | `partial` | `stale`
+  - Follow-up: `none` | `candidate: <why>`
+- Durable-memory follow-up:
+  - Record `candidate: <note kind + why>` or `none`.
+  - Do not store the durable content itself in state.
 
 ## Open Risks
-- Planning artifacts are starter placeholders until a repository adopts or maps the GSD workflow.
-- `.planning/CONTEXT_INDEX.md` is placeholder-level by design and should be refreshed with `$gsd-map-codebase` once real project or blueprint-maintenance routing is needed.
+- List active planning or delivery risks.
 
 ## Next Action
-- Run `$gsd-new-project` for a greenfield repo or `$gsd-map-codebase` for existing repo mapping, stale mapping repair, or context-index routing guidance.
+- Record the immediate next GSD action or note that no automatic next step applies.
+- If durable context is needed for routing, refresh it through `gsd-memory-lookup`; do not store it in state.
 
 ## Notes
 - Keep this file concise. It is the primary handoff artifact between sessions and milestone orchestrator runs.

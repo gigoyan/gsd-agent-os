@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD UI Discovery Orchestrator"
+  short_description: "Orchestrate browser-backed UI discovery"
+  default_prompt: "Use $gsd-ui-discovery-orchestrator to coordinate scoped UI discovery, Flow Intelligence, optional user stories, optional QA evidence, and coverage reporting."

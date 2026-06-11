@@ -69,6 +69,11 @@ def parse_args() -> argparse.Namespace:
         help="Template render value. May be repeated.",
     )
     parser.add_argument("--force", action="store_true", help="Replace existing differing files.")
+    parser.add_argument(
+        "--repair",
+        action="store_true",
+        help="Repair missing Claude Code runtime adapter files before falling back to canonical GSD sources.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Report without writing files.")
     parser.add_argument("--json", action="store_true", help="Emit a JSON report.")
     return parser.parse_args()
@@ -176,6 +181,31 @@ def write_or_report(path: Path, content: str, dry_run: bool, force: bool, report
     report.append(ReportItem("updated", rel, "forced replacement"))
 
 
+def write_template_or_report(
+    template_path: Path,
+    target_path: Path,
+    values: dict[str, str],
+    args: argparse.Namespace,
+    report: list[ReportItem],
+) -> None:
+    if not template_path.exists():
+        report.append(
+            ReportItem(
+                "missing_prerequisites",
+                target_path.as_posix(),
+                f"template not found: {template_path.as_posix()}",
+            )
+        )
+        return
+    write_or_report(
+        target_path,
+        render_template(template_path.read_text(encoding="utf-8"), values),
+        args.dry_run,
+        args.force,
+        report,
+    )
+
+
 def generate_codex(profile_assets: Path, output_root: Path, manifest: dict, values: dict[str, str], args: argparse.Namespace, report: list[ReportItem]) -> None:
     generated = manifest["generated_outputs"]
     config_template = profile_assets / generated["codex_config_template"]
@@ -207,10 +237,65 @@ def generate_claude(profile_assets: Path, output_root: Path, manifest: dict, val
     project_skills(output_root, args.dry_run, args.force, report)
 
 
-def project_skills(output_root: Path, dry_run: bool, force: bool, report: list[ReportItem]) -> None:
+def generate_claude_repair(profile_assets: Path, output_root: Path, values: dict[str, str], args: argparse.Namespace, report: list[ReportItem]) -> None:
+    manifest_path = profile_assets / "output-manifest.toml"
+    manifest: dict | None = None
+    if manifest_path.exists():
+        try:
+            manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
+        except tomllib.TOMLDecodeError as exc:
+            reason = f"invalid output manifest: {exc}"
+            report.append(ReportItem("blocked", ".claude/settings.json", reason))
+            report.append(ReportItem("blocked", ".claude/agents/*.md", reason))
+    else:
+        reason = f"profile output manifest not found: {manifest_path.as_posix()}"
+        report.append(ReportItem("missing_prerequisites", ".claude/settings.json", reason))
+        report.append(ReportItem("missing_prerequisites", ".claude/agents/*.md", reason))
+
+    if manifest is not None:
+        generated = manifest.get("generated_outputs", {})
+        claude_targets = generated.get("targets", {}).get("claude_code", {})
+
+        settings_template_name = generated.get("claude_settings_template")
+        settings_target_name = claude_targets.get("settings")
+        if settings_template_name and settings_target_name:
+            write_template_or_report(
+                profile_assets / settings_template_name,
+                output_root / settings_target_name,
+                values,
+                args,
+                report,
+            )
+        else:
+            report.append(ReportItem("missing_prerequisites", ".claude/settings.json", "Claude settings template mapping missing from output manifest"))
+
+        roles = manifest.get("roles", [])
+        if not roles:
+            report.append(ReportItem("missing_prerequisites", ".claude/agents/*.md", "Claude agent role mappings missing from output manifest"))
+        for role in roles:
+            target_data = role.get("targets", {}).get("claude_code")
+            if not target_data:
+                role_id = role.get("role_id", "unknown")
+                report.append(ReportItem("missing_prerequisites", ".claude/agents/*.md", f"Claude target mapping missing for role: {role_id}"))
+                continue
+            if not should_generate_role(role, values):
+                report.append(ReportItem("skipped", target_data["target"], f"condition not met: {role.get('apply_when')}"))
+                continue
+            write_template_or_report(
+                profile_assets / target_data["template"],
+                output_root / target_data["target"],
+                values,
+                args,
+                report,
+            )
+
+    project_skills(output_root, args.dry_run, args.force, report, missing_status="missing_prerequisites")
+
+
+def project_skills(output_root: Path, dry_run: bool, force: bool, report: list[ReportItem], missing_status: str = "skipped") -> None:
     skills_root = Path(".agents/skills")
     if not skills_root.exists():
-        report.append(ReportItem("skipped", ".claude/skills/**/SKILL.md", "canonical .agents/skills directory not found"))
+        report.append(ReportItem(missing_status, ".claude/skills/**/SKILL.md", "canonical .agents/skills directory not found"))
         return
     for source in sorted(skills_root.glob("*/SKILL.md")):
         skill_name = source.parent.name
@@ -284,12 +369,18 @@ def ensure_safe_output_root(output_root: Path) -> None:
 
 def main() -> int:
     args = parse_args()
+    if args.repair and args.target != "claude_code":
+        raise SystemExit("--repair is supported only with --target claude_code")
     profile_assets = Path(args.profile_assets)
     output_root = Path(args.output_root)
     ensure_safe_output_root(output_root)
-    manifest = load_manifest(profile_assets)
     values = load_values(args.selection_file, args.var)
     report: list[ReportItem] = []
+    if args.repair:
+        generate_claude_repair(profile_assets, output_root, values, args, report)
+        emit_report(report, args.json)
+        return 0
+    manifest = load_manifest(profile_assets)
     for target in expand_targets(args.target):
         if target == "codex":
             generate_codex(profile_assets, output_root, manifest, values, args, report)

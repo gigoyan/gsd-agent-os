@@ -31,21 +31,21 @@ Allowed `custody`: `registered-in-place` | `copied` | `moved` | `external-refere
 
 | source_id | title | classification | scope | governs | evidence_status | location | custody | date_or_version | owner_or_origin | notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `src-001` |  | `unknown` | `project` | `none` | `Unknown` |  | `missing` |  |  |  |
+| `<source-id>` |  | `unknown` | `project` | `none` | `Unknown` |  | `missing` |  |  |  |
 
 ## Claim Index
 Keep claims compact. Cite registered source IDs and repository-local anchors instead of copying long source text.
 
 | claim_id | claim | source_refs | evidence_status | applies_to | consumed_by | notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `claim-001` |  | `src-001#anchor` | `Unknown` |  |  |  |
+| `<claim-id>` |  | `<source-id>#<anchor>` | `Unknown` |  |  |  |
 
 ## Conflicts And Unknowns
 Record unresolved contradictions, missing materials, stale references, and follow-up questions.
 
 | item_id | type | description | affected_scope | source_refs | status | next_action |
 | --- | --- | --- | --- | --- | --- | --- |
-| `unknown-001` | `missing-material` |  |  |  | `Unknown` |  |
+| `<unknown-id>` | `missing-material` |  |  |  | `Unknown` |  |
 
 ## Downstream Consumption Log
 Record when a GSD artifact or workflow step consumes a source material or claim.

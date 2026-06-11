@@ -11,6 +11,9 @@
 - Run broader checks when the phase requires them, targeted evidence is stale or incomplete, shared behavior changed, or risk justifies broader confirmation.
 - If broader checks are intentionally skipped during verification, record why.
 
+## User-Facing Validation Requests
+- Validation commands are internal execution details. User-facing validation requests should describe the outcome to verify; agents resolve the concrete commands/checks, execute them when permitted, inspect outputs, and summarize results.
+
 ## Failing-First
 - Before implementation, create or update the minimum sufficient validation set when the change is reasonably testable.
 - Run the first decisive failing test or check when practical to confirm the expected red state.

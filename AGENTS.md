@@ -25,11 +25,18 @@
 - Active phase verification -> `$gsd-verify-phase`.
 - Full active milestone orchestration -> `$gsd-run-milestone`.
 - Small bounded task that does not need milestone ceremony -> `$gsd-quick-task`.
+- Full UI discovery, browser-backed UI exploration, role/page/flow UI capture, user-story capture from UI, full app crawl, form/action inventory, UI QA coverage, or "go through the app" requests -> `$gsd-ui-discovery-orchestrator`.
 - Source-material registration, organization, classification, or durable project evidence intake from repository file/directory paths -> `$gsd-register-source-materials`.
 - Blueprint install/update/audit -> `$gsd-sync-blueprint`; do not sync manually.
 - Durable memory lookup -> `$gsd-memory-lookup`.
 - Durable memory writeback -> `$gsd-session-save`.
 - Vault scaffold initialization/repair -> `$gsd-vault-bootstrap`.
+
+## Natural-Language Interaction Boundary
+- Users request outcomes in natural language; internal commands, flags, validators, goal IDs, artifact paths, and script names are agent execution details.
+- Agents must translate user requests into the required GSD skill, command, validation, and artifact-inspection steps without asking the user to run those steps manually when the agent can run them.
+- Ask the user only for user-only blockers: target URL, credentials or manual login/MFA, safe data policy, permission for destructive/payment/send actions, missing local software, OS/browser permission prompts, or environment access the agent cannot provide.
+- When commands are needed, run them internally and report the result in natural language with the important artifact references.
 
 ## Spec-First Gate
 - Non-trivial implementation requires sufficient current spec context before milestone planning or execution.

@@ -39,7 +39,7 @@ The skill may register external references discovered inside repository files, b
    - If a repository file contains external references, register only the repository file as the direct input and record discovered references as claims, notes, or separate source rows when useful.
    - Missing paths are registered only when the user clearly referenced them as expected material; set custody to `missing`.
 5. For each accepted path or source-local reference discovered inside a registered repository file, create or update one `Source Materials` row with:
-   - a stable `source_id` unique in the registry, continuing the existing `src-###` sequence;
+   - a stable `source_id` unique in the registry; prefer descriptive IDs derived from the material or purpose over opaque imported sequence IDs;
    - a short title derived from filename, document heading, or user label when available;
    - one allowed `classification`;
    - `scope`, defaulting to `project` unless the path, registry context, or user instruction narrows it;

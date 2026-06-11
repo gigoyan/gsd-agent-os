@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Publish Story Knowledge"
+  short_description: "Publish story knowledge mirror artifacts"
+  default_prompt: "Use $gsd-publish-story-knowledge to publish curated story knowledge through deterministic dry-run-first mirror artifacts."

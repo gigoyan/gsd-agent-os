@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "runtimeName": "gsd-browser-evidence-runtime",
+  "vendor": {
+    "browserHarnessPath": ".vendor/browser-harness/",
+    "sourceStatus": "ExternalPinned",
+    "sourceRefs": [
+      {
+        "source_id": "external-browser-harness-source",
+        "claim_id": "browser-harness-cache-bootstrap-resolution",
+        "anchors": [
+          ".gsd/browser-harness.lock.json#repository",
+          ".gsd/browser-harness.lock.json#revision",
+          ".gsd/ensure-browser-harness.py#user-cache-bootstrap"
+        ],
+        "evidence_status": "Confirmed"
+      }
+    ]
+  },
+  "browserHarness": {
+    "strategy": "path-then-cache-then-module-then-vendor",
+    "command": "browser-harness",
+    "vendorPath": ".vendor/browser-harness/",
+    "python": "python",
+    "timeoutSeconds": 30
+  },
+  "browserHarnessBootstrap": {
+    "enabled": true,
+    "autoInstall": true,
+    "lockPath": ".gsd/browser-harness.lock.json",
+    "ensureScript": ".gsd/ensure-browser-harness.py",
+    "installTimeoutSeconds": 300,
+    "cacheLocation": "user-level cache outside the project repository",
+    "cacheEnvOverride": "GSD_BROWSER_HARNESS_CACHE"
+  },
+  "browserSetup": {
+    "status": "implemented-wrapper",
+    "defaultDebuggingPort": 9222,
+    "defaultCdpUrl": "http://127.0.0.1:9222/json/version",
+    "profileRoot": ".planning/tmp/browser-harness/chrome-profiles/",
+    "launchFlags": [
+      "--remote-debugging-port={port}",
+      "--user-data-dir={profileDir}",
+      "--no-first-run",
+      "--no-default-browser-check"
+    ],
+    "agentRunnableSteps": [
+      "setup-check",
+      "ensure-browser-harness",
+      "launch-chrome",
+      "wait-cdp",
+      "wait-app",
+      "smoke --launch-browser --allow-browser-harness --tab-policy reuse-primary"
+    ],
+    "userOnlyPrerequisites": [
+      "Install Google Chrome or provide an explicit Chrome executable path.",
+      "Approve OS, firewall, antivirus, browser, or extension prompts that block Chrome or local CDP.",
+      "Provide the target app base URL and confirm whether automation may run against local, staging, or real data.",
+      "Provide credentials or complete login/MFA manually when the app requires authentication.",
+      "Provide sensitive secrets through the project's approved secret channel; do not paste them into browser evidence artifacts."
+    ]
+  },
+  "tabLifecycle": {
+    "defaultPolicy": "reuse-primary",
+    "allowedPolicies": [
+      "reuse-primary",
+      "allow-new-tab",
+      "force-new-tab"
+    ],
+    "sessionStateRoot": ".planning/tmp/browser-harness/sessions/",
+    "reusePolicy": "single-primary-tab",
+    "newTabRequiresReason": true,
+    "allowedCriticalNewTabReasons": [
+      "oauth_sso_popup",
+      "external_provider_popup",
+      "payment_provider_popup",
+      "side_by_side_comparison",
+      "app_opened_new_tab",
+      "preserve_unsaved_state",
+      "manual_user_requested"
+    ],
+    "closeRunOwnedExtraTabs": true,
+    "neverCloseUnknownTabs": true
+  },
+  "artifactRoot": ".planning/evidence/browser-runs/",
+  "runId": {
+    "format": "YYYYMMDD-HHMMSS-<scope-slug>-<role-slug>",
+    "timestampSource": "utc-now-by-default",
+    "overrideArgs": [
+      "--timestamp",
+      "--run-id"
+    ],
+    "slugPolicy": "lowercase-ascii-alnum-dash",
+    "artifactDirTemplate": ".planning/evidence/browser-runs/<run-id>/"
+  },
+  "modes": {
+    "evidence": {
+      "status": "implemented-wrapper-mvp",
+      "evidence_status": "Confirmed",
+      "behavior": "wrapper foundation writes the full artifact set with Unknown channel markers on the no-browser/blocked path; real capture is implemented through the runtime capture path"
+    },
+    "replay": {
+      "status": "implemented-wrapper-mvp",
+      "evidence_status": "Confirmed",
+      "behavior": "consumes replay.plan.json and creates a new run directory per invocation"
+    },
+    "qa": {
+      "status": "implemented-wrapper-mvp",
+      "evidence_status": "Confirmed",
+      "behavior": "opens the target, captures available channels, runs basic checks, and writes qa-findings.json"
+    },
+    "smoke": {
+      "status": "implemented-wrapper-mvp",
+      "evidence_status": "Confirmed",
+      "behavior": "runs deterministic load and optional text/url assertions for CI-friendly smoke checks"
+    },
+    "doctor": {
+      "status": "implemented-wrapper",
+      "evidence_status": "Confirmed",
+      "behavior": "no-browser-capable doctor: validates config and repo-local artifact root, resolves the engine via path-then-cache-then-module-then-vendor without installing, records engine availability/version/commit or a deterministic blocker, and verifies redaction/exit-code mapping"
+    },
+    "setup-check": {
+      "status": "implemented-wrapper",
+      "evidence_status": "Confirmed",
+      "behavior": "read-only first-goal readiness check that reports engine, Chrome, CDP, optional app health, agent-runnable commands, user-only prerequisites, and required user inputs"
+    },
+    "launch-chrome": {
+      "status": "implemented-wrapper",
+      "evidence_status": "Confirmed",
+      "behavior": "launches dedicated Chrome with remote debugging and a repo-local profile when the user has Chrome installed or provides --chrome-path"
+    },
+    "wait-cdp": {
+      "status": "implemented-wrapper",
+      "evidence_status": "Confirmed",
+      "behavior": "waits for a Chrome DevTools Protocol version endpoint and exits 0 only when reachable"
+    },
+    "wait-app": {
+      "status": "implemented-wrapper",
+      "evidence_status": "Confirmed",
+      "behavior": "waits for the user-provided target app URL and exits 0 only when reachable"
+    }
+  },
+  "autonomy": {
+    "defaultMode": "safe",
+    "allowedModes": [
+      "safe",
+      "custom",
+      "unrestricted"
+    ],
+    "safe": {
+      "blockedActionCategories": [
+        "credential-entry",
+        "payment",
+        "destructive-data-change",
+        "external-send",
+        "privilege-change"
+      ],
+      "unrestricted": false
+    },
+    "custom": {
+      "blockedActionCategories": [],
+      "unrestricted": false,
+      "requiresExplicitPolicyFile": true
+    },
+    "unrestricted": {
+      "blockedActionCategories": [],
+      "unrestricted": true,
+      "redactionAndSafetyEventsRemainRequired": true
+    }
+  },
+  "redactionAndSafety": {
+    "policyRefs": [
+      ".planning/templates/browser-evidence-contract.md",
+      ".planning/templates/evidence-redaction-safety-contract.md"
+    ],
+    "redactionReplacement": "[REDACTED_SECRET]",
+    "neverPublishRawEvidenceToVaultByDefault": true,
+    "safetyEventsFile": "safety-events.json",
+    "evidenceStatusValues": [
+      "Confirmed",
+      "Suggested",
+      "Unknown"
+    ]
+  },
+  "lifecycle": {
+    "helpConfigDoctorPathsAreReadOnly": true,
+    "startBrowserOnHelpConfigDoctor": false,
+    "invokeBrowserHarnessUpdate": false,
+    "invokeBrowserHarnessReload": false,
+    "executeBrowserHarnessStdinOnHelpConfigDoctor": false,
+    "stopOnlyOwnedProcesses": true,
+    "killUnknownProcesses": false,
+    "ownedProcessMarker": "future-run-scoped-metadata-required-before-stop"
+  },
+  "validationTarget": {
+    "targetPath": "",
+    "mutateDuringValidation": false,
+    "usage": "optional external target validation only"
+  },
+  "sourceTraceability": [
+    {
+      "source_id": "internal-browser-evidence-contract",
+      "claim_id": "runtime-mode-surface",
+      "anchors": [
+        "internal-browser-evidence-contract#mode-surface",
+        "internal-browser-evidence-contract#runtime-artifact-shape"
+      ],
+      "evidence_status": "Confirmed",
+      "use": "runtime mode surface"
+    },
+    {
+      "source_id": "internal-browser-evidence-contract",
+      "claim_id": "preserve-evidence-status-labels",
+      "anchors": [
+        "internal-browser-evidence-contract#evidence-status-labels"
+      ],
+      "evidence_status": "Confirmed",
+      "use": "preserve evidence labels"
+    },
+    {
+      "source_id": "internal-browser-evidence-contract",
+      "claim_id": "runtime-config-not-durable-memory",
+      "anchors": [
+        "internal-browser-evidence-contract#runtime-memory-boundary"
+      ],
+      "evidence_status": "Confirmed",
+      "use": "runtime config is not durable memory"
+    }
+  ],
+  "remainingForLaterPhases": {
+    "Suggested": [
+      "Add optional project-local app start command adapters once a project explicitly records its safe command, port, and data policy.",
+      "Add optional authenticated-login handoff recipes per project after the user defines credential and MFA handling."
+    ],
+    "Unknown": [
+      "Whether a target project allows browser automation against staging or real data until the user supplies a safe data policy.",
+      "Whether a target project requires user-only login, MFA, SSO, or browser-extension setup."
+    ]
+  }
+}

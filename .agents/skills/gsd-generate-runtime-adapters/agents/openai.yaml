@@ -1,0 +1,4 @@
+interface:
+  display_name: "GSD Generate Runtime Adapters"
+  short_description: "Generate project-local runtime adapters"
+  default_prompt: "Use $gsd-generate-runtime-adapters to generate or repair project-local Codex and Claude Code runtime adapter outputs from selected stack profiles."
