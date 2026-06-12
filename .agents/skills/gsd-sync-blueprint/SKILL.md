@@ -171,8 +171,8 @@ Blueprint file sync never copies `.claude/**` outputs from the Blueprint source.
 
 During audit:
 
-1. Detect Claude Code runtime usage in the target repository: target `CLAUDE.md` exists or target `.claude/` exists.
-2. When detected and mode is `install` or `update`, set `Claude skill projection refresh: planned` in the audit plan; otherwise set `not applicable`.
+1. For `install` mode, always set `Claude skill projection refresh: planned` in the audit plan: install creates the required `CLAUDE.md` adapter, so the target will use the Claude Code runtime surface after apply even though `CLAUDE.md` and `.claude/` do not exist yet at audit time.
+2. For `update` and `audit-only` modes, set `planned` when the target `CLAUDE.md` or target `.claude/` exists; otherwise set `not applicable`.
 
 During apply, after approved file sync actions succeed:
 
