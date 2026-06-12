@@ -17,6 +17,7 @@
 - Read `.planning/CONTEXT_INDEX.md` before broad repository scanning when it exists and is current.
 
 ## Skill Routing
+- `$gsd-<name>` denotes the canonical GSD skill `gsd-<name>`; invoke it through the active runtime's skill surface (Codex skills from `.agents/skills/**`, Claude Code projected skills from `.claude/skills/**`).
 - New/sparse project or bootstrap refresh -> `$gsd-new-project`.
 - Existing/stale/unknown repo reality, serious mapping, or context-index repair -> `$gsd-map-codebase`.
 - Stack selection -> `$gsd-select-stack`.

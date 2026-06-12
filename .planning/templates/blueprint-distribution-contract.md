@@ -51,6 +51,7 @@ Marker format:
 - Not synced from reusable blueprint.
 - Examples: `.codex/**`, `.claude/settings.json`, `.claude/agents/**`, `.claude/skills/**`, `.claude/rules/**`, `.claude/hooks/**`.
 - `CLAUDE.md` is a bootstrap-then-managed-block project-facing runtime adapter surface, not generated_project_local.
+- `.claude/skills/**` GSD projections are regenerated in the target from the target's canonical `.agents/skills/**` through the approval-covered Claude Runtime Projection Refresh step of `$gsd-sync-blueprint`; they are never copied from the blueprint source and never become blueprint truth.
 
 ## Sync Safety Rules
 
@@ -64,7 +65,7 @@ Marker format:
 - A missing target `README.md` must not be treated as a missing GSD blueprint file.
 - Reusable GSD usage guidance belongs in blueprint documentation, `AGENTS.md`, skills, templates, or contracts, not in target project `README.md`.
 - Never overwrite files with uncommitted project changes without surfacing a diff and asking for approval.
-- Never update `.codex/**` or generated `.claude/**` project-local runtime outputs through blueprint sync.
+- Never copy `.codex/**` or generated `.claude/**` project-local runtime outputs from the blueprint source during sync; `.claude/skills/**` projections may be regenerated in the target only through the approval-covered Claude Runtime Projection Refresh step.
 - Never copy milestone, phase, verification, roadmap history, or state history from the blueprint into a project repository.
 - Detect files previously installed by Blueprint sync but removed from the current manifest by comparing target lock entries with the current source manifest.
 - Do not delete anything unless it is a proven Blueprint-installed delete candidate, local modification can be safely ruled out, and the user explicitly approves deletion.

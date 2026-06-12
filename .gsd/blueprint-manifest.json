@@ -965,7 +965,7 @@
       "owner": "generated_project_local",
       "sync_strategy": "ignore",
       "required": false,
-      "description": "Project-local Claude Code skills projected after runtime adapter generation; ignored by blueprint sync."
+      "description": "Project-local Claude Code skill projections derived from canonical .agents/skills; ignored by blueprint file copying and regenerated only through runtime adapter generation/repair or the approval-covered Claude Runtime Projection Refresh step of sync."
     },
     {
       "path": ".claude/rules/**",

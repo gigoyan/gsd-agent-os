@@ -71,6 +71,10 @@ Claude-specific instructions may mention:
 
 `.claude/skills/**` is a generated/projected runtime surface unless explicitly classified otherwise.
 
+In Claude Code, the projected skill directory name is the skill name: each projected GSD skill is invocable by the user as `/<skill-name>` and by the model through the Skill tool.
+Every `$gsd-<name>` reference in runtime-neutral GSD artifacts resolves in Claude Code to the projected project skill `gsd-<name>`.
+Keeping `.claude/skills/**` projections current is what keeps the Claude Code slash-command surface working; the projections are refreshed by the runtime adapter generation/repair workflow and by the Claude Runtime Projection Refresh step of blueprint sync.
+
 ## Claude Runtime Auto-Repair
 
 `.agents/skills/**/SKILL.md` remains the canonical reusable source for GSD skills.
@@ -89,6 +93,7 @@ If repair is blocked, Claude Code must report the blocker and may fall back to c
 
 Repair must be conservative.
 It may generate missing `.claude/settings.json`, `.claude/agents/*.md`, and `.claude/skills/**/SKILL.md` files from canonical GSD sources and approved runtime templates.
+A skills-only repair (`--skills-only`) projects only `.claude/skills/**` and is the preferred minimal repair when the goal is restoring the Claude Code skill surface.
 Existing different `.claude/**` files must not be overwritten unless repair is explicitly run with `--force`.
 Generated `.claude/**` files remain `generated_project_local` outputs and are not blueprint truth.
 
@@ -104,7 +109,7 @@ Canonical reusable sources remain:
 
 ## Runtime Output Ownership
 
-Generated runtime outputs are project-local. Blueprint sync must not overwrite them as blueprint truth.
+Generated runtime outputs are project-local. Blueprint sync must not copy them from the blueprint source or treat them as blueprint truth.
 
 Generated project-local outputs include:
 
@@ -114,6 +119,8 @@ Generated project-local outputs include:
 - `.claude/skills/**`
 - `.claude/rules/**`
 - `.claude/hooks/**`
+
+`.claude/skills/**` GSD projections are deterministic derived outputs of the project's canonical `.agents/skills/**`. Blueprint sync may regenerate them in the target through the approval-covered Claude Runtime Projection Refresh step so the Claude Code skill surface stays current after canonical skills change; the regenerated files remain generated project-local outputs.
 
 `CLAUDE.md` is not generated_project_local. It is a bootstrap-then-managed-block project-facing runtime adapter surface because it may contain reusable guidance and project-owned local content.
 

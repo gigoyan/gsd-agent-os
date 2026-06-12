@@ -80,6 +80,7 @@ Bootstrap guidance blocks to update:
 Previously installed Blueprint files removed from current manifest:
 Files to preserve:
 Files skipped:
+Claude skill projection refresh: planned | not applicable
 Conflicts / approval required:
 Unsafe or ambiguous items:
 
@@ -156,12 +157,35 @@ Presence is not enough. Audit must compare actual content whenever the ownership
 
 ### `generated_project_local`
 
-- Ignore for sync.
+- Ignore for blueprint file sync.
 - Do not compare.
-- Do not update.
+- Do not copy from the Blueprint source.
 - Do not delete.
 - Examples include `.codex/**`, `.claude/settings.json`, `.claude/agents/**`, `.claude/skills/**`, `.claude/rules/**`, and `.claude/hooks/**`.
 - `CLAUDE.md` is not generated_project_local; handle it as `bootstrap_then_managed_block`.
+- `.claude/skills/**` GSD projections may change only through the separate Claude Runtime Projection Refresh step below, never through blueprint file copying.
+
+## Claude Runtime Projection Refresh
+
+Blueprint file sync never copies `.claude/**` outputs from the Blueprint source. The Claude Code skill surface (`.claude/skills/**`) is kept current through this separate, approval-covered refresh step instead.
+
+During audit:
+
+1. Detect Claude Code runtime usage in the target repository: target `CLAUDE.md` exists or target `.claude/` exists.
+2. When detected and mode is `install` or `update`, set `Claude skill projection refresh: planned` in the audit plan; otherwise set `not applicable`.
+
+During apply, after approved file sync actions succeed:
+
+1. Run the skills-only projection against the target using the target's freshly synced canonical skills:
+
+```bash
+python3 <TARGET>/.agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target claude_code --repair --skills-only --output-root <TARGET>
+```
+
+2. Report created and skipped projections in the final sync output.
+3. If existing projections were skipped because their content differs, list them and ask for separate explicit approval before re-running the projection with `--force`. Never force-overwrite differing projections silently.
+4. Do not record `.claude/**` outputs in `.gsd/blueprint.lock.json`; projections stay generated project-local outputs, not blueprint truth.
+5. If the projection script is missing or fails, report the refresh as `blocked` with the reason; do not fail the whole sync because of a blocked projection refresh.
 
 ## Removed Blueprint File Handling
 
@@ -247,12 +271,13 @@ Only after explicit approval:
    - update only marked blocks for `managed_block` and existing `bootstrap_then_managed_block` files;
    - create missing `bootstrap_if_missing` files;
    - delete approved removed-from-manifest candidates.
-4. Preserve every project-owned/runtime file and generated project-local output exactly.
-   Generated runtime adapter outputs such as `.codex/**` and generated `.claude/**` must remain preserved.
+4. Preserve every project-owned/runtime file and generated project-local output exactly during file sync.
+   Generated runtime adapter outputs such as `.codex/**` and generated `.claude/**` must never be copied from the Blueprint source; `.claude/skills/**` may change only through the Claude Runtime Projection Refresh step.
 5. Stop if a file changed since audit in a way that invalidates the plan.
 6. Update or create `.gsd/blueprint.lock.json` only after approved writes and deletes succeed.
-7. Run lightweight verification.
-8. Return the required final sync output.
+7. Run the Claude Runtime Projection Refresh step when planned.
+8. Run lightweight verification.
+9. Return the required final sync output.
 
 ## Lock File Requirements
 
@@ -307,8 +332,8 @@ Run lightweight checks after approved sync:
 - explicit approval was obtained before every mutation;
 - only approved deletions were applied;
 - project-owned/runtime files were preserved;
-- generated project-local files were untouched;
-- generated `.codex/**` and generated `.claude/**` runtime adapter outputs were untouched;
+- generated project-local files were untouched by blueprint file sync;
+- generated `.codex/**` runtime adapter outputs were untouched, and `.claude/**` changed only through the approved Claude Runtime Projection Refresh step;
 - `CLAUDE.md` project-owned content was preserved when its blueprint block was created or updated;
 - managed block markers are balanced in changed mixed files;
 - `.gsd/blueprint.lock.json` was updated only after successful approved sync.
@@ -324,6 +349,7 @@ The final sync response must include:
 - Bootstrap guidance blocks updated
 - Files preserved
 - Files skipped
+- Claude skill projection refresh results
 - Conflicts
 - Unsafe or ambiguous items
 - Lock file status

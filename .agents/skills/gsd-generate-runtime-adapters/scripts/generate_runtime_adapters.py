@@ -74,6 +74,15 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Repair missing Claude Code runtime adapter files before falling back to canonical GSD sources.",
     )
+    parser.add_argument(
+        "--skills-only",
+        action="store_true",
+        help="Project only canonical skills into .claude/skills/**; skip settings and agents outputs. Supported with --target claude_code.",
+    )
+    parser.add_argument(
+        "--skills-root",
+        help="Canonical skills directory to project from. Defaults to <output-root>/.agents/skills when present, else ./.agents/skills.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Report without writing files.")
     parser.add_argument("--json", action="store_true", help="Emit a JSON report.")
     return parser.parse_args()
@@ -234,7 +243,7 @@ def generate_claude(profile_assets: Path, output_root: Path, manifest: dict, val
         template_path = profile_assets / target_data["template"]
         target_path = output_root / target_data["target"]
         write_or_report(target_path, render_template(template_path.read_text(encoding="utf-8"), values), args.dry_run, args.force, report)
-    project_skills(output_root, args.dry_run, args.force, report)
+    project_skills(output_root, resolve_skills_root(args, output_root), args.dry_run, args.force, report)
 
 
 def generate_claude_repair(profile_assets: Path, output_root: Path, values: dict[str, str], args: argparse.Namespace, report: list[ReportItem]) -> None:
@@ -289,13 +298,21 @@ def generate_claude_repair(profile_assets: Path, output_root: Path, values: dict
                 report,
             )
 
-    project_skills(output_root, args.dry_run, args.force, report, missing_status="missing_prerequisites")
+    project_skills(output_root, resolve_skills_root(args, output_root), args.dry_run, args.force, report, missing_status="missing_prerequisites")
 
 
-def project_skills(output_root: Path, dry_run: bool, force: bool, report: list[ReportItem], missing_status: str = "skipped") -> None:
-    skills_root = Path(".agents/skills")
+def resolve_skills_root(args: argparse.Namespace, output_root: Path) -> Path:
+    if args.skills_root:
+        return Path(args.skills_root)
+    output_local = output_root / ".agents" / "skills"
+    if output_local.exists():
+        return output_local
+    return Path(".agents/skills")
+
+
+def project_skills(output_root: Path, skills_root: Path, dry_run: bool, force: bool, report: list[ReportItem], missing_status: str = "skipped") -> None:
     if not skills_root.exists():
-        report.append(ReportItem(missing_status, ".claude/skills/**/SKILL.md", "canonical .agents/skills directory not found"))
+        report.append(ReportItem(missing_status, ".claude/skills/**/SKILL.md", f"canonical skills directory not found: {skills_root.as_posix()}"))
         return
     for source in sorted(skills_root.glob("*/SKILL.md")):
         skill_name = source.parent.name
@@ -334,19 +351,28 @@ def split_frontmatter(text: str) -> tuple[str, str]:
 
 
 def claude_frontmatter(skill_name: str, description: str) -> str:
+    safe_description = description.replace("\n", " ").strip() or "Generated GSD skill."
     if skill_name in HIGH_RISK_SKILLS:
+        if not safe_description.endswith("Invoke explicitly only."):
+            safe_description = f"{safe_description} Invoke explicitly only."
         return "\n".join(
             [
                 "---",
-                "description: Audit, export, or synchronize GSD workflow assets. Invoke explicitly only.",
+                f"description: {yaml_quote(safe_description)}",
                 "disable-model-invocation: true",
                 "allowed-tools: Read, Glob, Grep, Bash, Edit, Write",
                 "---",
             ]
         )
-    tools = "Read, Glob, Grep, Bash" if skill_name in READ_ONLY_SKILLS else "Read, Glob, Grep, Bash, Edit, Write"
-    safe_description = description.replace("\n", " ").strip() or "Generated GSD skill."
-    return "\n".join(["---", f"description: {safe_description}", f"allowed-tools: {tools}", "---"])
+    lines = ["---", f"description: {yaml_quote(safe_description)}"]
+    if skill_name in READ_ONLY_SKILLS:
+        lines.append("allowed-tools: Read, Glob, Grep, Bash")
+    lines.append("---")
+    return "\n".join(lines)
+
+
+def yaml_quote(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False)
 
 
 def emit_report(report: list[ReportItem], as_json: bool) -> None:
@@ -371,11 +397,18 @@ def main() -> int:
     args = parse_args()
     if args.repair and args.target != "claude_code":
         raise SystemExit("--repair is supported only with --target claude_code")
+    if args.skills_only and args.target != "claude_code":
+        raise SystemExit("--skills-only is supported only with --target claude_code")
     profile_assets = Path(args.profile_assets)
     output_root = Path(args.output_root)
     ensure_safe_output_root(output_root)
     values = load_values(args.selection_file, args.var)
     report: list[ReportItem] = []
+    if args.skills_only:
+        missing_status = "missing_prerequisites" if args.repair else "skipped"
+        project_skills(output_root, resolve_skills_root(args, output_root), args.dry_run, args.force, report, missing_status=missing_status)
+        emit_report(report, args.json)
+        return 0
     if args.repair:
         generate_claude_repair(profile_assets, output_root, values, args, report)
         emit_report(report, args.json)

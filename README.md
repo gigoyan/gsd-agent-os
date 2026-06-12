@@ -153,6 +153,23 @@ For `PROJECT.md` and `.planning/CODEBASE_MAP.md`, sync may create the starter fi
 
 `README.md` and existing `.planning/STATE.md` are project-owned. Sync must not create or update a target project README and must never update existing runtime state.
 
+## Claude Code Runtime Surface
+
+GSD works in both Codex and Claude Code from the same canonical skills under `.agents/skills/**`.
+
+In Claude Code, skills are invoked from projected copies under `.claude/skills/<skill-name>/SKILL.md`, which makes every GSD skill available as a `/gsd-<name>` slash command and lets the agent route plain natural-language requests through the matching skill automatically.
+
+The projection is delivered automatically:
+
+- `install` and `update` sync runs include a Claude Runtime Projection Refresh step that regenerates `.claude/skills/**` in the target project from the target's canonical skills.
+- The `CLAUDE.md` adapter installed in each project instructs the agent to self-repair a missing or stale projection before any non-trivial GSD task.
+
+To refresh the projection manually in any project:
+
+    python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target claude_code --repair --skills-only
+
+Projected `.claude/skills/**` files are generated project-local outputs: do not edit them by hand and do not commit them as blueprint truth. Newly projected skills become visible to the `/` menu when the next Claude Code session starts.
+
 ## Scenario 1. Project From Scratch
 ### When To Choose This Path
 Choose this path if the repository does not contain a real codebase yet, or if you only have an idea, a brief, notes, or early project information.

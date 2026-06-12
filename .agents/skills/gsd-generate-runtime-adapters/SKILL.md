@@ -59,16 +59,33 @@ Repair mode is intentionally conservative:
 - Do not treat `.claude/**` as blueprint truth.
 - Report created, updated, skipped, blocked, and missing-prerequisite outputs.
 
-Repair command:
+Repair command (POSIX shells):
+
+```bash
+python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target claude_code --repair --dry-run
+python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target claude_code --repair
+```
+
+Repair command (PowerShell):
 
 ```powershell
 python .agents\skills\gsd-generate-runtime-adapters\scripts\generate_runtime_adapters.py --target claude_code --repair --dry-run
 python .agents\skills\gsd-generate-runtime-adapters\scripts\generate_runtime_adapters.py --target claude_code --repair
 ```
 
+Skills-only refresh (projects `.claude/skills/**` without touching settings or agents):
+
+```bash
+python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target claude_code --repair --skills-only
+```
+
 ## Scripted Projection
 
 Use the deterministic helper when available:
+
+```bash
+python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target both --dry-run
+```
 
 ```powershell
 python .agents\skills\gsd-generate-runtime-adapters\scripts\generate_runtime_adapters.py --target both --dry-run
@@ -83,10 +100,18 @@ Useful arguments:
 - `--var key=value` supplies explicit render values for template placeholders
 - `--force` allows updating existing generated files whose content differs
 - `--repair` runs conservative Claude Code runtime-surface repair; supported with `--target claude_code`
+- `--skills-only` projects only `.claude/skills/**` from canonical skills and skips settings/agents outputs; supported with `--target claude_code`
+- `--skills-root <path>` overrides the canonical skills directory; defaults to `<output-root>/.agents/skills` when present, else `./.agents/skills`
 - `--dry-run` reports without writing files
 - `--json` emits a machine-readable report
 
 Run target validation without leaving generated runtime output changes in the repository by using a temporary output root:
+
+```bash
+tmp="$(mktemp -d)/gsd-runtime-adapters-codex"
+python3 .agents/skills/gsd-generate-runtime-adapters/scripts/generate_runtime_adapters.py --target codex --output-root "$tmp" --var http_framework=fastify
+rm -rf "$tmp"
+```
 
 ```powershell
 $tmp = Join-Path $env:TEMP "gsd-runtime-adapters-codex"
@@ -118,7 +143,10 @@ Projection rules:
 - Normalize generic Codex child-agent tool-name prohibitions to the runtime-neutral delegation rule.
 - Do not copy `.agents/skills/**/agents/openai.yaml`.
 - Add Claude Code frontmatter to the projected skill.
-- Add `disable-model-invocation: true` for high-risk generated skills:
+- The projected directory name is the Claude Code skill name, so the projected skill is invocable as `/<skill-name>` and through the Skill tool.
+- Emit the canonical skill description as a YAML double-quoted scalar so colons and quotes cannot break frontmatter parsing.
+- Omit `allowed-tools` for normal skills so orchestrator skills inherit the full runtime tool surface, including delegation and skill-invocation tools.
+- Add `disable-model-invocation: true` and append `Invoke explicitly only.` to the description for high-risk generated skills:
   - `gsd-sync-blueprint`
   - `gsd-export-blueprint-package`
   - `gsd-export-project-context`
@@ -127,7 +155,7 @@ High-risk frontmatter:
 
 ```yaml
 ---
-description: Audit, export, or synchronize GSD workflow assets. Invoke explicitly only.
+description: "<canonical skill description> Invoke explicitly only."
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Bash, Edit, Write
 ---
@@ -137,16 +165,15 @@ Normal projected frontmatter:
 
 ```yaml
 ---
-description: <runtime-neutral skill purpose>
-allowed-tools: Read, Glob, Grep, Bash, Edit, Write
+description: "<canonical skill description>"
 ---
 ```
 
-Read-only projected skills may use:
+Read-only projected skills use:
 
 ```yaml
 ---
-description: <runtime-neutral skill purpose>
+description: "<canonical skill description>"
 allowed-tools: Read, Glob, Grep, Bash
 ---
 ```
